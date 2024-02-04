@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphical Interface for Grammars</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="node_modules/two.js/build/two.js"></script>
+    <script src="script.js"></script>
+   
+</head>
+<body>
+    <header>
+        <h1>Graphical Interface for Grammars</h1>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><p>Version 1.0</p></li>
+            </ul>
+        </nav>
+    </header>
+
+    <form id="grammarInputForm">
+        <label for="variableInputs">Variables:</label>
+        <input type="text" id="variablesInput" name="variables"><br><br>
+        <label for="terminalsInput">Terminal symbols:</label>
+        <input type="text" id="terminalsInput" name="terminals"><br><br>
+        <label for="productionsInput">Productions:</label>
+        <input type="text" id="productionsInput" name="productions"><br><br>
+        <label for="startingInput">Starting symbol:</label>
+        <input type="text" id="startingInput" name="starting"><br><br>
+        <input type="submit" value="Submit">
+    </form>
+    <div id="drawingArea"></div>
+    
+</body>
+</html>

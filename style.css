@@ -1,0 +1,55 @@
+header {
+    background-color: #005b0c;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px; 
+}
+
+header a, p, h1 {
+    color: white
+}
+
+h1 {
+    margin: 0; 
+}
+
+header nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+header nav ul li {
+    display: inline-block;
+}
+
+header nav ul li a {
+    display: block;
+    text-align: center;
+    padding: 10px 20px; 
+    text-decoration: none;
+}
+
+header nav ul li a:hover {
+    background-color: #ffffff22;
+}
+
+#grammarInputForm {
+    width: 50%
+}
+
+#grammarInputForm input {
+    
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+}
+
+#grammarInputForm input:focus {
+    border: 3px solid #555;
+}
+
+#drawingArea {
+    background-color: beige;
+}
