@@ -1,5 +1,3 @@
-
-
 class Grammar {
     variables
     terminals
