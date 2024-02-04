@@ -4,18 +4,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Graphical Interface For Grammars</title>
+    <title>Graphical Interface for Grammars</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap" rel="stylesheet">
     <script src="node_modules/two.js/build/two.js"></script>
     <script src="script.js"></script>
    
 </head>
 <body>
     <header>
-        <h1>Graphical Interface For Grammars</h1>
+        <h1>Graphical Interface for Grammars</h1>
         <nav>
             <ul>
                 <li><a href="#home">Home</a></li>
@@ -25,14 +22,12 @@
     </header>
     <div class="nav_bar">
         <ul>
-            <li><a href="index.html" class="active">GRAMMAR TO GRAPH</a></li>
-            <li><a href="graphToGrammar.html">GRAPH TO GRAMMAR</a></li>
-            <li><a href="wordContainment.html">WORD CONTAINMENT</a></li>
+            <li><a href="index.html">Grammar To Graph</a></li>
+            <li><a href="graphToGrammar.html">Graph To Grammar</a></li>
+            <li><a href="wordContainment.html" class="active">Word Containment</a></li>
         </ul>
 
     </div>
-
-    <button id="exampleButton">Insert Example Grammar</button>
 
     <form id="grammarInputForm">
         <label for="variableInputs">Variables:</label>
@@ -43,12 +38,8 @@
         <input type="text" id="productionsInput" name="productions"><br><br>
         <label for="startingInput">Starting symbol:</label>
         <input type="text" id="startingInput" name="starting"><br><br>
-        <input type="submit" id="submit" value="Submit">
-        <span id="type">Type: </span>
-        <button id="clear">Clear</button>
-        
+        <input type="submit" value="Submit">
     </form>
-    
     <div id="drawingArea"></div>
     
 </body>

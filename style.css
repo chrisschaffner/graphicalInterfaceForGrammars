@@ -1,9 +1,14 @@
+* {
+    font-family: 'Quicksand', sans-serif;
+}
+
 header {
     background-color: #005b0c;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 10px 20px; 
+    border-left: 5px solid #003c08;
 }
 
 header a, p, h1 {
@@ -36,7 +41,8 @@ header nav ul li a:hover {
 }
 
 #grammarInputForm {
-    width: 50%
+    width: 50%;
+    
 }
 
 #grammarInputForm input {
@@ -46,10 +52,125 @@ header nav ul li a:hover {
     box-sizing: border-box;
 }
 
+#submit {
+    color: white;
+    background-color:#005b0c;
+    border: 2px solid grey;
+    border-radius: 5px;
+    font-size: 15px;
+    transition: color 0.3s ease;
+}
+
+#submit:hover{
+    background-color: #ffffff;
+    color: black;
+}
+
 #grammarInputForm input:focus {
     border: 3px solid #555;
 }
 
 #drawingArea {
     background-color: beige;
+    border-style: solid;
+    user-select: none;
+    cursor:crosshair;
+    height: 500px;
+}
+
+.nav_bar {
+    margin-bottom: 50px;
+    width: 100%;
+    text-align: left;
+    background-color: #ffffff;;
+    padding: 0;
+    border-left: 5px solid #003c08;
+    
+}
+
+.nav_bar ul {
+    list-style: none;
+    padding: 0;
+    display: inline-flex;
+    justify-content: flex-start;
+    height: 15px;
+
+
+}
+
+.nav_bar ul li {
+    
+    padding-right: 0px;
+    
+    
+}
+
+.nav_bar ul li a {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    transition: color 0.3s ease;
+    transition: background-color 0.3s ease;
+    background-color: #005b0c;
+    padding: 16px 15px 13px 15px;
+    
+    
+    
+}
+
+.nav_bar ul li a:hover {
+    color: black;
+    background-color: white;
+    
+}
+
+.nav_bar ul li a.active {
+    color:black;
+    background-color: white;
+}
+
+#drawingArea ::selection {
+    color: transparent;
+    background-color: transparent;
+}
+
+#type {
+    padding: 12px 20px;
+    margin-left: 20px;
+    color: white;
+    background-color:#005b0c;
+    border: 2px solid grey;
+    border-radius: 5px;
+    font-size: 15px;
+}
+
+#exampleButton {
+    padding: 12px 20px;
+    margin-bottom: 40px;
+    color: white;
+    background-color:#005b0c;
+    border: 2px solid grey;
+    border-radius: 5px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+#exampleButton:hover {
+    color:black;
+    background-color: #ffffff;
+}
+
+#clear {
+    padding: 12px 20px;
+    margin-left: 20px;
+    color: white;
+    background-color:rgb(174, 17, 17);
+    border: 2px solid grey;
+    border-radius: 5px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+#clear:hover {
+    color:black;
+    background-color: rgb(255, 188, 188);
 }

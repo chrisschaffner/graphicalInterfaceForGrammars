@@ -1,3 +1,6 @@
+
+
+
 class Grammar {
     variables
     terminals
@@ -123,15 +126,34 @@ document.addEventListener("DOMContentLoaded", function(){
     var terminalsInput = document.getElementById("terminalsInput");
     var productionsInput = document.getElementById("productionsInput");
     var startingInput = document.getElementById("startingInput");
+    var typeDisplay = document.getElementById("type");
+    var exampleButton = document.getElementById("exampleButton");
+    var clearButton = document.getElementById("clear");
+    var submitButton = document.getElementById("submit");
 
-    grammarForm.addEventListener("submit", function(event){
+    exampleButton.addEventListener("click", function(){
+        variablesInput.value = ["A", "B", "C", "D"];
+        terminalsInput.value = ["a", "b", "c"];
+        productionsInput.value = ["A->ε|aB|bB|cB|aC","B->aB|bB|cB|aC","C->aD|bD|cD","D->a|b|c"];
+        startingInput.value = "A";
+    })
+
+    clearButton.addEventListener("click", function(){
+        variablesInput.value = [];
+        terminalsInput.value = [];
+        productionsInput.value = [];
+        startingInput.value = [];
+        two.clear();
+    })
+
+    submitButton.addEventListener("click", function(event){
         event.preventDefault();
 
-        var variables = variablesInput.value.split(",");
-        var terminals = terminalsInput.value.split(",");
-        var starting = startingInput.value;
+        var variables = variablesInput.value.replace(/\s/g, '').split(",");
+        var terminals = terminalsInput.value.replace(/\s/g, '').split(",");
+        var starting = startingInput.value.replace(/\s/g, '');
         var productions = [];
-        var splittedProductionsInput = productionsInput.value.split(",");
+        var splittedProductionsInput = productionsInput.value.replace(/\s/g, '').split(",");
         
 
         for(let i=0; i<splittedProductionsInput.length; i++){
@@ -139,13 +161,19 @@ document.addEventListener("DOMContentLoaded", function(){
             if (splittedProductionInput.length > 2){
                 return
             }
-            productions.push(new Production(splittedProductionInput[0], splittedProductionInput[1]));
+            var rightSides = splittedProductionInput[1].split("|");
+            for(let j=0; j<rightSides.length; j++){
+                productions.push(new Production(splittedProductionInput[0], rightSides[j]));
+            }
+            
         }
         
 
         if(checkCorrectGrammarForm(variables, terminals, productions, starting)){
 
             var grammar = new Grammar(variables, terminals, productions, starting);
+
+            typeDisplay.textContent = "Type: " + calculateGrammarType(grammar);
 
             var automatonFromGrammar = createNFAFromGrammar(grammar);
 
@@ -163,21 +191,44 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
     var canvas = document.getElementById("drawingArea");
-    var params = {width:3000, height:3000};
+    var drawingAreaWidth = canvas.clientWidth;
+    var drawingAreaHeight = canvas.clientHeight;
+    var params = {width:drawingAreaWidth, height:drawingAreaHeight};
     var two = new Two(params)
     two.appendTo(canvas);
 
-    var testVariables= ["A","B","C","D"];
-    var testProductionsInput = ["A->ε","A->aB","A->bB","A->cB","A->aC","B->aB","B->bB","B->cB","B->aC","C->aD","C->bD","C->cD","D->a","D->b","D->c"];
-    var testProductions = [];
-    
-    for(let i=0; i<testProductionsInput.length; i++){
-        var splittedProductionInput = testProductionsInput[i].split("->");
-        if (splittedProductionInput.length > 2){
-            return
+
+    document.addEventListener("mousemove", function(event){
+        if(event.buttons === 1){
+            var xAmount = event.movementX / 1;
+            var yAmount = event.movementY / 1;
+
+            two.scene.translation.x += xAmount;
+            two.scene.translation.y += yAmount;
+            two.update();
         }
-        testProductions.push(new Production(splittedProductionInput[0], splittedProductionInput[1]));
-    }
+    });
+
+    document.addEventListener("wheel", function(event){
+        var mousePosition = new Two.Vector(event.offsetX, event.offsetY);
+        var sceneMouse = new Two.Vector(mousePosition.x - two.scene.translation.x, mousePosition.y - two.scene.translation.y);
+        var zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
+        two.scene.scale *= zoomFactor;
+        two.scene.translation.x -= (sceneMouse.x * (zoomFactor - 1));
+        two.scene.translation.y -= (sceneMouse.y * (zoomFactor - 1));
+        two.update();
+    })
+
+window.addEventListener("resize", function(){
+    var drawingAreaWidth = document.getElementById("drawingArea").clientWidth;
+    var drawingAreaHeight = this.document.getElementById("drawingArea").clientHeight;
+
+    two.width = drawingAreaWidth;
+    two.height = drawingAreaHeight;
+    two.update();
+
+})
+    
 
 /*     var testTerminals = ["a","b","c"];
     var testStarting = "A";
@@ -734,4 +785,36 @@ function createNFAFromGrammar(grammar){
     
 
     return automaton;
+}
+
+function calculateGrammarType(grammar){
+    
+    var productions = grammar.productions;
+    var variables = grammar.variables;
+    var terminals = grammar.terminals;
+    terminals.push("ε");
+
+    var isType1 = true;
+    var isType2 = true;
+    var isType3 = true;
+
+    for(let i=0; i<productions.length; i++){
+        
+        isType1 &= (productions[i].left.length <= productions[i].right.length);
+        isType2 &= (isType1 && variables.includes(productions[i].left));
+        isType3 &= (isType2 && productions[i].right.length <= 2 && (terminals.includes(productions[i].right[0]) && (terminals.includes(productions[i].right.slice(-1)) ||variables.includes(productions[i].right.slice(-1)))));
+    }
+
+    if(isType3){
+        return 3
+    }
+    if(isType2){
+        return 2
+    }
+    if(isType1){
+        return 0
+    }
+
+    return 0
+
 }
