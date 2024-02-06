@@ -1,5 +1,6 @@
 * {
     font-family: 'Quicksand', sans-serif;
+    user-select: none;
 }
 
 header {
@@ -76,6 +77,25 @@ header nav ul li a:hover {
     user-select: none;
     cursor:crosshair;
     height: 500px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-end;
+}
+
+#drawingArea button {
+    
+    margin-left: 5px;
+    padding: 12px 20px;
+    color: white;
+    background-color: #005b0c;
+    border-radius: 5px;
+    border: 2px solid gray;
+    transition: all 0.3s ease;
+}
+
+#drawingArea button:hover {
+    color: black;
+    background-color: white;
 }
 
 .nav_bar {
@@ -159,6 +179,22 @@ header nav ul li a:hover {
     background-color: #ffffff;
 }
 
+#exampleGraphButton {
+    padding: 12px 20px;
+    margin-bottom: 40px;
+    color: white;
+    background-color:#005b0c;
+    border: 2px solid grey;
+    border-radius: 5px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+#exampleGraphButton:hover {
+    color:black;
+    background-color: #ffffff;
+}
+
 #clear {
     padding: 12px 20px;
     margin-left: 20px;
@@ -174,3 +210,20 @@ header nav ul li a:hover {
     color:black;
     background-color: rgb(255, 188, 188);
 }
+
+#createState, #createTransition, #markEnd {
+    background-color: white;
+    padding: 12px 20px;
+    margin-top: 10px;
+    margin-right: 10px;
+    border: 2px solid grey;
+    border-radius: 5px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+#createState:hover, #createTransition:hover, #markEnd:hover {
+    color: white;
+    background-color: rgba(0, 128, 0, 0.5);
+}
+

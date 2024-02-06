@@ -4,15 +4,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Graphical Interface for Grammars</title>
+    <title>Graphical Interface For Grammars</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap" rel="stylesheet">
     <script src="node_modules/two.js/build/two.js"></script>
     <script src="script.js"></script>
    
 </head>
 <body>
     <header>
-        <h1>Graphical Interface for Grammars</h1>
+        <h1>Graphical Interface For Grammars</h1>
         <nav>
             <ul>
                 <li><a href="#home">Home</a></li>
@@ -22,25 +25,20 @@
     </header>
     <div class="nav_bar">
         <ul>
-            <li><a href="index.html">Grammar To Graph</a></li>
-            <li><a href="graphToGrammar.html" class="active">Graph To Grammar</a></li>
-            <li><a href="wordContainment.html">Word Containment</a></li>
+            <li><a href="index.html">GRAMMAR TO GRAPH</a></li>
+            <li><a href="graphToGrammar.html" class="active">GRAPH TO GRAMMAR</a></li>
+            <li><a href="wordContainment.html">WORD CONTAINMENT</a></li>
         </ul>
 
     </div>
 
-    <form id="grammarInputForm">
-        <label for="variableInputs">Variables:</label>
-        <input type="text" id="variablesInput" name="variables"><br><br>
-        <label for="terminalsInput">Terminal symbols:</label>
-        <input type="text" id="terminalsInput" name="terminals"><br><br>
-        <label for="productionsInput">Productions:</label>
-        <input type="text" id="productionsInput" name="productions"><br><br>
-        <label for="startingInput">Starting symbol:</label>
-        <input type="text" id="startingInput" name="starting"><br><br>
-        <input type="submit" value="Submit">
-    </form>
+    <button id="exampleGraphButton">Insert Example Graph</button>
+
     <div id="drawingArea"></div>
+    <button id="createState">Create State</button>
+    <button id="createTransition">Create Transition</button>
+    <button id="markEnd">Mark End</button>
+    <button id="clear">Clear</button>
     
 </body>
 </html>

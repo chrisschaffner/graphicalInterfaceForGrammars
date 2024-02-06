@@ -1,6 +1,4 @@
 
-
-
 class Grammar {
     variables
     terminals
@@ -82,11 +80,19 @@ class State{
     isStart;
     isEnd;
     generation;
+    stateCircle;
+    endCircle;
+    textLabel;
+    startArrow;
 
     constructor(name, isStart, isEnd){
         this.name = name;
         this.isStart = isStart;
         this.isEnd = isEnd;
+    }
+
+    toString(){
+        return this.name;
     }
 
     setPosition(posX, posY){
@@ -98,6 +104,53 @@ class State{
         this.generation = generation;
     }
 
+    createVisuals(two){
+
+        this.stateCircle = new Two.Circle(this.posX, this.posY, 100);
+        this.stateCircle.fill = 'transparent';
+        this.stateCircle.stroke = 'black';
+        this.stateCircle.linewidth = 8;
+        
+        this.textLabel = new Two.Text(this.name, this.posX, this.posY);
+        this.textLabel.size = 60;    
+
+        this.endCircle = new Two.Circle(this.posX, this.posY, 85);
+        this.endCircle.fill = 'transparent';
+        this.endCircle.linewidth = 0;
+
+        if(this.isEnd){
+            this.endCircle.linewidth = 8;
+        }
+
+        if(this.isStart){
+            this.startArrow = two.makeArrow(this.posX-200, this.posY, this.posX-100, this.posY, 40);
+            this.startArrow.linewidth = 8;
+        }
+
+        two.add(this.textLabel);
+        two.add(this.endCircle);
+        two.add(this.stateCircle);
+        two.update();
+        
+    }
+
+    setEnd(two, bool){
+        
+        two.remove(this.textLabel);
+        two.remove(this.stateCircle);
+        
+        if(bool){
+
+            this.endCircle.linewidth = 8;
+
+            two.add(this.textLabel);
+            two.add(this.endCircle);
+            two.add(this.stateCircle);
+            two.update();
+        }
+        
+    }
+
 }
 
 class FaTranisition{
@@ -106,6 +159,7 @@ class FaTranisition{
     via = [];
     startVector;
     endVector;
+    transitionLine;
 
     constructor(from, to, via){
         this.from = from;
@@ -116,10 +170,137 @@ class FaTranisition{
     toString(){
         return "(" + this.from.name + ", " + this.to.name + ")";
     }
+
+    createVisuals(two, states){
+
+        console.log(this);
+    
+        if (this.from == this.to){
+    
+            var x1 = this.from.posX + Math.cos(-Math.PI/2)*100;
+            var y1 = this.from.posY + Math.sin(-Math.PI/2)*100; 
+            var x2 = this.from.posX + Math.cos(-1*Math.PI/3)*200;
+            var y2 = this.from.posY + Math.sin(-1*Math.PI/3)*200;
+            var x3 = this.from.posX + Math.cos(-1*Math.PI/6) * 100;
+            var y3 = this.from.posY + Math.sin(-1*Math.PI/6) * 100;
+    
+            
+            this.transitionLine = two.makePath(x1, y1, x2, y2, x3, y3);
+            this.transitionLine.opacity = .3;
+    
+            var label = two.makeText(this.via, x2+30, y2-30);
+            label.size = 30;
+            label.opacity = .3    
+        }
+    
+        else{
+    
+            
+            var angle = Math.atan2(this.to.posY - this.from.posY, this.to.posX - this.from.posX);
+    
+            var x1 = this.from.posX + Math.cos(angle)*100;
+            var y1 = this.from.posY + Math.sin(angle)*100;
+            var x2 = this.to.posX - Math.cos(angle)*100;
+            var y2 = this.to.posY - Math.sin(angle)*100;
+    
+            this.startVector = {x: x1,y: y1};
+            this.endVector = {x: x2, y: y2};
+
+    
+            this.transitionLine = two.makePath(x1, y1, x2, y2);
+     
+            var label = two.makeText(this.via, Math.floor((x2+x1)/2), Math.floor((y2+y1)/2)-30);
+            label.size = 30;
+    
+            var amount = 40;
+    
+            var deformationFactor = 1;
+    
+    
+            for(let i=0; i<states.length; i++){
+                var circleCenter = {x: states[i].posX, y: states[i].posY};
+            
+                if(checkLineCircleIntersection(this.startVector, this.endVector, circleCenter, 99)){
+                
+                    var pointToInsert = calculateMedianVertex(this.startVector, this.endVector);
+                    const oldMedian = calculateMedianVertex(this.startVector, this.endVector);
+                    two.remove(this.transitionLine);
+    
+                    while(amount < 500 && (checkLineCircleIntersection(this.startVector, pointToInsert, circleCenter, 100) || checkLineCircleIntersection(pointToInsert, this.endVector, circleCenter, 100))){
+                    
+                    two.remove(this.transitionLine)
+                    
+                    var slope = calculateLineSlope(this.startVector, this.endVector);
+                    console.log(slope)
+                    if(slope == Infinity){
+                        pointToInsert.x += amount;
+                    }
+                    if(Math.abs(slope) < 0.05){
+                        pointToInsert.y += amount
+                    }
+                    else{
+                        pointToInsert.x += amount * slope;
+                        pointToInsert.y += amount*(1/slope);
+                    }
+                    
+                    this.transitionLine = two.makePath(x1,y1, pointToInsert.x, pointToInsert.y, x2, y2);
+    
+                    label.translation.x += (pointToInsert.x - oldMedian.x) * 0.55;
+                    label.translation.y += (pointToInsert.y - oldMedian.y) * .55;
+    
+                    deformationFactor += Math.sqrt((pointToInsert.x - oldMedian.x)^2 + (pointToInsert.y - oldMedian.y)^2);
+                    
+                    angle = Math.atan2(this.endVector.y - pointToInsert.y, this.endVector.x - pointToInsert.x);
+                    
+                    amount += .1;
+                    }
+              
+                }
+    
+            }
+    
+            var v1 = {x:100, y:150}
+            var v2 = {x:150, y:10}
+            var v3 = {x:200, y:150}
+    
+            var arrowhead = two.makePath(v1.x, v1.y, v2.x, v2.y ,v3.x, v3.y);
+    
+            var xOffset = Math.cos(angle) * -18; 
+            var yOffset = Math.sin(angle) * -18;
+        
+            arrowhead.fill = "black"
+            arrowhead.scale = .3
+            arrowhead.translation.x = this.endVector.x + xOffset
+            arrowhead.translation.y = this.endVector.y + yOffset
+            arrowhead.rotation = angle + (Math.PI/2);
+            console.log(deformationFactor)
+        
+        }
+    
+        
+        this.transitionLine.closed = false;
+        this.transitionLine.fill = "transparent"
+        this.transitionLine.curved = true;
+        this.transitionLine.stroke = "black"
+        this.transitionLine.linewidth = 8;
+    }
+
+
 }
 
-
 document.addEventListener("DOMContentLoaded", function(){
+
+
+    var canvas = document.getElementById("drawingArea");
+    var canvasRect = canvas.getBoundingClientRect();
+    var drawingAreaWidth = canvas.clientWidth;
+    var drawingAreaHeight = canvas.clientHeight;
+
+
+
+    var two = new Two({type: Two.Types.svg, width: drawingAreaWidth, height: drawingAreaHeight});
+    two.appendTo(canvas);
+
 
     var grammarForm = document.getElementById("grammarInputForm");
     var variablesInput = document.getElementById("variablesInput");
@@ -130,76 +311,207 @@ document.addEventListener("DOMContentLoaded", function(){
     var exampleButton = document.getElementById("exampleButton");
     var clearButton = document.getElementById("clear");
     var submitButton = document.getElementById("submit");
+    var createStateButton = document.getElementById("createState");
+    var createTransitionButton = document.getElementById("createTransition");
+    var markEndButton = document.getElementById("markEnd");
 
-    exampleButton.addEventListener("click", function(){
-        variablesInput.value = ["A", "B", "C", "D"];
-        terminalsInput.value = ["a", "b", "c"];
-        productionsInput.value = ["A->ε|aB|bB|cB|aC","B->aB|bB|cB|aC","C->aD|bD|cD","D->a|b|c"];
-        startingInput.value = "A";
-    })
 
-    clearButton.addEventListener("click", function(){
-        variablesInput.value = [];
-        terminalsInput.value = [];
-        productionsInput.value = [];
-        startingInput.value = [];
-        two.clear();
-    })
+    var stateCount = 0;
+    var createdStates = [];
+    var createdTransitions = [];
+    var createdInputAlphabet = [];
+    var createdAutomaton = new FiniteAutomaton(createdStates, createdInputAlphabet, createdTransitions);
 
-    submitButton.addEventListener("click", function(event){
-        event.preventDefault();
+    var userSelectedStateFrom;
+    var userSelectedStateTo;
 
-        var variables = variablesInput.value.replace(/\s/g, '').split(",");
-        var terminals = terminalsInput.value.replace(/\s/g, '').split(",");
-        var starting = startingInput.value.replace(/\s/g, '');
-        var productions = [];
-        var splittedProductionsInput = productionsInput.value.replace(/\s/g, '').split(",");
-        
+    var stateCreationActive = false;
+    var transitionCreationActive = false;
+    var endMarkingActive = false;
 
-        for(let i=0; i<splittedProductionsInput.length; i++){
-            var splittedProductionInput = splittedProductionsInput[i].split("->");
-            if (splittedProductionInput.length > 2){
-                return
-            }
-            var rightSides = splittedProductionInput[1].split("|");
-            for(let j=0; j<rightSides.length; j++){
-                productions.push(new Production(splittedProductionInput[0], rightSides[j]));
+    if(exampleButton != undefined){
+        exampleButton.addEventListener("click", function(){
+            variablesInput.value = ["A", "B", "C", "D"];
+            terminalsInput.value = ["a", "b", "c"];
+            productionsInput.value = ["A->ε|aB|bB|cB|aC","B->aB|bB|cB|aC","C->aD|bD|cD","D->a|b|c"];
+            startingInput.value = "A";
+        });
+    }
+
+    if(createStateButton != undefined){
+        createStateButton.addEventListener("click", function(){
+            
+            stateCreationActive = !stateCreationActive;
+
+            createStateButton.style.backgroundColor = (stateCreationActive) ? "green" : "transparent";
+            createStateButton.style.color = (stateCreationActive) ? "white" : "black";
+        });
+    }
+
+    if(createTransitionButton != undefined){
+        createTransitionButton.addEventListener("click", function(){
+                
+            transitionCreationActive = !transitionCreationActive;
+            createTransitionButton.style.backgroundColor = (transitionCreationActive) ? "green" : "transparent";
+            createTransitionButton.style.color = (transitionCreationActive) ? "white" : "black";
+        });
+    }    
+
+    if(clearButton != undefined){
+        clearButton.addEventListener("click", function(){
+            variablesInput.value = [];
+            terminalsInput.value = [];
+            productionsInput.value = [];
+            startingInput.value = [];
+            two.clear();
+        })
+    }
+
+    if(submitButton != undefined){
+        submitButton.addEventListener("click", function(event){
+            event.preventDefault();
+    
+            var variables = variablesInput.value.replace(/\s/g, '').split(",");
+            var terminals = terminalsInput.value.replace(/\s/g, '').split(",");
+            var starting = startingInput.value.replace(/\s/g, '');
+            var productions = [];
+            var splittedProductionsInput = productionsInput.value.replace(/\s/g, '').split(",");
+            
+    
+            for(let i=0; i<splittedProductionsInput.length; i++){
+                var splittedProductionInput = splittedProductionsInput[i].split("->");
+                if (splittedProductionInput.length > 2){
+                    return
+                }
+                var rightSides = splittedProductionInput[1].split("|");
+                for(let j=0; j<rightSides.length; j++){
+                    productions.push(new Production(splittedProductionInput[0], rightSides[j]));
+                }
+                
             }
             
-        }
-        
+    
+            if(checkCorrectGrammarForm(variables, terminals, productions, starting)){
+    
+                var grammar = new Grammar(variables, terminals, productions, starting);
+    
+                typeDisplay.textContent = "Type: " + calculateGrammarType(grammar);
+    
+                var automatonFromGrammar = createNFAFromGrammar(grammar);
+    
+                two.clear()
+    
+                createGraph(two, automatonFromGrammar);
+    
+                two.update();
+    
+            }
+            else{
+                console.log("Couldnt create grammar!")
+            }
+            
+        });
+    }
 
-        if(checkCorrectGrammarForm(variables, terminals, productions, starting)){
+    if(markEndButton != undefined){
+        markEndButton.addEventListener("click", function(){
+            
+            endMarkingActive = !endMarkingActive;
 
-            var grammar = new Grammar(variables, terminals, productions, starting);
-
-            typeDisplay.textContent = "Type: " + calculateGrammarType(grammar);
-
-            var automatonFromGrammar = createNFAFromGrammar(grammar);
-
-            two.clear()
-
-            createGraph(two, automatonFromGrammar);
+            markEndButton.style.backgroundColor = (endMarkingActive) ? "green" : "transparent";
+            markEndButton.style.color = (endMarkingActive) ? "white" : "black";
 
             two.update();
+        });
+    }
+            
+    document.addEventListener("mousedown", function(event){
 
+        var mousePositionX = event.clientX - canvasRect.left;
+        var mousePositionY = event.clientY - canvasRect.top;
+
+        var isMouseInsideCanvas = (mousePositionX >= 0 && mousePositionX <= canvas.clientWidth && mousePositionY >= 0 && mousePositionY <= canvas.clientHeight);
+        console.log(isMouseInsideCanvas)
+
+        if(stateCreationActive && isMouseInsideCanvas){
+
+            var drawingAreaScale = two.scene.scale;
+            var drawingAreaShiftX = two.scene.translation.x;
+            var drawingAreaShiftY = two.scene.translation.y;
+            var createdState = new State("z" + stateCount.toString(), stateCount==0, false)
+            createdState.setPosition((mousePositionX - drawingAreaShiftX)/drawingAreaScale, (mousePositionY - drawingAreaShiftY)/drawingAreaScale);
+            createdState.createVisuals(two);
+            createdAutomaton.states.push(createdState);
+            stateCount += 1;      
+            two.update();      
+
+            createdState.stateCircle._renderer.elem.addEventListener('mousedown', function() {
+                
+                if(transitionCreationActive){
+                    console.log(createdState.name + ' from');
+                    userSelectedStateFrom = createdState;
+                }
+
+                if(endMarkingActive){
+                    createdState.isEnd = true;
+                    createdState.setEnd(two, true);
+                }
+            });
+
+            createdState.stateCircle._renderer.elem.addEventListener('mouseup', function() {
+            
+                if(transitionCreationActive){
+
+                    console.log(createdState.name + ' to');
+                    userSelectedStateTo = createdState;
+
+                    var userViaInput = prompt("Insert terminal for transition:").replace(/\s/g, '').split(",");
+                    
+                    if(userViaInput != null){
+                        console.log(userViaInput)
+                    }
+
+                    for(let i=0; i<userViaInput.length; i++){
+                        if(!createdAutomaton.inputAlphabet.includes(userViaInput[i])){
+                            createdAutomaton.inputAlphabet.push(userViaInput[i]);
+                        }
+                    }
+
+                    var createdTransition = new FaTranisition(userSelectedStateFrom, userSelectedStateTo, userViaInput);
+                    createdAutomaton.transitions.push(createdTransition);
+                    createdTransition.createVisuals(two, createdAutomaton.states);
+                    console.log(createdAutomaton)
+                    two.update();
+                }
+            });
+
+            createdState.stateCircle._renderer.elem.addEventListener("mouseover", function(){
+            createdState.stateCircle.stroke = 'green';
+            createdState.endCircle.stroke = 'green';
+            createdState.textLabel.fill = 'green';
+            two.update();
+            });
+
+            createdState.stateCircle._renderer.elem.addEventListener("mouseout", function(){
+            createdState.stateCircle.stroke = 'black'
+            createdState.endCircle.stroke = 'black';
+            createdState.textLabel.fill = 'black';
+                        two.update();
+            });
+                    
         }
-        else{
-            console.log("Couldnt create grammar!")
-        }
-        
+
     });
 
-    var canvas = document.getElementById("drawingArea");
-    var drawingAreaWidth = canvas.clientWidth;
-    var drawingAreaHeight = canvas.clientHeight;
-    var params = {width:drawingAreaWidth, height:drawingAreaHeight};
-    var two = new Two(params)
-    two.appendTo(canvas);
-
-
     document.addEventListener("mousemove", function(event){
-        if(event.buttons === 1){
+
+        var mousePositionX = event.clientX - canvasRect.left;
+        var mousePositionY = event.clientY - canvasRect.top;
+
+        var isMouseInsideCanvas = (mousePositionX >= 0 && mousePositionX <= canvas.clientWidth && mousePositionY >= 0 && mousePositionY <= canvas.clientHeight);
+
+        if(event.buttons === 1 && isMouseInsideCanvas && !stateCreationActive && !transitionCreationActive && !endMarkingActive){
+            console.log("Drag")
             var xAmount = event.movementX / 1;
             var yAmount = event.movementY / 1;
 
@@ -210,16 +522,24 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
     document.addEventListener("wheel", function(event){
-        var mousePosition = new Two.Vector(event.offsetX, event.offsetY);
-        var sceneMouse = new Two.Vector(mousePosition.x - two.scene.translation.x, mousePosition.y - two.scene.translation.y);
-        var zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
-        two.scene.scale *= zoomFactor;
-        two.scene.translation.x -= (sceneMouse.x * (zoomFactor - 1));
-        two.scene.translation.y -= (sceneMouse.y * (zoomFactor - 1));
-        two.update();
-    })
+        
+        var mousePositionX = event.clientX - canvasRect.left;
+        var mousePositionY = event.clientY - canvasRect.top;
+        var isMouseInsideCanvas = (mousePositionX >= 0 && mousePositionX <= canvas.clientWidth && mousePositionY >= 0 && mousePositionY <= canvas.clientHeight);
+        
+        if(isMouseInsideCanvas){
+            var sceneMouse = new Two.Vector(mousePositionX - two.scene.translation.x, mousePositionY - two.scene.translation.y);
+            var zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
+            two.scene.scale *= zoomFactor;
+            two.scene.translation.x -= (sceneMouse.x * (zoomFactor - 1));
+            two.scene.translation.y -= (sceneMouse.y * (zoomFactor - 1));
+            two.update();
+        }
+        
+        
+    });
 
-window.addEventListener("resize", function(){
+    window.addEventListener("resize", function(){
     var drawingAreaWidth = document.getElementById("drawingArea").clientWidth;
     var drawingAreaHeight = this.document.getElementById("drawingArea").clientHeight;
 
@@ -227,22 +547,10 @@ window.addEventListener("resize", function(){
     two.height = drawingAreaHeight;
     two.update();
 
-})
+    });
     
-
-/*     var testTerminals = ["a","b","c"];
-    var testStarting = "A";
-
-    var testGrammar = new Grammar(testVariables, testTerminals, testProductions, testStarting);
-
-    console.log(testGrammar.toString());
-
-    var testAutomaton = createNFAFromGrammar(testGrammar);
-
-    createGraph(two, testAutomaton); */
-
     two.update();
-});
+    });
 
 function onlyUnique(value, index, array) {
     return array.indexOf(value) === index;
@@ -308,7 +616,6 @@ function checkLowerCaseLetter(char){
 }
 
 function checkProduction(production, variables, terminals){
-
     var leftSide = production.left;
     var rightSide = production.right;
 
@@ -382,152 +689,7 @@ function checkFaTransition(transition, alphabet, states){
 
 }
 
-function createTwoState(two, state){
-    var posX = state.posX;
-    var posY = state.posY;
-    var name = state.name;
-    var nodeCircle = two.makeCircle(posX, posY, 100);
-    var nodeName = two.makeText(name, posX, posY);
-    nodeName.size = 60;    
-    nodeCircle.fill = 'transparent';
-    nodeCircle.stroke = 'black';
-    nodeCircle.linewidth = 8;
 
-    if(state.isEnd){
-        var endCircle = two.makeCircle(posX, posY, 85);
-        endCircle.fill = 'transparent';
-        endCircle.linewidth = 8;
-    }
-
-}
-
-function createTwoTransition(two, transition, states){
-
-
-    var from = transition.from;
-    var to = transition.to;
-    var via = transition.via;
-
-
-    if (transition.from == transition.to){
-
-
-
-        var x1 = from.posX + Math.cos(-Math.PI/2)*100;
-        var y1 = from.posY + Math.sin(-Math.PI/2)*100; 
-        var x2 = from.posX + Math.cos(-1*Math.PI/3)*200;
-        var y2 = from.posY + Math.sin(-1*Math.PI/3)*200;
-        var x3 = from.posX + Math.cos(-1*Math.PI/6) * 100;
-        var y3 = from.posY + Math.sin(-1*Math.PI/6) * 100;
-
-        
-        var line = two.makePath(x1, y1, x2, y2, x3, y3);
-        line.opacity = .3;
-
-        var label = two.makeText(via, x2+30, y2-30);
-        label.size = 30;
-        label.opacity = .3    
-    }
-
-    else{
-
-        
-        var angle = Math.atan2(to.posY - from.posY, to.posX - from.posX);
-
-        var x1 = from.posX + Math.cos(angle)*100;
-        var y1 = from.posY + Math.sin(angle)*100;
-        var x2 = to.posX - Math.cos(angle)*100;
-        var y2 = to.posY - Math.sin(angle)*100;
-
-
-
-        transition.startVector = {x: x1,y: y1};
-        transition.endVector = {x: x2, y: y2};
-
-        console.log(transition.startVector);
-        console.log(transition.endVector);
-
-        var line = two.makePath(x1, y1, x2, y2);
- 
-        var label = two.makeText(via, Math.floor((x2+x1)/2), Math.floor((y2+y1)/2)-30);
-        label.size = 30;
-
-        var amount = 40;
-
-        var deformationFactor = 1;
-
-
-        for(let i=0; i<states.length; i++){
-            var circleCenter = {x: states[i].posX, y: states[i].posY};
-        
-            if(checkLineCircleIntersection(transition.startVector, transition.endVector, circleCenter, 99)){
-            
-                var pointToInsert = calculateMedianVertex(transition.startVector, transition.endVector);
-                const oldMedian = calculateMedianVertex(transition.startVector, transition.endVector);
-                two.remove(line);
-
-                while(amount < 500 && (checkLineCircleIntersection(transition.startVector, pointToInsert, circleCenter, 120) || checkLineCircleIntersection(pointToInsert, transition.endVector, circleCenter, 120))){
-                
-                two.remove(line)
-                
-                var slope = calculateLineSlope(transition.startVector, transition.endVector);
-                console.log(slope)
-                if(slope == Infinity){
-                    pointToInsert.x += amount;
-                }
-                if(slope == 0){
-                    pointToInsert.y += amount
-                }
-                else{
-                    pointToInsert.x += amount * slope;
-                    pointToInsert.y += amount*(1/slope);
-                }
-                
-                line = two.makePath(x1,y1, pointToInsert.x, pointToInsert.y, x2, y2);
-
-                label.translation.x += (pointToInsert.x - oldMedian.x) * 0.55;
-                label.translation.y += (pointToInsert.y - oldMedian.y) * .55;
-
-                deformationFactor += Math.sqrt((pointToInsert.x - oldMedian.x)^2 + (pointToInsert.y - oldMedian.y)^2);
-                
-                angle = Math.atan2(transition.endVector.y - pointToInsert.y, transition.endVector.x - pointToInsert.x);
-                
-                amount += .1;
-                }
-          
-            }
-
-        }
-
-        var v1 = {x:100, y:150}
-        var v2 = {x:150, y:10}
-        var v3 = {x:200, y:150}
-
-        var arrowhead = two.makePath(v1.x, v1.y, v2.x, v2.y ,v3.x, v3.y);
-
-        var xOffset = Math.cos(angle) * -18; 
-        var yOffset = Math.sin(angle) * -18;
-    
-        arrowhead.fill = "black"
-        arrowhead.scale = .3
-        arrowhead.translation.x = transition.endVector.x + xOffset
-        arrowhead.translation.y = transition.endVector.y + yOffset
-        arrowhead.rotation = angle + (Math.PI/2);
-        console.log(deformationFactor)
-    
-    }
-
-    
-    line.closed = false;
-    line.fill = "transparent"
-    line.curved = true;
-    line.stroke = "black"
-    line.linewidth = 8;
-    
-
-    
-
-}
 
 function calculateMedianVertex(point1, point2){
     return {x: (point2.x+point1.x)/2, y: (point2.y+point1.y)/2}
@@ -548,18 +710,13 @@ function createGraph(two, automaton){
     calculateStatePositions(automaton);
 
     for(let i=0; i<states.length; i++){
-        createTwoState(two, states[i]);
-        if(states[i].isStart){
-            var state = states[i];
-            var startArrow = two.makeArrow(state.posX-200, state.posY, state.posX-100, state.posY, 40);
-            
-            startArrow.linewidth = 8;
-        }
+        states[i].createVisuals(two);
     }
 
 
     for (let i = 0; i < transitions.length; i++) {
-            createTwoTransition(two, transitions[i], states);
+            //createTwoTransition(two, transitions[i], states);
+            transitions[i].createVisuals(two, states);
         }
 }
 
@@ -791,7 +948,7 @@ function calculateGrammarType(grammar){
     
     var productions = grammar.productions;
     var variables = grammar.variables;
-    var terminals = grammar.terminals;
+    var terminals = grammar.terminals.slice();
     terminals.push("ε");
 
     var isType1 = true;
