@@ -69,6 +69,13 @@ class FiniteAutomaton{
         }
     }
 
+    clear(){
+        this.states = [];
+        this.inputAlphabet = [];
+        this.transitions = [];
+        this.generationsArray = [];
+    }
+
     
 
 }
@@ -91,9 +98,7 @@ class State{
         this.isEnd = isEnd;
     }
 
-    toString(){
-        return this.name;
-    }
+    
 
     setPosition(posX, posY){
         this.posX = posX;
@@ -291,6 +296,9 @@ class FaTranisition{
 document.addEventListener("DOMContentLoaded", function(){
 
 
+    var htmlTarget = document.getElementById("htmlInfo").dataset.value;
+    console.log(htmlTarget)
+
     var canvas = document.getElementById("drawingArea");
     var canvasRect = canvas.getBoundingClientRect();
     var drawingAreaWidth = canvas.clientWidth;
@@ -314,6 +322,12 @@ document.addEventListener("DOMContentLoaded", function(){
     var createStateButton = document.getElementById("createState");
     var createTransitionButton = document.getElementById("createTransition");
     var markEndButton = document.getElementById("markEnd");
+
+
+    var variablesOutput = document.getElementById("variablesOutput");
+    var terminalsOutput = document.getElementById("terminalsOutput");
+    var productionsOutput = document.getElementById("productionsOutput");
+    var startingOutput = document.getElementById("startingOutput");
 
 
     var stateCount = 0;
@@ -357,15 +371,34 @@ document.addEventListener("DOMContentLoaded", function(){
         });
     }    
 
-    if(clearButton != undefined){
-        clearButton.addEventListener("click", function(){
-            variablesInput.value = [];
-            terminalsInput.value = [];
-            productionsInput.value = [];
-            startingInput.value = [];
-            two.clear();
-        })
-    }
+    
+    clearButton.addEventListener("click", function(){
+            
+        switch(htmlTarget){
+            case "graphToGrammar": {
+                console.log("End")
+                two.clear();
+                two.update();
+                createdAutomaton.clear();
+                variablesOutput.textContent = "";
+                terminalsOutput.textContent = "";
+                productionsOutput.textContent = "";
+                startingOutput.textContent = "";
+                stateCount = 0;
+                break;
+            }
+            case "grammarToGraph": {
+                variablesInput.value = [];
+                terminalsInput.value = [];
+                productionsInput.value = [];
+                startingInput.value = [];
+                two.clear();
+                break;
+            }
+        }    
+
+    });
+    
 
     if(submitButton != undefined){
         submitButton.addEventListener("click", function(event){
@@ -442,6 +475,9 @@ document.addEventListener("DOMContentLoaded", function(){
             createdState.setPosition((mousePositionX - drawingAreaShiftX)/drawingAreaScale, (mousePositionY - drawingAreaShiftY)/drawingAreaScale);
             createdState.createVisuals(two);
             createdAutomaton.states.push(createdState);
+
+            console.log(createGrammarFromDFA(createdAutomaton));
+            
             stateCount += 1;      
             two.update();      
 
@@ -455,6 +491,7 @@ document.addEventListener("DOMContentLoaded", function(){
                 if(endMarkingActive){
                     createdState.isEnd = true;
                     createdState.setEnd(two, true);
+                    console.log(createGrammarFromDFA(createdAutomaton));
                 }
             });
 
@@ -480,7 +517,8 @@ document.addEventListener("DOMContentLoaded", function(){
                     var createdTransition = new FaTranisition(userSelectedStateFrom, userSelectedStateTo, userViaInput);
                     createdAutomaton.transitions.push(createdTransition);
                     createdTransition.createVisuals(two, createdAutomaton.states);
-                    console.log(createdAutomaton)
+                    console.log(createGrammarFromDFA(createdAutomaton));
+                    
                     two.update();
                 }
             });
@@ -688,8 +726,6 @@ function checkFaTransition(transition, alphabet, states){
     
 
 }
-
-
 
 function calculateMedianVertex(point1, point2){
     return {x: (point2.x+point1.x)/2, y: (point2.y+point1.y)/2}
@@ -974,4 +1010,80 @@ function calculateGrammarType(grammar){
 
     return 0
 
+}
+
+function createGrammarFromDFA(automaton){
+    console.log(automaton)
+    var variables = [];
+    var terminals;
+    var productions = [];
+    var starting;
+
+    for(i=0; i<automaton.states.length; i++){
+        variables.push(automaton.states[i].name);
+    }
+
+    var startState = automaton.states.find(element => element.isStart === true);
+
+    console.log(startState.isEnd)
+
+    starting = startState.name;
+
+    if(startState.isEnd){
+        console.log("FFF")
+        productions.push(new Production(startState.name, "ε"));
+    }
+
+    terminals = automaton.inputAlphabet;
+
+    for(let i=0; i<automaton.states.length; i++){
+        for(let j=0; j<automaton.inputAlphabet.length; j++){
+            console.log("AAA")
+            var successor = calculateStateSuccessorVia(automaton.transitions, automaton.states[i], automaton.inputAlphabet[j]);
+            if(successor != undefined){
+
+                productions.push(new Production(automaton.states[i].name, automaton.inputAlphabet[j] + successor.name));
+            
+                if(successor.isEnd){
+                    productions.push(new Production(automaton.states[i].name, automaton.inputAlphabet[j]));
+                }
+            }
+        }
+    }
+
+    variablesOutput.textContent = variables.join(", ");
+    terminalsOutput.textContent = terminals.join(", ");
+    productionsOutput.innerHTML = formatProductions(productions).join(", ");
+    
+    startingOutput.textContent = starting;
+
+    //return new Grammar(variables, terminals, productions, starting);
+}
+
+function calculateStateSuccessorVia(transitions, state, via){
+
+    var successorTransition = transitions.find(element => element.from === state && element.via.includes(via));
+
+    if(successorTransition != undefined){
+        return successorTransition.to
+    }
+
+}
+
+function formatProductions(productions) {
+    var groupedProductions = {};
+
+    productions.forEach(production => {
+        if (!groupedProductions[production.left]) {
+            groupedProductions[production.left] = [];
+        }
+        groupedProductions[production.left].push(production.right);
+    });
+
+    var formattedProductions = [];
+    for (var left in groupedProductions) {
+        formattedProductions.push(left + " -> " + groupedProductions[left].join(" | "));
+    }
+
+    return formattedProductions;
 }
