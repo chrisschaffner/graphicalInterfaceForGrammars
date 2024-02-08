@@ -293,62 +293,105 @@ class FaTranisition{
 
 }
 
+class SentenceForm{
+    form;
+    previousForm;
+
+    constructor(form, previousForm){
+        this.form = form;
+        this.previousForm = previousForm;
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function(){
 
 
     var htmlTarget = document.getElementById("htmlInfo").dataset.value;
-    console.log(htmlTarget)
 
-    var canvas = document.getElementById("drawingArea");
-    var canvasRect = canvas.getBoundingClientRect();
-    var drawingAreaWidth = canvas.clientWidth;
-    var drawingAreaHeight = canvas.clientHeight;
-
-
-
-    var two = new Two({type: Two.Types.svg, width: drawingAreaWidth, height: drawingAreaHeight});
-    two.appendTo(canvas);
-
-
-    var grammarForm = document.getElementById("grammarInputForm");
-    var variablesInput = document.getElementById("variablesInput");
-    var terminalsInput = document.getElementById("terminalsInput");
-    var productionsInput = document.getElementById("productionsInput");
-    var startingInput = document.getElementById("startingInput");
-    var typeDisplay = document.getElementById("type");
-    var exampleButton = document.getElementById("exampleButton");
-    var clearButton = document.getElementById("clear");
-    var submitButton = document.getElementById("submit");
-    var createStateButton = document.getElementById("createState");
-    var createTransitionButton = document.getElementById("createTransition");
-    var markEndButton = document.getElementById("markEnd");
-
-
-    var variablesOutput = document.getElementById("variablesOutput");
-    var terminalsOutput = document.getElementById("terminalsOutput");
-    var productionsOutput = document.getElementById("productionsOutput");
-    var startingOutput = document.getElementById("startingOutput");
-
-
-    var stateCount = 0;
-    var createdStates = [];
-    var createdTransitions = [];
-    var createdInputAlphabet = [];
-    var createdAutomaton = new FiniteAutomaton(createdStates, createdInputAlphabet, createdTransitions);
-
-    var userSelectedStateFrom;
-    var userSelectedStateTo;
-
-    var stateCreationActive = false;
-    var transitionCreationActive = false;
-    var endMarkingActive = false;
+    switch(htmlTarget){
+        case "grammarToGraph": {
+            var grammarForm = document.getElementById("grammarInputForm");
+            var variablesInput = document.getElementById("variablesInput");
+            var terminalsInput = document.getElementById("terminalsInput");
+            var productionsInput = document.getElementById("productionsInput");
+            var startingInput = document.getElementById("startingInput");
+            var typeDisplay = document.getElementById("type");
+            var clearButton = document.getElementById("clear");
+            var submitButton = document.getElementById("submit");
+            var exampleButton = document.getElementById("exampleButton");
+            var canvas = document.getElementById("drawingArea");
+            var canvasRect = canvas.getBoundingClientRect();
+            var drawingAreaWidth = canvas.clientWidth;
+            var drawingAreaHeight = canvas.clientHeight;
+            var two = new Two({type: Two.Types.svg, width: drawingAreaWidth, height: drawingAreaHeight});
+            two.appendTo(canvas);
+            break;
+        }
+        case "graphToGrammar": {
+            var clearButton = document.getElementById("clear");
+            var createStateButton = document.getElementById("createState");
+            var createTransitionButton = document.getElementById("createTransition");
+            var markEndButton = document.getElementById("markEnd");
+            var makeScreenshotButton = document.getElementById("screenshot");
+            var variablesOutput = document.getElementById("variablesOutput");
+            var terminalsOutput = document.getElementById("terminalsOutput");
+            var productionsOutput = document.getElementById("productionsOutput");
+            var startingOutput = document.getElementById("startingOutput");
+            var stateCount = 0;
+            var createdStates = [];
+            var createdTransitions = [];
+            var createdInputAlphabet = [];
+            var createdAutomaton = new FiniteAutomaton(createdStates, createdInputAlphabet, createdTransitions);
+            var userSelectedStateFrom;
+            var userSelectedStateTo;
+            var stateCreationActive = false;
+            var transitionCreationActive = false;
+            var endMarkingActive = false;
+            var canvas = document.getElementById("drawingArea");
+            var canvasRect = canvas.getBoundingClientRect();
+            var drawingAreaWidth = canvas.clientWidth;
+            var drawingAreaHeight = canvas.clientHeight;
+            var two = new Two({type: Two.Types.svg, width: drawingAreaWidth, height: drawingAreaHeight});
+            two.appendTo(canvas);
+            break;
+        }
+        case "wordContainment": {
+            //var grammarForm = document.getElementById("grammarInputForm");
+            var variablesInput = document.getElementById("variablesInput");
+            var terminalsInput = document.getElementById("terminalsInput");
+            var productionsInput = document.getElementById("productionsInput");
+            var startingInput = document.getElementById("startingInput");
+            var typeDisplay = document.getElementById("type");
+            var clearButton = document.getElementById("clear");
+            var exampleButton = document.getElementById("exampleButton");
+        }
+    }
 
     if(exampleButton != undefined){
         exampleButton.addEventListener("click", function(){
-            variablesInput.value = ["A", "B", "C", "D"];
-            terminalsInput.value = ["a", "b", "c"];
-            productionsInput.value = ["A->ε|aB|bB|cB|aC","B->aB|bB|cB|aC","C->aD|bD|cD","D->a|b|c"];
-            startingInput.value = "A";
+    
+            switch(htmlTarget){
+                case "graphToGrammar": {
+                    break;
+                }
+                case "grammarToGraph": {
+                    variablesInput.value = ["A", "B", "C", "D"];
+                    terminalsInput.value = ["a", "b", "c"];
+                    productionsInput.value = ["A->ε|aB|bB|cB|aC","B->aB|bB|cB|aC","C->aD|bD|cD","D->a|b|c"];
+                    startingInput.value = "A";
+                    break;
+                }
+                case "wordContainment": {
+                    variablesInput.value = ["A", "B", "C", "D"];
+                    terminalsInput.value = ["a", "b", "c"];
+                    productionsInput.value = ["A->ε|aB|bB|cB|aC","B->aB|bB|cB|aC","C->aD|bD|cD","D->a|b|c"];
+                    startingInput.value = "A";
+                    break;
+                }
+            }
+
+
+            
         });
     }
 
@@ -371,34 +414,40 @@ document.addEventListener("DOMContentLoaded", function(){
         });
     }    
 
-    
-    clearButton.addEventListener("click", function(){
+    if(clearButton != undefined){
+        clearButton.addEventListener("click", function(){
             
-        switch(htmlTarget){
-            case "graphToGrammar": {
-                console.log("End")
-                two.clear();
-                two.update();
-                createdAutomaton.clear();
-                variablesOutput.textContent = "";
-                terminalsOutput.textContent = "";
-                productionsOutput.textContent = "";
-                startingOutput.textContent = "";
-                stateCount = 0;
-                break;
-            }
-            case "grammarToGraph": {
-                variablesInput.value = [];
-                terminalsInput.value = [];
-                productionsInput.value = [];
-                startingInput.value = [];
-                two.clear();
-                break;
-            }
-        }    
-
-    });
+            switch(htmlTarget){
+                case "graphToGrammar": {
+                    console.log("End")
+                    two.clear();
+                    two.update();
+                    createdAutomaton.clear();
+                    variablesOutput.textContent = "";
+                    terminalsOutput.textContent = "";
+                    productionsOutput.textContent = "";
+                    startingOutput.textContent = "";
+                    stateCount = 0;
+                    break;
+                }
+                case "grammarToGraph": {
+                    variablesInput.value = [];
+                    terminalsInput.value = [];
+                    productionsInput.value = [];
+                    startingInput.value = [];
+                    two.clear();
+                    break;
+                }
+            }    
     
+        });
+    }
+
+    if(makeScreenshotButton != undefined){
+        makeScreenshotButton.addEventListener("click", function(){
+            makeDrawingAreaScreenshot();
+        })    
+    }
 
     if(submitButton != undefined){
         submitButton.addEventListener("click", function(event){
@@ -435,6 +484,10 @@ document.addEventListener("DOMContentLoaded", function(){
                 two.clear()
     
                 createGraph(two, automatonFromGrammar);
+
+                //console.log(calculateOneStepDerivations("A", 3, grammar.productions));
+
+                console.log(decideWordProblem(grammar, "aaaa"));
     
                 two.update();
     
@@ -457,11 +510,19 @@ document.addEventListener("DOMContentLoaded", function(){
             two.update();
         });
     }
+
+    if(canvas != undefined){
+        canvas.addEventListener("wheel", function(event){
+            event.preventDefault();
+        });
+    }
             
     document.addEventListener("mousedown", function(event){
 
-        var mousePositionX = event.clientX - canvasRect.left;
-        var mousePositionY = event.clientY - canvasRect.top;
+        var pageScrollX = window.pageXOffset;
+        var pageScrollY = window.pageYOffset;
+        var mousePositionX = event.clientX - canvasRect.left + pageScrollX;
+        var mousePositionY = event.clientY - canvasRect.top + pageScrollY;
 
         var isMouseInsideCanvas = (mousePositionX >= 0 && mousePositionX <= canvas.clientWidth && mousePositionY >= 0 && mousePositionY <= canvas.clientHeight);
         console.log(isMouseInsideCanvas)
@@ -543,8 +604,10 @@ document.addEventListener("DOMContentLoaded", function(){
 
     document.addEventListener("mousemove", function(event){
 
-        var mousePositionX = event.clientX - canvasRect.left;
-        var mousePositionY = event.clientY - canvasRect.top;
+        var pageScrollX = window.pageXOffset;
+        var pageScrollY = window.pageYOffset;
+        var mousePositionX = event.clientX - canvasRect.left + pageScrollX;
+        var mousePositionY = event.clientY - canvasRect.top + pageScrollY;
 
         var isMouseInsideCanvas = (mousePositionX >= 0 && mousePositionX <= canvas.clientWidth && mousePositionY >= 0 && mousePositionY <= canvas.clientHeight);
 
@@ -561,10 +624,13 @@ document.addEventListener("DOMContentLoaded", function(){
 
     document.addEventListener("wheel", function(event){
         
-        var mousePositionX = event.clientX - canvasRect.left;
-        var mousePositionY = event.clientY - canvasRect.top;
-        var isMouseInsideCanvas = (mousePositionX >= 0 && mousePositionX <= canvas.clientWidth && mousePositionY >= 0 && mousePositionY <= canvas.clientHeight);
+        var pageScrollX = window.pageXOffset;
+        var pageScrollY = window.pageYOffset;
+        var mousePositionX = event.clientX - canvasRect.left + pageScrollX;
+        var mousePositionY = event.clientY - canvasRect.top + pageScrollY;
         
+        var isMouseInsideCanvas = (mousePositionX >= 0 && mousePositionX <= canvas.clientWidth && mousePositionY >= 0 && mousePositionY <= canvas.clientHeight);
+        console.log(isMouseInsideCanvas)
         if(isMouseInsideCanvas){
             var sceneMouse = new Two.Vector(mousePositionX - two.scene.translation.x, mousePositionY - two.scene.translation.y);
             var zoomFactor = event.deltaY > 0 ? 0.9 : 1.1;
@@ -586,8 +652,11 @@ document.addEventListener("DOMContentLoaded", function(){
     two.update();
 
     });
-    
-    two.update();
+
+
+    if(two != undefined){
+        two.update();
+    }
     });
 
 function onlyUnique(value, index, array) {
@@ -1005,7 +1074,7 @@ function calculateGrammarType(grammar){
         return 2
     }
     if(isType1){
-        return 0
+        return 1
     }
 
     return 0
@@ -1086,4 +1155,102 @@ function formatProductions(productions) {
     }
 
     return formattedProductions;
+}
+
+function makeDrawingAreaScreenshot(){
+}
+
+function checkWordAlphabet(terminals, word){
+    
+    var wordIsOverAlphabet = true;
+    
+    for(let i=0; i<word.length; i++){
+        wordIsOverAlphabet &= (terminals.includes(word[i]));
+    }
+
+    return wordIsOverAlphabet;
+}
+
+function decideWordProblem(grammar, word){
+
+    if(!checkWordAlphabet(grammar.terminals, word)){
+        return false;
+    }
+
+    var n = word.length;
+    var l = [new SentenceForm(grammar.starting, null)];
+    var lOld;
+    var i=0;
+
+    do {
+        lOld = l;
+        l = next(lOld, n, grammar.productions);
+        i++;
+
+    }
+    while(i<50 && !(l.some(element => element.form === word) || checkArrayEuquality(l, lOld)));
+
+    
+    
+    return (l.find(element => element.form === word));
+}
+
+function next(l, n, productions){
+
+    var successorDerivations = l.slice();
+
+    for(let i=0; i<l.length; i++){
+
+        var successorDerivation = calculateOneStepDerivations(l[i], n, productions);
+        for(let j=0; j<successorDerivation.length; j++){
+            if(!successorDerivations.includes(successorDerivation[j])){
+                successorDerivations.push(successorDerivation[j])
+            }
+        }
+    }
+    return successorDerivations;
+}
+
+function calculateOneStepDerivations(sentenceForm, maxLenght, productions){
+    
+    var derivations = [];
+    
+    for(let i=0; i<sentenceForm.form.length; i++){
+        for(let j=0; j<sentenceForm.form.length; j++){
+
+            var firstPortion = sentenceForm.form.slice(0, i);
+
+            var currentPortion = sentenceForm.form.slice(i, j+1);
+
+            var lastPortion = sentenceForm.form.slice(j+1, sentenceForm.length);
+
+            var matchingProductions = productions.filter(element => element.left === currentPortion);
+
+
+            if(matchingProductions != undefined){
+                for(let k=0; k<matchingProductions.length; k++){
+
+                    resultingSentenceForm = new SentenceForm((firstPortion + matchingProductions[k].right + lastPortion).replace(/ε/g, ''), sentenceForm);
+
+                    if(resultingSentenceForm.form.length <= maxLenght && resultingSentenceForm.form.length > 0){
+                        derivations.push(resultingSentenceForm)
+                    }
+                }
+            }
+        }
+    }
+
+    return derivations;
+}
+
+function checkArrayEuquality(array1, array2){
+    if(array1.length !== array2.length){
+        return false;
+    }
+    for(let i=0; i<array1.length; i++){
+        if(array1[i] !== array2[i]){
+            return false;
+        }
+    }
+    return true;
 }

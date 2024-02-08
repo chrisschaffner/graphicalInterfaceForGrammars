@@ -1,6 +1,5 @@
 * {
     font-family: 'Quicksand', sans-serif;
-    user-select: none;
 }
 
 header {
@@ -43,10 +42,25 @@ header nav ul li a:hover {
 
 #grammarInputForm {
     width: 50%;
-    
+    font-size: 20px;
 }
 
-#grammarInputForm input {
+#grammarInputFormWC {
+    width: 50%;
+    font-size: 20px;
+    border: 2px solid grey;
+    background-color: beige;
+}
+
+#grammarInputFormWC #submit {
+    margin-left: 15px;
+}
+
+#grammarInputFormWC label {
+    margin-left: 10px;
+}
+
+#grammarInputForm, #grammarInputFormWC input {
     
     padding: 12px 20px;
     margin: 8px 0;
@@ -74,12 +88,14 @@ header nav ul li a:hover {
 #drawingArea {
     background-color: beige;
     border-style: solid;
-    user-select: none;
     cursor:crosshair;
-    height: 500px;
+    height: 600px;
     display: flex;
     justify-content: flex-start;
     align-items: flex-end;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
 }
 
 #drawingArea button {
@@ -239,5 +255,32 @@ header nav ul li a:hover {
     font-size: 20px;
     margin-left: 15px;
     margin-bottom: 10px;
+}
+
+#screenshot {
+    background-color: #005b0c;
+    color: white;
+    padding: 12px 20px;
+    margin-top: 10px;
+    margin-left: 20px;
+    border: 2px solid grey;
+    border-radius: 5px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+#screenshot:hover {
+    color:black;
+    background-color: white;
+}
+
+#WCoutput {
+    display: flex;
+    flex-direction: column;
+}
+
+#WCoutput span {
+    margin-top: 20px;
+    font-size: 20px;
 }
 

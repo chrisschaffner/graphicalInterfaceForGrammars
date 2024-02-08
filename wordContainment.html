@@ -4,15 +4,18 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Graphical Interface for Grammars</title>
+    <title>Graphical Interface For Grammars</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap" rel="stylesheet">
     <script src="node_modules/two.js/build/two.js"></script>
     <script src="script.js"></script>
    
 </head>
 <body>
     <header>
-        <h1>Graphical Interface for Grammars</h1>
+        <h1>Graphical Interface For Grammars</h1>
         <nav>
             <ul>
                 <li><a href="#home">Home</a></li>
@@ -22,14 +25,16 @@
     </header>
     <div class="nav_bar">
         <ul>
-            <li><a href="index.html">Grammar To Graph</a></li>
-            <li><a href="graphToGrammar.html">Graph To Grammar</a></li>
-            <li><a href="wordContainment.html" class="active">Word Containment</a></li>
+            <li><a href="index.html">GRAMMAR TO GRAPH</a></li>
+            <li><a href="graphToGrammar.html">GRAPH TO GRAMMAR</a></li>
+            <li><a href="wordContainment.html" class="active">WORD CONTAINMENT</a></li>
         </ul>
 
     </div>
 
-    <form id="grammarInputForm">
+    
+    <form id="grammarInputFormWC">
+        <button id="exampleButton">Insert Example Grammar</button>
         <label for="variableInputs">Variables:</label>
         <input type="text" id="variablesInput" name="variables"><br><br>
         <label for="terminalsInput">Terminal symbols:</label>
@@ -38,9 +43,20 @@
         <input type="text" id="productionsInput" name="productions"><br><br>
         <label for="startingInput">Starting symbol:</label>
         <input type="text" id="startingInput" name="starting"><br><br>
-        <input type="submit" value="Submit">
+        <label for="wordInput">Word to check:</label>
+        <input type="text" id="wordInput" name="starting"><br><br>
+        <input type="submit" id="submit" value="Check">
+        <span id="type">Type: </span>
+        <button id="screenshot">Make Screenshot</button>
     </form>
-    <div id="drawingArea"></div>
+
+    <div id="WCoutput">
+        <span id="wordContainmentOutput">word is not in the language</span>
+        <span id="derivationOutput">Derivation: </span>
+    </div>
+
+    <div id="htmlInfo" data-name="target" data-value="wordContainment"></div>
+
     
 </body>
 </html>
