@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
         var isMouseInsideCanvas = (mousePositionX >= 0 && mousePositionX <= canvas.clientWidth && mousePositionY >= 0 && mousePositionY <= canvas.clientHeight);
 
-        if(event.buttons === 1 && isMouseInsideCanvas && !stateCreationActive && !transitionCreationActive && !endMarkingActive){
+        if(event.buttons === 1 && isMouseInsideCanvas){
             
             var xAmount = event.movementX / 1;
             var yAmount = event.movementY / 1;

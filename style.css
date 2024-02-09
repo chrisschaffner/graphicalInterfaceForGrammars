@@ -52,7 +52,7 @@ header nav ul li a:hover {
     background-color: beige;
 }
 
-#grammarInputFormWC #submit {
+#grammarInputFormWC #check {
     margin-left: 15px;
 }
 
@@ -67,16 +67,16 @@ header nav ul li a:hover {
     box-sizing: border-box;
 }
 
-#submit {
+#submit, #check{
     color: white;
     background-color:#005b0c;
     border: 2px solid grey;
     border-radius: 5px;
     font-size: 15px;
-    transition: color 0.3s ease;
+    transition: all 0.5s ease;
 }
 
-#submit:hover{
+#submit:hover, #check:hover{
     background-color: #ffffff;
     color: black;
 }
@@ -275,7 +275,7 @@ header nav ul li a:hover {
 }
 
 #WCoutput {
-    display: flex;
+    display:flex;
     flex-direction: column;
 }
 
@@ -284,3 +284,20 @@ header nav ul li a:hover {
     font-size: 20px;
 }
 
+#generateWordsButton {
+    display: none;
+    padding: 12px 20px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    color: white;
+    background-color:#005b0c;
+    border: 2px solid grey;
+    border-radius: 5px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+#generateWordsButton:hover {
+    color:black;
+    background-color: white;
+}

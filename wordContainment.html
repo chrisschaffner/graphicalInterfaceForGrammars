@@ -46,15 +46,19 @@
         <input type="text" id="startingInput" name="starting"><br><br>
         <label for="wordInput">Word to check:</label>
         <input type="text" id="wordInput" name="starting"><br><br>
-        <input type="submit" id="submit" value="Check">
+        <input type="submit" id="check" value="Check">
         <span id="type">Type: </span>
-        <button id="screenshot">Make Screenshot</button>
+        <button id="clear">Clear</button>
+
     </form>
 
     <div id="WCoutput">
-        <span id="wordContainmentOutput">word is not in the language</span>
-        <span id="derivationOutput">Derivation: </span>
+        <span id="wordContainmentOutput"></span>
+        <span id="derivationOutput"></span>
     </div>
+
+    <button id="generateWordsButton">Generate random words</button>
+    <span id="exampleWords"></span>
 
     <div id="htmlInfo" data-name="target" data-value="wordContainment"></div>
 

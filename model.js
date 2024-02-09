@@ -821,8 +821,10 @@ function checkWordAlphabet(terminals, word){
 
 function decideWordProblem(grammar, word){
 
+
+
     if(!checkWordAlphabet(grammar.terminals, word)){
-        return false;
+        return undefined;
     }
 
     var n = word.length;
@@ -833,6 +835,7 @@ function decideWordProblem(grammar, word){
     do {
         lOld = l;
         l = next(lOld, n, grammar.productions);
+        console.log(l.length);
         i++;
 
     }
@@ -850,15 +853,15 @@ function next(l, n, productions){
     for(let i=0; i<l.length; i++){
 
         var successorDerivation = calculateOneStepDerivations(l[i], n, productions);
-        for(let j=0; j<successorDerivation.length; j++){
-            if(!successorDerivations.includes(successorDerivation[j])){
-                successorDerivations.push(successorDerivation[j])
-            }
-        }
+        
+        successorDerivations = successorDerivations.concat(successorDerivation)
+            
     }
-    return successorDerivations;
-}
 
+    return successorDerivations.filter(filterOutUniqueForms);
+    
+}
+    
 function calculateOneStepDerivations(sentenceForm, maxLenght, productions){
     
     var derivations = [];
@@ -902,3 +905,24 @@ function checkArrayEuquality(array1, array2){
     }
     return true;
 }
+
+function sentenceFormPredecessorsToString(sentenceForm){
+    
+    var predecessors = [];
+    var temp = sentenceForm;
+    var outputString;
+    
+    while(temp != null){
+        predecessors.push(temp.form);
+        temp = temp.previousForm;
+    }
+
+    predecessors.reverse();
+    outputString = predecessors.join(" -> ");
+
+    return outputString;
+}
+
+const filterOutUniqueForms = (value, index, self) => {
+    return self.findIndex(obj => obj.form === value.form) === index;
+};
