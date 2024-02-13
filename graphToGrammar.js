@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var createTransitionButton = document.getElementById("createTransition");
     var markEndButton = document.getElementById("markEnd");
     var makeScreenshotButton = document.getElementById("screenshot");
+    var copyButton = document.getElementById("copy");
     var variablesOutput = document.getElementById("variablesOutput");
     var terminalsOutput = document.getElementById("terminalsOutput");
     var productionsOutput = document.getElementById("productionsOutput");
@@ -80,6 +81,12 @@ document.addEventListener("DOMContentLoaded", function(){
         makeDrawingAreaScreenshot();
     })    
 
+    copyButton.addEventListener("click", function(event){
+        event.preventDefault();
+        grammarformToSessionStorage(variablesOutput.textContent, terminalsOutput.textContent, productionsOutput.textContent, startingOutput.textContent);
+        console.log(variablesOutput.textContent)
+    })
+
 
     canvas.addEventListener("wheel", function(event){
         event.preventDefault();
@@ -101,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function(){
             var drawingAreaScale = two.scene.scale;
             var drawingAreaShiftX = two.scene.translation.x;
             var drawingAreaShiftY = two.scene.translation.y;
-            var createdState = new State("z" + stateCount.toString(), stateCount==0, false)
+            var createdState = new State("Z" + numberToSubscript(stateCount), stateCount==0, false)
             createdState.setPosition((mousePositionX - drawingAreaShiftX)/drawingAreaScale, (mousePositionY - drawingAreaShiftY)/drawingAreaScale);
             createdState.createVisuals(two);
             createdAutomaton.states.push(createdState);

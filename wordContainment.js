@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", function(){
     var clearButton = document.getElementById("clear");
     var exampleButton = document.getElementById("exampleButton");
     var checkButton = document.getElementById("check");
+    var copyButton = document.getElementById("copy");
+    var pasteButton = document.getElementById("paste");
     var wordContainmentDisplay = document.getElementById("wordContainmentOutput");
     var derivationDisplay = document.getElementById("derivationOutput");
     var generateExampleWordsButton = document.getElementById("generateWordsButton");
@@ -22,9 +24,11 @@ document.addEventListener("DOMContentLoaded", function(){
     
         variablesInput.value = ["A", "B", "C", "D"];
         terminalsInput.value = ["a", "b", "c"];
-        productionsInput.value = ["A->ε|aB|bB|cB|aC","B->aB|bB|cB|aC","C->aD|bD|cD","D->a|b|c"];
+        productionsInput.value = ["A->ε|aB|bB|cB|aC\nB->aB|bB|cB|aC\nC->aD|bD|cD\nD->a|b|c"];
         startingInput.value = "A";
         wordInput.value = "aaaa";
+
+        console.log(numberToSubscript(2345))
     });
 
     checkButton.addEventListener("click", function(event){
@@ -35,8 +39,10 @@ document.addEventListener("DOMContentLoaded", function(){
         var terminals = terminalsInput.value.replace(/\s/g, '').split(",");
         var starting = startingInput.value.replace(/\s/g, '');
         var productions = [];
-        var splittedProductionsInput = productionsInput.value.replace(/\s/g, '').split(",");
-        var word = wordInput.value;
+        productionsInput.value = productionsInput.value.replace(/,/g, "");
+        productionsInput.value = productionsInput.value.replace(/[ \t]/g, "");
+        var splittedProductionsInput = productionsInput.value.split("\n");
+        var word = wordInput.value.replace(/\s/g, '');
 
         wordContainmentDisplay.textContent = "";
         derivationDisplay.textContent = "";
@@ -57,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
         if(checkCorrectGrammarForm(variables, terminals, productions, starting)){
 
-            var grammar = new Grammar(variables, terminals, productions, starting);
+            grammar = new Grammar(variables, terminals, productions, starting);
 
             typeDisplay.textContent = "Type: " + calculateGrammarType(grammar);
 
@@ -89,7 +95,26 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
     generateExampleWordsButton.addEventListener("click", function(){
-        ///do
+
+        exampleWordsDisplay.textContent = generateTerminalsForms(grammar, 100);
+
     })
+
+    copyButton.addEventListener("click", function(event){
+        event.preventDefault();
+        grammarformToSessionStorage(variablesInput.value, terminalsInput.value, productionsInput.value, startingInput.value);
+        console.log("Saved Input in session storage");
+    });
+
+    pasteButton.addEventListener("click", function(event){
+
+        event.preventDefault();
+        variablesInput.value = sessionStorage.getItem("variables");
+        terminalsInput.value = sessionStorage.getItem("terminals");
+        productionsInput.value  = sessionStorage.getItem("productions");
+        startingInput.value = sessionStorage.getItem("starting");
+        console.log("Pasted Input from session storage");
+
+    });
 
 });

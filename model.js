@@ -6,7 +6,7 @@ function scriptLoaded(){
 class Grammar {
     variables
     terminals
-    productions  
+    productions
     starting
 
     constructor(variables, terminals, productions, starting){
@@ -305,13 +305,19 @@ class SentenceForm{
         this.form = form;
         this.previousForm = previousForm;
     }
+
+    toString(){
+        return this.form;
+    }
 }
+
 
 function onlyUnique(value, index, array) {
     return array.indexOf(value) === index;
   }
 
 function computeLineLength(point1, point2) {
+   
     const x1 = point1.x;
     const y1 = point1.y;
     const x2 = point2.x;
@@ -323,22 +329,16 @@ function computeLineLength(point1, point2) {
 function checkCorrectGrammarForm(variables, terminals, productions, starting){
 
     for (let i=0; i<variables.length; i++){
-        var charAtI = variables[i];
 
-        if (!checkUpperCaseLetter(charAtI)){
+       /*  if (!checkUpperCaseLetter(variables[i][0])){
+            console.log("Invalid variables, please enter only letters/numbers")
             return false
-        }
+        } */
     }
 
-    console.log("Passed variables check");
-
-    for (let i=0; i<terminals.length; i++){
-        
-        var charAtI = terminals[i];
-
-        if (!checkLowerCaseLetter(charAtI)){
-            return false
-        }
+    if(terminals.length == 0){
+        console.log("Invalid terminals")
+        return false
     }
 
     console.log("Passed terminals check");
@@ -377,16 +377,58 @@ function checkProduction(production, variables, terminals){
     for(let i=0; i<leftSide.length;i++){
 
         if (!variables.includes(leftSide[i]) && !terminals.includes(leftSide[i])){
-            return false
-          
+            var subscriptLength=0;
+            
+            for(let j=i; j<leftSide.length-i; j++){
+                if(leftSide.charCodeAt(j) >= 8320 && leftSide.charCodeAt(j) <= 8329){
+                    subscriptLength++;
+                    i=j+subscriptLength+2;
+                    continue;
+                }
+                else{
+                    break;
+                }
+            }
+
+            if(subscriptLength == 0){
+                break;
+            }
+
+            if(!variables.includes(leftSide.slice(i, i+subscriptLength+2)) && !terminals.includes(leftSide.slice(i, i+subscriptLength+2))){
+                return false
+            }
+            
         }
     }
 
+    console.log("N")
+
     for(let i=0; i<rightSide.length;i++){
-        if (!(variables.includes(rightSide[i]) || terminals.includes(rightSide[i]) || rightSide[i] == "ε")){
-            return false
+
+        if (!variables.includes(rightSide[i]) && !terminals.includes(rightSide[i]) && rightSide[i] !== 'ε'){
+            var subscriptLength=0;
+            
+            for(let j=i; j<rightSide.length-i; j++){
+                if(rightSide.charCodeAt(j) >= 8320 && rightSide.charCodeAt(j) <= 8329){
+                    subscriptLength++;
+                    i=j+subscriptLength+2;
+                    continue;
+                }
+                else{
+                    break;
+                }
+            }
+
+            if(subscriptLength == 0){
+                break;
+            }
+
+            if(!variables.includes(rightSide.slice(i, i+subscriptLength+2) && !terminals.includes(rightSide.slice(i, i+subscriptLength+2)))){
+                return false
+            }
         }
     }
+
 
     return true;
 }
@@ -770,7 +812,7 @@ function createGrammarFromDFA(automaton){
 
     variablesOutput.textContent = variables.join(", ");
     terminalsOutput.textContent = terminals.join(", ");
-    productionsOutput.innerHTML = formatProductions(productions).join(", ");
+    productionsOutput.innerHTML = formatProductions(productions).join("\n");
     
     startingOutput.textContent = starting;
 
@@ -926,3 +968,49 @@ function sentenceFormPredecessorsToString(sentenceForm){
 const filterOutUniqueForms = (value, index, self) => {
     return self.findIndex(obj => obj.form === value.form) === index;
 };
+
+function generateTerminalsForms(grammar, maxCount){
+    
+    var n = 7;
+    var l = [new SentenceForm(grammar.starting, null)];
+    var lOld;
+    var i=0;
+
+    do {
+        lOld = l;
+        l = next(lOld, n, grammar.productions);
+        i++;
+
+    }
+    while(i<50 && !checkArrayEuquality(l, lOld));
+
+    l = l.filter(element => checkWordAlphabet(grammar.terminals, element.form))
+
+    l = l.slice(0, maxCount);
+
+    console.log(l.length)
+
+    var stringOutput = l.join(", ");
+    
+    return stringOutput;
+
+
+}
+
+function grammarformToSessionStorage(variables, terminals, productions, starting){
+    sessionStorage.setItem("variables", variables);
+    sessionStorage.setItem("terminals", terminals);
+    sessionStorage.setItem("productions", productions);
+    sessionStorage.setItem("starting", starting);
+}
+
+function numberToSubscript(number){
+    var input = number.toString();
+    var output = "";
+
+    for(let i=0; i<input.length; i++){
+        output += String.fromCharCode(input.charCodeAt(i) + 8272);
+    }
+
+    return output
+}

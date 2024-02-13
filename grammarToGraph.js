@@ -10,11 +10,14 @@ document.addEventListener("DOMContentLoaded", function(){
     var clearButton = document.getElementById("clear");
     var submitButton = document.getElementById("submit");
     var exampleButton = document.getElementById("exampleButton");
+    var copyButton = document.getElementById("copy");
+    var pasteButton = document.getElementById("paste");
     var canvas = document.getElementById("drawingArea");
     var canvasRect = canvas.getBoundingClientRect();
     var drawingAreaWidth = canvas.clientWidth;
     var drawingAreaHeight = canvas.clientHeight;
     var two = new Two({type: Two.Types.svg, width: drawingAreaWidth, height: drawingAreaHeight});
+    var grammar;
     two.appendTo(canvas);
 
     
@@ -79,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function(){
     
         variablesInput.value = ["A", "B", "C", "D"];
         terminalsInput.value = ["a", "b", "c"];
-        productionsInput.value = ["A->ε|aB|bB|cB|aC","B->aB|bB|cB|aC","C->aD|bD|cD","D->a|b|c"];
+        productionsInput.value = ["A->ε|aB|bB|cB|aC\nB->aB|bB|cB|aC\nC->aD|bD|cD\nD->a|b|c"];
         startingInput.value = "A";
 
     });
@@ -91,6 +94,12 @@ document.addEventListener("DOMContentLoaded", function(){
         productionsInput.value = [];
         startingInput.value = [];
         two.clear();
+
+        two.scene.translation.x = 0;
+        two.scene.translation.y = 0;
+        two.scene.scale = 1;
+
+        two.update();
    
 
     });
@@ -102,10 +111,18 @@ document.addEventListener("DOMContentLoaded", function(){
         var terminals = terminalsInput.value.replace(/\s/g, '').split(",");
         var starting = startingInput.value.replace(/\s/g, '');
         var productions = [];
-        var splittedProductionsInput = productionsInput.value.replace(/\s/g, '').split(",");
+        productionsInput.value = productionsInput.value.replace(/,/g, "");
+        productionsInput.value = productionsInput.value.replace(/[ \t]/g, "");
+        var splittedProductionsInput = productionsInput.value.split("\n");
+        console.log(productionsInput.value)
         
 
         for(let i=0; i<splittedProductionsInput.length; i++){
+
+            if(splittedProductionsInput[i] === ""){
+                continue
+            }
+
             var splittedProductionInput = splittedProductionsInput[i].split("->");
             if (splittedProductionInput.length > 2){
                 return
@@ -120,7 +137,10 @@ document.addEventListener("DOMContentLoaded", function(){
 
         if(checkCorrectGrammarForm(variables, terminals, productions, starting)){
 
-            var grammar = new Grammar(variables, terminals, productions, starting);
+
+            grammar = new Grammar(variables, terminals, productions, starting);
+
+            console.log(grammar)
 
             typeDisplay.textContent = "Type: " + calculateGrammarType(grammar);
 
@@ -141,6 +161,23 @@ document.addEventListener("DOMContentLoaded", function(){
             console.log("Couldnt create grammar!")
         }
         
+    });
+
+    copyButton.addEventListener("click", function(event){
+        event.preventDefault();
+        grammarformToSessionStorage(variablesInput.value, terminalsInput.value, productionsInput.value, startingInput.value);
+        console.log("Saved Input in session storage");
+    });
+
+    pasteButton.addEventListener("click", function(event){
+
+        event.preventDefault();
+        variablesInput.value = sessionStorage.getItem("variables");
+        terminalsInput.value = sessionStorage.getItem("terminals");
+        productionsInput.value  = sessionStorage.getItem("productions");
+        startingInput.value = sessionStorage.getItem("starting");
+        console.log("Pasted Input from session storage");
+
     });
 
 });

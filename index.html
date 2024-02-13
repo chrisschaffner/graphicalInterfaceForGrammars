@@ -32,22 +32,34 @@
         </ul>
 
     </div>
+    
 
     <button id="exampleButton">Insert Example Grammar</button>
 
     <form id="grammarInputForm">
-        <label for="variableInputs">Variables:</label>
-        <input type="text" id="variablesInput" name="variables"><br><br>
-        <label for="terminalsInput">Terminal symbols:</label>
-        <input type="text" id="terminalsInput" name="terminals"><br><br>
-        <label for="productionsInput">Productions:</label>
-        <input type="text" id="productionsInput" name="productions"><br><br>
-        <label for="startingInput">Starting symbol:</label>
-        <input type="text" id="startingInput" name="starting"><br><br>
-        <input type="submit" id="submit" value="Submit">
+        <div>
+            <label for="variableInputs">Variables:</label>
+            <input type="text" id="variablesInput" name="variables" placeholder="e.g. A, B"><br><br>
+        </div>
+        <div>
+            <label for="terminalsInput">Terminal symbols:</label>
+            <input type="text" id="terminalsInput" name="terminals" placeholder="e.g. a, b, c"><br><br>
+        </div>
+        <div>
+            <label for="productionsInput">Productions:</label>
+            <textarea rows="5" cols="60" id="productionsInput" name="productions" placeholder="e.g.&#10;A->aB|cD&#10;B->Bc"></textarea>
+        </div>
+        <div>
+            <label for="startingInput">Starting symbol:</label>
+            <input type="text" id="startingInput" name="starting" placeholder="e.g. B"><br><br>
+        </div>
+        
+        <button id="submit">Submit</button>
         <span id="type">Type: </span>
         <button id="clear">Clear</button>
         <button id="screenshot">Make Screenshot</button>
+        <button id="copy">Copy grammar to clipboard</button>
+        <button id="paste">Paste grammar from clipboard</button>
     </form>
     
     <div id="drawingArea"></div>
