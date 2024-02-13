@@ -270,12 +270,22 @@ header nav ul li a:hover {
     background-color: beige;
 }
 #convertedGrammar span {
-    margin-top: 20px;
     font-size: 20px;
+    margin-bottom: 15px;
     margin-left: 15px;
-    margin-bottom: 10px;
-    line-height: 1.5em;
+    line-height: 2;   
+    text-align: left;
 }
+
+
+#productionsOutput, #productionsLabel {
+    display: flex;
+    justify-content:start;
+}
+
+
+
+
 
 #screenshot, #copy, #paste {
     background-color: #005b0c;

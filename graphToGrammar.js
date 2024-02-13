@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var stateCreationActive = false;
     var transitionCreationActive = false;
     var endMarkingActive = false;
+    var grammar;
 
   
     
@@ -83,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     copyButton.addEventListener("click", function(event){
         event.preventDefault();
-        grammarformToSessionStorage(variablesOutput.textContent, terminalsOutput.textContent, productionsOutput.textContent, startingOutput.textContent);
+        grammarformToSessionStorage(grammar.variables, grammar.terminals, formatProductions(grammar.productions).join("\n"), grammar.starting);
         console.log(variablesOutput.textContent)
     })
 
@@ -113,7 +114,8 @@ document.addEventListener("DOMContentLoaded", function(){
             createdState.createVisuals(two);
             createdAutomaton.states.push(createdState);
 
-            console.log(createGrammarFromDFA(createdAutomaton));
+            grammar = createGrammarFromDFA(createdAutomaton);
+            grammarOutput(grammar);
             
             stateCount += 1;      
             two.update();      
@@ -128,7 +130,8 @@ document.addEventListener("DOMContentLoaded", function(){
                 if(endMarkingActive){
                     createdState.isEnd = true;
                     createdState.setEnd(two, true);
-                    console.log(createGrammarFromDFA(createdAutomaton));
+                    grammar = createGrammarFromDFA(createdAutomaton);
+                    grammarOutput(grammar);
                 }
             });
 
@@ -154,7 +157,8 @@ document.addEventListener("DOMContentLoaded", function(){
                     var createdTransition = new FaTranisition(userSelectedStateFrom, userSelectedStateTo, userViaInput);
                     createdAutomaton.transitions.push(createdTransition);
                     createdTransition.createVisuals(two, createdAutomaton.states);
-                    console.log(createGrammarFromDFA(createdAutomaton));
+                    grammar = createGrammarFromDFA(createdAutomaton);
+                    grammarOutput(grammar);
                     
                     two.update();
                 }
@@ -229,3 +233,10 @@ document.addEventListener("DOMContentLoaded", function(){
 
     });
 });
+
+function grammarOutput(grammar){
+    variablesOutput.textContent = grammar.variables.join(", ");
+    terminalsOutput.textContent = grammar.terminals.join(", ");
+    productionsOutput.innerHTML = formatProductions(grammar.productions).join("<br>");
+    startingOutput.textContent = grammar.starting;
+}

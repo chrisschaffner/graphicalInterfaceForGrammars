@@ -810,13 +810,7 @@ function createGrammarFromDFA(automaton){
         }
     }
 
-    variablesOutput.textContent = variables.join(", ");
-    terminalsOutput.textContent = terminals.join(", ");
-    productionsOutput.innerHTML = formatProductions(productions).join("\n");
-    
-    startingOutput.textContent = starting;
-
-    //return new Grammar(variables, terminals, productions, starting);
+    return new Grammar(variables, terminals, productions, starting);
 }
 
 function calculateStateSuccessorVia(transitions, state, via){
