@@ -35,36 +35,11 @@ document.addEventListener("DOMContentLoaded", function(){
         
         event.preventDefault();
 
-        var variables = variablesInput.value.replace(/\s/g, '').split(",");
-        var terminals = terminalsInput.value.replace(/\s/g, '').split(",");
-        var starting = startingInput.value.replace(/\s/g, '');
-        var productions = [];
-        productionsInput.value = productionsInput.value.replace(/,/g, "");
-        productionsInput.value = productionsInput.value.replace(/[ \t]/g, "");
-        var splittedProductionsInput = productionsInput.value.split("\n");
         var word = wordInput.value.replace(/\s/g, '');
 
-        wordContainmentDisplay.textContent = "";
-        derivationDisplay.textContent = "";
+        try{
+            grammar = userInputToGrammar(variablesInput.value, terminalsInput.value, productionsInput.value, startingInput.value)
         
-
-        for(let i=0; i<splittedProductionsInput.length; i++){
-            var splittedProductionInput = splittedProductionsInput[i].split("->");
-            if (splittedProductionInput.length > 2){
-                return
-            }
-            var rightSides = splittedProductionInput[1].split("|");
-            for(let j=0; j<rightSides.length; j++){
-                productions.push(new Production(splittedProductionInput[0], rightSides[j]));
-            }
-            
-        }
-        
-
-        if(checkCorrectGrammarForm(variables, terminals, productions, starting)){
-
-            grammar = new Grammar(variables, terminals, productions, starting);
-
             typeDisplay.textContent = "Type: " + calculateGrammarType(grammar);
 
             console.log(decideWordProblem(grammar, word));
@@ -75,26 +50,25 @@ document.addEventListener("DOMContentLoaded", function(){
                 wordContainmentDisplay.textContent = "Word is in the language";
                 wordContainmentDisplay.style.color = 'green';
                 derivationDisplay.textContent = "Derivation: " + sentenceFormPredecessorsToString(wordProblemResult);
-                //exampleWordsDisplay.textContent = "Random Example Words: "
-
-               
-
             }
             else{
                 wordContainmentDisplay.textContent = "Word is not in the language";
                 wordContainmentDisplay.style.color = 'red';
 
             }
-        }
-        else{
-            console.log("Couldnt create grammar!")
-        }
 
-        generateExampleWordsButton.style.display = "block";
+            generateExampleWordsButton.style.display = "block";
+        
+        }
+        catch(error){
+            console.error(error);
+        }        
         
     });
 
     generateExampleWordsButton.addEventListener("click", function(){
+
+        console.log("LOG")
 
         exampleWordsDisplay.textContent = generateTerminalsForms(grammar, 100);
 

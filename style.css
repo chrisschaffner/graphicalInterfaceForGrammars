@@ -246,7 +246,7 @@ header nav ul li a:hover {
     background-color: rgb(255, 188, 188);
 }
 
-#createState, #createTransition, #markEnd {
+#createState, #createTransition, #markEnd, #delete {
     background-color: white;
     padding: 12px 20px;
     margin-top: 10px;
@@ -257,7 +257,7 @@ header nav ul li a:hover {
     transition: all 0.3s ease;
 }
 
-#createState:hover, #createTransition:hover, #markEnd:hover {
+#createState:hover, #createTransition:hover, #markEnd:hover, #delete:hover {
     color: white;
     background-color: rgba(0, 128, 0, 0.5);
 }

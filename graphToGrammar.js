@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var createStateButton = document.getElementById("createState");
     var createTransitionButton = document.getElementById("createTransition");
     var markEndButton = document.getElementById("markEnd");
+    var deleteButton = document.getElementById("delete");
     var makeScreenshotButton = document.getElementById("screenshot");
     var copyButton = document.getElementById("copy");
     var variablesOutput = document.getElementById("variablesOutput");
@@ -16,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var productionsOutput = document.getElementById("productionsOutput");
     var startingOutput = document.getElementById("startingOutput");
     var stateCount = 0;
+    var transitionsCount = 0;
     var createdStates = [];
     var createdTransitions = [];
     var createdInputAlphabet = [];
@@ -25,6 +27,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var stateCreationActive = false;
     var transitionCreationActive = false;
     var endMarkingActive = false;
+    var deleteActive = false;
     var grammar;
 
   
@@ -38,6 +41,15 @@ document.addEventListener("DOMContentLoaded", function(){
 
         two.update();
     });
+
+    deleteButton.addEventListener("click", function(){
+        deleteActive = !deleteActive;
+
+        deleteButton.style.backgroundColor = (deleteActive) ? "green" : "transparent";
+        deleteButton.style.color = (deleteActive) ? "white" : "black";
+
+        two.update();
+    })
     
 
 
@@ -110,6 +122,7 @@ document.addEventListener("DOMContentLoaded", function(){
             var drawingAreaShiftX = two.scene.translation.x;
             var drawingAreaShiftY = two.scene.translation.y;
             var createdState = new State("Z" + numberToSubscript(stateCount), stateCount==0, false)
+            createdState.index = stateCount;
             createdState.setPosition((mousePositionX - drawingAreaShiftX)/drawingAreaScale, (mousePositionY - drawingAreaShiftY)/drawingAreaScale);
             createdState.createVisuals(two);
             createdAutomaton.states.push(createdState);
@@ -133,6 +146,16 @@ document.addEventListener("DOMContentLoaded", function(){
                     grammar = createGrammarFromDFA(createdAutomaton);
                     grammarOutput(grammar);
                 }
+
+                if(deleteActive){
+                    var indexToDelete = createdAutomaton.states.indexOf(createdAutomaton.states.find(element => element.index === createdState.index));
+                    createdAutomaton.states[indexToDelete].deleteVisuals(two);
+                    createdAutomaton.states.splice(indexToDelete, 1);
+                    grammar = createGrammarFromDFA(createdAutomaton);
+                    grammarOutput(grammar);
+                    stateCount -=1;
+                    two.update();
+                }
             });
 
             createdState.stateCircle._renderer.elem.addEventListener('mouseup', function() {
@@ -155,8 +178,40 @@ document.addEventListener("DOMContentLoaded", function(){
                     }
 
                     var createdTransition = new FaTranisition(userSelectedStateFrom, userSelectedStateTo, userViaInput);
+                    createdTransition.index = transitionsCount;
+                    transitionsCount += 1;
                     createdAutomaton.transitions.push(createdTransition);
                     createdTransition.createVisuals(two, createdAutomaton.states);
+                    createdTransition.boundingBox._renderer.elem.addEventListener('mousedown', function() {
+                        if(deleteActive){
+                            var transitionIndex = createdAutomaton.transitions.indexOf(createdAutomaton.transitions.find(element => element.index === createdTransition.index));
+                            createdAutomaton.transitions[transitionIndex].deleteVisuals(two);
+                            createdAutomaton.transitions.splice(transitionIndex, 1);
+                            grammar = createGrammarFromDFA(createdAutomaton);
+                            grammarOutput(grammar);
+                            transitionsCount -=1;
+                            two.update();
+                        }
+
+                        
+                    });
+
+                    createdTransition.boundingBox._renderer.elem.addEventListener('mouseover', function(){
+                        createdTransition.transitionLine.stroke = 'green';
+                        createdTransition.arrowhead.fill = 'green';
+                        createdTransition.label.fill = 'green';
+                        two.update();
+                    });
+
+                    createdTransition.boundingBox._renderer.elem.addEventListener('mouseout', function(){
+                        createdTransition.transitionLine.stroke = 'black';
+                        createdTransition.arrowhead.fill = 'black';
+                        createdTransition.label.fill = 'black';
+
+
+                        two.update();
+                    });
+                    
                     grammar = createGrammarFromDFA(createdAutomaton);
                     grammarOutput(grammar);
                     
@@ -165,17 +220,17 @@ document.addEventListener("DOMContentLoaded", function(){
             });
 
             createdState.stateCircle._renderer.elem.addEventListener("mouseover", function(){
-            createdState.stateCircle.stroke = 'green';
-            createdState.endCircle.stroke = 'green';
-            createdState.textLabel.fill = 'green';
-            two.update();
+                createdState.stateCircle.stroke = 'green';
+                createdState.endCircle.stroke = 'green';
+                createdState.textLabel.fill = 'green';
+                two.update();
             });
 
             createdState.stateCircle._renderer.elem.addEventListener("mouseout", function(){
-            createdState.stateCircle.stroke = 'black'
-            createdState.endCircle.stroke = 'black';
-            createdState.textLabel.fill = 'black';
-                        two.update();
+                createdState.stateCircle.stroke = 'black'
+                createdState.endCircle.stroke = 'black';
+                createdState.textLabel.fill = 'black';
+                two.update();
             });
                     
         }
@@ -235,6 +290,12 @@ document.addEventListener("DOMContentLoaded", function(){
 });
 
 function grammarOutput(grammar){
+
+    variablesOutput.textContent = "";
+    terminalsOutput.textContent = "";
+    productionsOutput.textContent = "";
+    startingOutput.textContent = "";
+
     variablesOutput.textContent = grammar.variables.join(", ");
     terminalsOutput.textContent = grammar.terminals.join(", ");
     productionsOutput.innerHTML = formatProductions(grammar.productions).join("<br>");

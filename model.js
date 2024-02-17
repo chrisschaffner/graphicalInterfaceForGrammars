@@ -1,3 +1,5 @@
+
+
 function scriptLoaded(){
     console.log("The specific script has finished loading.");
 }
@@ -95,6 +97,7 @@ class State{
     endCircle;
     textLabel;
     startArrow;
+    index;
 
     constructor(name, isStart, isEnd){
         this.name = name;
@@ -143,6 +146,13 @@ class State{
         
     }
 
+    deleteVisuals(two){
+        two.remove(this.stateCircle);
+        two.remove(this.endCircle);
+        two.remove(this.textLabel);
+        two.remove(this.startArrow); 
+    }
+
     setEnd(two, bool){
         
         two.remove(this.textLabel);
@@ -166,9 +176,13 @@ class FaTranisition{
     from;
     to;
     via = [];
+    index;
     startVector;
     endVector;
     transitionLine;
+    boundingBox;
+    arrowhead;
+    label;
 
     constructor(from, to, via){
         this.from = from;
@@ -197,9 +211,9 @@ class FaTranisition{
             this.transitionLine = two.makePath(x1, y1, x2, y2, x3, y3);
             this.transitionLine.opacity = .3;
     
-            var label = two.makeText(this.via, x2+30, y2-30);
-            label.size = 30;
-            label.opacity = .3    
+            this.label = two.makeText(this.via, x2+30, y2-30);
+            this.label.size = 30;
+            this.label.opacity = .3    
         }
     
         else{
@@ -218,8 +232,8 @@ class FaTranisition{
     
             this.transitionLine = two.makePath(x1, y1, x2, y2);
      
-            var label = two.makeText(this.via, Math.floor((x2+x1)/2), Math.floor((y2+y1)/2)-30);
-            label.size = 30;
+            this.label = two.makeText(this.via, Math.floor((x2+x1)/2), Math.floor((y2+y1)/2)-30);
+            this.label.size = 30;
     
             var amount = 40;
     
@@ -254,8 +268,8 @@ class FaTranisition{
                     
                     this.transitionLine = two.makePath(x1,y1, pointToInsert.x, pointToInsert.y, x2, y2);
     
-                    label.translation.x += (pointToInsert.x - oldMedian.x) * 0.55;
-                    label.translation.y += (pointToInsert.y - oldMedian.y) * .55;
+                    this.label.translation.x += (pointToInsert.x - oldMedian.x) * 0.55;
+                    this.label.translation.y += (pointToInsert.y - oldMedian.y) * .55;
     
                     deformationFactor += Math.sqrt((pointToInsert.x - oldMedian.x)^2 + (pointToInsert.y - oldMedian.y)^2);
                     
@@ -265,6 +279,8 @@ class FaTranisition{
                     }
               
                 }
+
+
     
             }
     
@@ -272,16 +288,16 @@ class FaTranisition{
             var v2 = {x:150, y:10}
             var v3 = {x:200, y:150}
     
-            var arrowhead = two.makePath(v1.x, v1.y, v2.x, v2.y ,v3.x, v3.y);
+            this.arrowhead = two.makePath(v1.x, v1.y, v2.x, v2.y ,v3.x, v3.y);
     
             var xOffset = Math.cos(angle) * -18; 
             var yOffset = Math.sin(angle) * -18;
         
-            arrowhead.fill = "black"
-            arrowhead.scale = .3
-            arrowhead.translation.x = this.endVector.x + xOffset
-            arrowhead.translation.y = this.endVector.y + yOffset
-            arrowhead.rotation = angle + (Math.PI/2);
+            this.arrowhead.fill = "black"
+            this.arrowhead.scale = .3
+            this.arrowhead.translation.x = this.endVector.x + xOffset
+            this.arrowhead.translation.y = this.endVector.y + yOffset
+            this.arrowhead.rotation = angle + (Math.PI/2);
             console.log(deformationFactor)
         
         }
@@ -292,6 +308,26 @@ class FaTranisition{
         this.transitionLine.curved = true;
         this.transitionLine.stroke = "black"
         this.transitionLine.linewidth = 8;
+
+        this.boundingBox = this.transitionLine.clone();
+        this.boundingBox.linewidth = 40;
+        this.boundingBox.noFill();
+        two.add(this.boundingBox);
+
+        for(let i=0; i<states.length; i++){
+            states[i].createVisuals(two);
+        }
+
+        two.update()
+
+    }
+
+    deleteVisuals(two){
+        two.remove(this.transitionLine);
+        two.remove(this.boundingBox);
+        two.remove(this.arrowhead);
+        two.remove(this.label);
+        two.update();
     }
 
 
@@ -310,7 +346,6 @@ class SentenceForm{
         return this.form;
     }
 }
-
 
 function onlyUnique(value, index, array) {
     return array.indexOf(value) === index;
@@ -374,29 +409,15 @@ function checkProduction(production, variables, terminals){
     var leftSide = production.left;
     var rightSide = production.right;
 
+    console.log("Left" + leftSide + " Right: " + rightSide)
+
     for(let i=0; i<leftSide.length;i++){
 
-        if (!variables.includes(leftSide[i]) && !terminals.includes(leftSide[i])){
-            var subscriptLength=0;
+        console.log(variables[0].name === leftSide[0].name)
+
+        if (!variables.some(element => element.name === leftSide[i].name) && !terminals.some(element => element.name === leftSide[i])){
             
-            for(let j=i; j<leftSide.length-i; j++){
-                if(leftSide.charCodeAt(j) >= 8320 && leftSide.charCodeAt(j) <= 8329){
-                    subscriptLength++;
-                    i=j+subscriptLength+2;
-                    continue;
-                }
-                else{
-                    break;
-                }
-            }
-
-            if(subscriptLength == 0){
-                break;
-            }
-
-            if(!variables.includes(leftSide.slice(i, i+subscriptLength+2)) && !terminals.includes(leftSide.slice(i, i+subscriptLength+2))){
-                return false
-            }
+            return false;
             
         }
     }
@@ -406,31 +427,109 @@ function checkProduction(production, variables, terminals){
     for(let i=0; i<rightSide.length;i++){
 
         if (!variables.includes(rightSide[i]) && !terminals.includes(rightSide[i]) && rightSide[i] !== 'ε'){
-            var subscriptLength=0;
-            
-            for(let j=i; j<rightSide.length-i; j++){
-                if(rightSide.charCodeAt(j) >= 8320 && rightSide.charCodeAt(j) <= 8329){
-                    subscriptLength++;
-                    i=j+subscriptLength+2;
-                    continue;
-                }
-                else{
-                    break;
-                }
-            }
 
-            if(subscriptLength == 0){
-                break;
-            }
-
-            if(!variables.includes(rightSide.slice(i, i+subscriptLength+2) && !terminals.includes(rightSide.slice(i, i+subscriptLength+2)))){
-                return false
-            }
+            return false
         }
     }
 
 
     return true;
+}
+
+function userInputToGrammar(variablesInputValue, terminalsInputValue, productionsInputValue, startingInputValue){
+   
+    var variables = variablesInputValue.replace(/\s/g, '').split(","); 
+    var terminals = terminalsInputValue.replace(/\s/g, '').split(",");
+    var starting = startingInputValue.replace(/\s/g, '');
+    var productions = [];
+    productionsInputValue = productionsInputValue.replace(/,/g, "");
+    productionsInputValue = productionsInputValue.replace(/[ \t]/g, "");
+    var splittedProductionsInput = productionsInputValue.split("\n");
+
+    console.log(variables)
+
+
+    if(terminals.length == 0){
+        throw new Error("Empty terminals!");
+    }
+
+    if(!variables.includes(starting)){
+        throw new Error("Invalid starting variable!")
+    }
+
+    for(let i=0; i<splittedProductionsInput.length; i++){
+
+        if(splittedProductionsInput[i] === ""){
+            continue
+        }
+
+        var splittedProductionInput = splittedProductionsInput[i].split("->");
+        if (splittedProductionInput.length > 2){
+            return
+        }
+        var leftSide = splittedProductionInput[0];
+        var processedLeftSide = [];
+
+        for(let i=leftSide.length-1; i>=0; i--){
+            for(let j=0; j<leftSide.length; j++){
+                
+                var slice = leftSide.slice(i-j, i+1);
+                console.log(slice)
+                if(variables.some(element => element === slice)){
+                    console.log("fpind")
+                    processedLeftSide = [slice].concat(processedLeftSide);
+
+                    i=i-j;
+                    break;
+                }
+                else if(terminals.includes(slice)){
+                    processedLeftSide = [slice].concat(processedLeftSide);
+                    i=i-j;
+                    break;
+                }
+                else{
+                    console.log("Not found");
+                }
+            }
+        }
+        console.log(processedLeftSide)
+
+        var rightSides = splittedProductionInput[1].split("|");
+        
+        
+        for(let j=0; j<rightSides.length; j++){
+            var rightSide = rightSides[j];
+            var processedRightSide = [];
+
+            for(let i=rightSide.length-1; i>=0; i--){
+                for(let j=0; j<rightSide.length; j++){
+                    
+                    var slice = rightSide.slice(i-j, i+1);
+
+                    if(variables.some(element => element === slice)){
+
+                        processedRightSide = [slice].concat(processedRightSide);
+
+                        i=i-j;
+                        break;
+                    }
+                    else if(terminals.includes(slice) || slice === 'ε'){
+                        processedRightSide = [slice].concat(processedRightSide);
+                        i=i-j;
+                        break;
+                    }
+                    else{
+                        console.log("Not found");
+                    }
+                }
+            }
+
+            productions.push(new Production(processedLeftSide, processedRightSide));
+
+        }
+    }
+    console.log(productions)
+    return new Grammar(variables, terminals, productions, starting)
 }
 
 function checkFiniteAutomaton(states, inputAlphabet, startStates, endStates, faTransitions){
@@ -704,10 +803,12 @@ function createNFAFromGrammar(grammar){
         for(let j=0; j<inputAlphabet.length; j++){
     
             for(let k=0; k<productions.length; k++){
-                if(productions[k].right.length === 2 &&
-                   productions[k].left === variables[i] &&
-                   productions[k].right[0] === inputAlphabet[j]){
 
+                console.log([variables[i]])
+                if(productions[k].right.length === 2 &&
+                   productions[k].left.join("") === variables[i] &&
+                   productions[k].right[0] === inputAlphabet[j]){
+                    console.log("AAA")
                     let b = productions[k].right[1];
                     let stateB = states.find(element => element.name === b);
                     let stateI = states.find(element => element.name === variables[i]);
@@ -715,17 +816,18 @@ function createNFAFromGrammar(grammar){
                 }
             }
     
-            let productionToCheck = productions.find(element => (element.left === variables[i] && element.right === inputAlphabet[j]));
+            let productionToCheck = productions.find(element => (element.left.join("") === variables[i] && element.right.join("") === inputAlphabet[j]));
             if(productionToCheck != undefined){
                 let stateI = states.find(element => element.name === variables[i]);
                 let zeState = states.find(element => element.name === "Ze");
                 transitions.push(new FaTranisition(stateI, zeState, inputAlphabet[j]));
             }
         }
+        console.log(transitions)
     }
     
 
-    if(productions.some(element => (element.left === starting && element.right === "ε"))){
+    if(productions.some(element => (element.left.join("") === starting && element.right.join("") === "ε"))){
 
         states.find(element => element.name === starting).isEnd = true;
     
@@ -753,8 +855,8 @@ function calculateGrammarType(grammar){
     for(let i=0; i<productions.length; i++){
         
         isType1 &= (productions[i].left.length <= productions[i].right.length);
-        isType2 &= (isType1 && variables.includes(productions[i].left));
-        isType3 &= (isType2 && productions[i].right.length <= 2 && (terminals.includes(productions[i].right[0]) && (terminals.includes(productions[i].right.slice(-1)) ||variables.includes(productions[i].right.slice(-1)))));
+        isType2 &= (isType1 && variables.includes(productions[i].left.join("")));
+        isType3 &= (isType2 && productions[i].right.length <= 2 && (terminals.includes(productions[i].right[0]) && (terminals.includes(productions[i].right.slice(-1).join("")) ||variables.includes(productions[i].right.slice(-1).join("")))));
     }
 
     if(isType3){
@@ -784,14 +886,19 @@ function createGrammarFromDFA(automaton){
 
     var startState = automaton.states.find(element => element.isStart === true);
 
-    console.log(startState.isEnd)
+    if(startState != undefined){
+        starting = startState.name;
 
-    starting = startState.name;
-
-    if(startState.isEnd){
-        console.log("FFF")
-        productions.push(new Production(startState.name, "ε"));
+        if(startState.isEnd){
+            console.log("FFF")
+            productions.push(new Production(startState.name, "ε"));
+            console.log(startState.isEnd)
+        }
     }
+
+    
+
+    
 
     terminals = automaton.inputAlphabet;
 
@@ -871,13 +978,10 @@ function decideWordProblem(grammar, word){
     do {
         lOld = l;
         l = next(lOld, n, grammar.productions);
-        console.log(l.length);
         i++;
 
     }
     while(i<50 && !(l.some(element => element.form === word) || checkArrayEuquality(l, lOld)));
-
-    
     
     return (l.find(element => element.form === word));
 }
@@ -909,18 +1013,18 @@ function calculateOneStepDerivations(sentenceForm, maxLenght, productions){
 
             var currentPortion = sentenceForm.form.slice(i, j+1);
 
-            var lastPortion = sentenceForm.form.slice(j+1, sentenceForm.length);
+            var lastPortion = sentenceForm.form.slice(j+1, sentenceForm.length); //possible error
 
-            var matchingProductions = productions.filter(element => element.left === currentPortion);
+            var matchingProductions = productions.filter(element => element.left.join("") === currentPortion);
 
 
             if(matchingProductions != undefined){
                 for(let k=0; k<matchingProductions.length; k++){
 
-                    resultingSentenceForm = new SentenceForm((firstPortion + matchingProductions[k].right + lastPortion).replace(/ε/g, ''), sentenceForm);
+                    resultingSentenceForm = (firstPortion + matchingProductions[k].right + lastPortion.replace(/ε/g, ''));
 
-                    if(resultingSentenceForm.form.length <= maxLenght && resultingSentenceForm.form.length > 0){
-                        derivations.push(resultingSentenceForm)
+                    if(resultingSentenceForm.split(",").length <= maxLenght && resultingSentenceForm.split(",").length > 0){
+                        derivations.push(new SentenceForm(firstPortion + matchingProductions[k].right.join("") + lastPortion.replace(/ε/g, ''), sentenceForm))
                     }
                 }
             }
@@ -964,9 +1068,10 @@ const filterOutUniqueForms = (value, index, self) => {
 };
 
 function generateTerminalsForms(grammar, maxCount){
-    
+
     var n = 7;
     var l = [new SentenceForm(grammar.starting, null)];
+    console.log(l.length)
     var lOld;
     var i=0;
 
@@ -976,13 +1081,11 @@ function generateTerminalsForms(grammar, maxCount){
         i++;
 
     }
-    while(i<50 && !checkArrayEuquality(l, lOld));
+    while(i<6 && !checkArrayEuquality(l, lOld));
 
     l = l.filter(element => checkWordAlphabet(grammar.terminals, element.form))
 
     l = l.slice(0, maxCount);
-
-    console.log(l.length)
 
     var stringOutput = l.join(", ");
     

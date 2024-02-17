@@ -106,39 +106,10 @@ document.addEventListener("DOMContentLoaded", function(){
 
     submitButton.addEventListener("click", function(event){
         event.preventDefault();
-
-        var variables = variablesInput.value.replace(/\s/g, '').split(",");
-        var terminals = terminalsInput.value.replace(/\s/g, '').split(",");
-        var starting = startingInput.value.replace(/\s/g, '');
-        var productions = [];
-        productionsInput.value = productionsInput.value.replace(/,/g, "");
-        productionsInput.value = productionsInput.value.replace(/[ \t]/g, "");
-        var splittedProductionsInput = productionsInput.value.split("\n");
-        console.log(productionsInput.value)
         
+        try{
 
-        for(let i=0; i<splittedProductionsInput.length; i++){
-
-            if(splittedProductionsInput[i] === ""){
-                continue
-            }
-
-            var splittedProductionInput = splittedProductionsInput[i].split("->");
-            if (splittedProductionInput.length > 2){
-                return
-            }
-            var rightSides = splittedProductionInput[1].split("|");
-            for(let j=0; j<rightSides.length; j++){
-                productions.push(new Production(splittedProductionInput[0], rightSides[j]));
-            }
-            
-        }
-        
-
-        if(checkCorrectGrammarForm(variables, terminals, productions, starting)){
-
-
-            grammar = new Grammar(variables, terminals, productions, starting);
+            grammar = userInputToGrammar(variablesInput.value, terminalsInput.value, productionsInput.value, startingInput.value);
 
             console.log(grammar)
 
@@ -155,10 +126,10 @@ document.addEventListener("DOMContentLoaded", function(){
             console.log(decideWordProblem(grammar, "aaaa"));
 
             two.update();
-
         }
-        else{
-            console.log("Couldnt create grammar!")
+
+        catch(error){
+            console.error(error);
         }
         
     });
