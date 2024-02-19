@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var deleteButton = document.getElementById("delete");
     var makeScreenshotButton = document.getElementById("screenshot");
     var copyButton = document.getElementById("copy");
+    var moveButton = document.getElementById("move");
     var variablesOutput = document.getElementById("variablesOutput");
     var terminalsOutput = document.getElementById("terminalsOutput");
     var productionsOutput = document.getElementById("productionsOutput");
@@ -28,10 +29,12 @@ document.addEventListener("DOMContentLoaded", function(){
     var transitionCreationActive = false;
     var endMarkingActive = false;
     var deleteActive = false;
+    var moveActive = false;
+    var movingState;
+
     var grammar;
 
-  
-    
+
     markEndButton.addEventListener("click", function(){
         
         endMarkingActive = !endMarkingActive;
@@ -49,9 +52,7 @@ document.addEventListener("DOMContentLoaded", function(){
         deleteButton.style.color = (deleteActive) ? "white" : "black";
 
         two.update();
-    })
-    
-
+    });
 
     createStateButton.addEventListener("click", function(){
         
@@ -61,8 +62,6 @@ document.addEventListener("DOMContentLoaded", function(){
         createStateButton.style.color = (stateCreationActive) ? "white" : "black";
     });
     
-
-
     createTransitionButton.addEventListener("click", function(){
             
         transitionCreationActive = !transitionCreationActive;
@@ -70,8 +69,6 @@ document.addEventListener("DOMContentLoaded", function(){
         createTransitionButton.style.color = (transitionCreationActive) ? "white" : "black";
     });
       
-
-
     clearButton.addEventListener("click", function(){
         
         
@@ -88,8 +85,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
     });
     
-
-
     makeScreenshotButton.addEventListener("click", function(){
         makeDrawingAreaScreenshot();
     })    
@@ -98,13 +93,17 @@ document.addEventListener("DOMContentLoaded", function(){
         event.preventDefault();
         grammarformToSessionStorage(grammar.variables, grammar.terminals, formatProductions(grammar.productions).join("\n"), grammar.starting);
         console.log(variablesOutput.textContent)
-    })
+    });
 
+    moveButton.addEventListener("click", function(){
+        moveActive = !moveActive;
+        moveButton.style.backgroundColor = (moveActive) ? "green" : "transparent";
+        moveButton.style.color = (moveActive) ? "white" : "black";
+    });
 
     canvas.addEventListener("wheel", function(event){
         event.preventDefault();
     });
-    
     
     document.addEventListener("mousedown", function(event){
 
@@ -121,118 +120,24 @@ document.addEventListener("DOMContentLoaded", function(){
             var drawingAreaScale = two.scene.scale;
             var drawingAreaShiftX = two.scene.translation.x;
             var drawingAreaShiftY = two.scene.translation.y;
-            var createdState = new State("Z" + numberToSubscript(stateCount), stateCount==0, false)
-            createdState.index = stateCount;
-            createdState.setPosition((mousePositionX - drawingAreaShiftX)/drawingAreaScale, (mousePositionY - drawingAreaShiftY)/drawingAreaScale);
+
+            for(let i=0; i<createdAutomaton.states.length+1; i++){
+                if(!createdAutomaton.states.some(element => element.index === i)){
+                    stateCount = i;
+                }
+            }
+
+            var createdState = new State("Z" + numberToSubscript(stateCount), stateCount==0, false, stateCount);
+            createdState.setPosition((mousePositionX - drawingAreaShiftX)/drawingAreaScale, (mousePositionY - drawingAreaShiftY)/drawingAreaScale, two);
             createdState.createVisuals(two);
             createdAutomaton.states.push(createdState);
 
             grammar = createGrammarFromDFA(createdAutomaton);
             grammarOutput(grammar);
             
-            stateCount += 1;      
+            stateCount += 1;     
             two.update();      
-
-            createdState.stateCircle._renderer.elem.addEventListener('mousedown', function() {
                 
-                if(transitionCreationActive){
-                    console.log(createdState.name + ' from');
-                    userSelectedStateFrom = createdState;
-                }
-
-                if(endMarkingActive){
-                    createdState.isEnd = true;
-                    createdState.setEnd(two, true);
-                    grammar = createGrammarFromDFA(createdAutomaton);
-                    grammarOutput(grammar);
-                }
-
-                if(deleteActive){
-                    var indexToDelete = createdAutomaton.states.indexOf(createdAutomaton.states.find(element => element.index === createdState.index));
-                    createdAutomaton.states[indexToDelete].deleteVisuals(two);
-                    createdAutomaton.states.splice(indexToDelete, 1);
-                    grammar = createGrammarFromDFA(createdAutomaton);
-                    grammarOutput(grammar);
-                    stateCount -=1;
-                    two.update();
-                }
-            });
-
-            createdState.stateCircle._renderer.elem.addEventListener('mouseup', function() {
-            
-                if(transitionCreationActive){
-
-                    console.log(createdState.name + ' to');
-                    userSelectedStateTo = createdState;
-
-                    var userViaInput = prompt("Insert terminal for transition:").replace(/\s/g, '').split(",");
-                    
-                    if(userViaInput != null){
-                        console.log(userViaInput)
-                    }
-
-                    for(let i=0; i<userViaInput.length; i++){
-                        if(!createdAutomaton.inputAlphabet.includes(userViaInput[i])){
-                            createdAutomaton.inputAlphabet.push(userViaInput[i]);
-                        }
-                    }
-
-                    var createdTransition = new FaTranisition(userSelectedStateFrom, userSelectedStateTo, userViaInput);
-                    createdTransition.index = transitionsCount;
-                    transitionsCount += 1;
-                    createdAutomaton.transitions.push(createdTransition);
-                    createdTransition.createVisuals(two, createdAutomaton.states);
-                    createdTransition.boundingBox._renderer.elem.addEventListener('mousedown', function() {
-                        if(deleteActive){
-                            var transitionIndex = createdAutomaton.transitions.indexOf(createdAutomaton.transitions.find(element => element.index === createdTransition.index));
-                            createdAutomaton.transitions[transitionIndex].deleteVisuals(two);
-                            createdAutomaton.transitions.splice(transitionIndex, 1);
-                            grammar = createGrammarFromDFA(createdAutomaton);
-                            grammarOutput(grammar);
-                            transitionsCount -=1;
-                            two.update();
-                        }
-
-                        
-                    });
-
-                    createdTransition.boundingBox._renderer.elem.addEventListener('mouseover', function(){
-                        createdTransition.transitionLine.stroke = 'green';
-                        createdTransition.arrowhead.fill = 'green';
-                        createdTransition.label.fill = 'green';
-                        two.update();
-                    });
-
-                    createdTransition.boundingBox._renderer.elem.addEventListener('mouseout', function(){
-                        createdTransition.transitionLine.stroke = 'black';
-                        createdTransition.arrowhead.fill = 'black';
-                        createdTransition.label.fill = 'black';
-
-
-                        two.update();
-                    });
-                    
-                    grammar = createGrammarFromDFA(createdAutomaton);
-                    grammarOutput(grammar);
-                    
-                    two.update();
-                }
-            });
-
-            createdState.stateCircle._renderer.elem.addEventListener("mouseover", function(){
-                createdState.stateCircle.stroke = 'green';
-                createdState.endCircle.stroke = 'green';
-                createdState.textLabel.fill = 'green';
-                two.update();
-            });
-
-            createdState.stateCircle._renderer.elem.addEventListener("mouseout", function(){
-                createdState.stateCircle.stroke = 'black'
-                createdState.endCircle.stroke = 'black';
-                createdState.textLabel.fill = 'black';
-                two.update();
-            });
-                    
         }
 
     });
@@ -243,10 +148,13 @@ document.addEventListener("DOMContentLoaded", function(){
         var pageScrollY = window.pageYOffset;
         var mousePositionX = event.clientX - canvasRect.left + pageScrollX;
         var mousePositionY = event.clientY - canvasRect.top + pageScrollY;
+        var drawingAreaScale = two.scene.scale;
+        var drawingAreaShiftX = two.scene.translation.x;
+        var drawingAreaShiftY = two.scene.translation.y;
 
         var isMouseInsideCanvas = (mousePositionX >= 0 && mousePositionX <= canvas.clientWidth && mousePositionY >= 0 && mousePositionY <= canvas.clientHeight);
 
-        if(event.buttons === 1 && isMouseInsideCanvas && !stateCreationActive && !transitionCreationActive && !endMarkingActive){
+        if(event.buttons === 1 && isMouseInsideCanvas && !stateCreationActive && !moveActive && !transitionCreationActive && !endMarkingActive){
             console.log("Drag")
             var xAmount = event.movementX / 1;
             var yAmount = event.movementY / 1;
@@ -254,6 +162,24 @@ document.addEventListener("DOMContentLoaded", function(){
             two.scene.translation.x += xAmount;
             two.scene.translation.y += yAmount;
             two.update();
+        }
+
+        if(movingState != undefined && moveActive){
+
+            /* createdAutomaton.states.find(element => element === movingState).setPosition((mousePositionX - drawingAreaShiftX)/drawingAreaScale, (mousePositionY - drawingAreaShiftY)/drawingAreaScale, two);
+            createdAutomaton.states.find(element => element === movingState).deleteVisuals(two);
+            createdAutomaton.states.find(element => element === movingState).createVisuals(two); */
+
+            movingState.setPosition((mousePositionX - drawingAreaShiftX)/drawingAreaScale, (mousePositionY - drawingAreaShiftY)/drawingAreaScale, two);
+            movingState.deleteVisuals(two);
+            movingState.createVisuals(two);
+
+
+            for(let i=0; i<createdAutomaton.transitions.length; i++){
+                createdAutomaton.transitions[i].deleteVisuals(two);
+                createdAutomaton.transitions[i].createVisuals(two, createdAutomaton.states);
+            }
+
         }
     });
 
@@ -287,6 +213,104 @@ document.addEventListener("DOMContentLoaded", function(){
     two.update();
 
     });
+
+    document.addEventListener('stateMouseDown', function(event){
+        
+        var state = event.detail;
+        
+        if(transitionCreationActive){
+            console.log(state.name + ' from');
+            userSelectedStateFrom = state;
+        }
+
+        if(endMarkingActive){
+            state.isEnd = true;
+            state.setEnd(two, true);
+            
+        }
+
+        if(deleteActive){
+            
+            var indexToDelete = createdAutomaton.states.findIndex(element => element.index === state.index);
+            console.log(indexToDelete)
+            createdAutomaton.states[indexToDelete].deleteVisuals(two);
+            createdAutomaton.states.splice(indexToDelete, 1);
+        
+        }
+
+        if(moveActive){
+            var state = event.detail;
+            movingState = state;
+
+        }
+
+        grammar = createGrammarFromDFA(createdAutomaton);
+        grammarOutput(grammar);
+        two.update();
+    });
+
+    document.addEventListener('stateMouseUp', function(event){
+        var state = event.detail;
+
+        if(transitionCreationActive){
+
+            console.log(state.name + ' to');
+            userSelectedStateTo = state;
+
+            var userViaInput = prompt("Insert terminal for transition:").replace(/\s/g, '').split(",");
+            
+            if(userViaInput != null){
+                console.log(userViaInput)
+            }
+
+            for(let i=0; i<userViaInput.length; i++){
+                if(!createdAutomaton.inputAlphabet.includes(userViaInput[i])){
+                    createdAutomaton.inputAlphabet.push(userViaInput[i]);
+                }
+            }
+
+            var createdTransition = new FaTranisition(userSelectedStateFrom, userSelectedStateTo, userViaInput);
+            createdTransition.index = transitionsCount;
+            transitionsCount += 1;
+            createdAutomaton.transitions.push(createdTransition);
+            createdTransition.createVisuals(two, createdAutomaton.states);
+            
+            
+            grammar = createGrammarFromDFA(createdAutomaton);
+            grammarOutput(grammar);
+            
+            two.update();
+        }
+
+        movingState = undefined;
+
+    });
+
+    document.addEventListener('transitionMouseDown', function(event){
+
+        var transition = event.detail;
+
+        if(deleteActive){
+            var indexToDelete = createdAutomaton.transitions.findIndex(element => element.index === transition.index);
+            createdAutomaton.transitions[indexToDelete].deleteVisuals(two);
+            createdAutomaton.transitions.splice(indexToDelete, 1);
+
+            for(let i=0; i<transition.via.length; i++){
+
+                var via = transition.via[i];
+
+                if(createdAutomaton.transitions.some(element => element.via.includes(via)) == false){
+                    var indexToDelete = createdAutomaton.inputAlphabet.indexOf(via);
+                    createdAutomaton.inputAlphabet.splice(indexToDelete, 1);
+                }
+            }
+        }
+
+        grammar = createGrammarFromDFA(createdAutomaton);
+        grammarOutput(grammar);
+    });
+
+
 });
 
 function grammarOutput(grammar){

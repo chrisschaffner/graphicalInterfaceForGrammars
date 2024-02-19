@@ -99,17 +99,19 @@ class State{
     startArrow;
     index;
 
-    constructor(name, isStart, isEnd){
+    constructor(name, isStart, isEnd, index){
         this.name = name;
         this.isStart = isStart;
         this.isEnd = isEnd;
+        this.index = index;
     }
 
     
 
-    setPosition(posX, posY){
+    setPosition(posX, posY, two){
         this.posX = posX;
         this.posY = posY;
+        two.update();
     }
 
     setGeneration(generation){
@@ -142,15 +144,44 @@ class State{
         two.add(this.textLabel);
         two.add(this.endCircle);
         two.add(this.stateCircle);
+
+        two.update();
+
+
+        this.stateCircle._renderer.elem.addEventListener('mousedown', () => {
+            document.dispatchEvent(new CustomEvent('stateMouseDown', {detail: this}));
+        });
+
+        this.stateCircle._renderer.elem.addEventListener('mouseover', () => {
+
+            this.stateCircle.stroke = 'green';
+            this.endCircle.stroke = 'green';
+            this.textLabel.fill = 'green';
+            two.update();
+        });
+
+        this.stateCircle._renderer.elem.addEventListener('mouseout', () => {
+            this.stateCircle.stroke = 'black'
+            this.endCircle.stroke = 'black';
+            this.textLabel.fill = 'black';
+            two.update();
+        })
+
+        this.stateCircle._renderer.elem.addEventListener('mouseup', () => {
+            document.dispatchEvent(new CustomEvent('stateMouseUp', {detail: this}));
+        });
+
         two.update();
         
     }
 
     deleteVisuals(two){
+        console.log("Delete " + this.index);
         two.remove(this.stateCircle);
         two.remove(this.endCircle);
         two.remove(this.textLabel);
         two.remove(this.startArrow); 
+        two.update();
     }
 
     setEnd(two, bool){
@@ -195,8 +226,6 @@ class FaTranisition{
     }
 
     createVisuals(two, states){
-
-        console.log(this);
     
         if (this.from == this.to){
     
@@ -220,88 +249,54 @@ class FaTranisition{
     
             
             var angle = Math.atan2(this.to.posY - this.from.posY, this.to.posX - this.from.posX);
+            var endAngle = angle;
     
-            var x1 = this.from.posX + Math.cos(angle)*100;
-            var y1 = this.from.posY + Math.sin(angle)*100;
-            var x2 = this.to.posX - Math.cos(angle)*100;
-            var y2 = this.to.posY - Math.sin(angle)*100;
-    
-            this.startVector = {x: x1,y: y1};
-            this.endVector = {x: x2, y: y2};
-
-    
-            this.transitionLine = two.makePath(x1, y1, x2, y2);
+            this.startVector = {x: this.from.posX + Math.cos(angle)*100,y: this.from.posY + Math.sin(angle)*100};
+            this.endVector = {x: this.to.posX - Math.cos(angle)*100, y: this.to.posY - Math.sin(angle)*100};
      
-            this.label = two.makeText(this.via, Math.floor((x2+x1)/2), Math.floor((y2+y1)/2)-30);
-            this.label.size = 30;
-    
-            var amount = 40;
-    
-            var deformationFactor = 1;
-    
+            var amount = 0;
+
+            var pointToInsert = calculateMedianVertex(this.startVector, this.endVector);
+            var normalVecor = calculateNormalVector(this.startVector, this.endVector);    
     
             for(let i=0; i<states.length; i++){
-                var circleCenter = {x: states[i].posX, y: states[i].posY};
-            
-                if(checkLineCircleIntersection(this.startVector, this.endVector, circleCenter, 99)){
-                
-                    var pointToInsert = calculateMedianVertex(this.startVector, this.endVector);
-                    const oldMedian = calculateMedianVertex(this.startVector, this.endVector);
-                    two.remove(this.transitionLine);
-    
-                    while(amount < 500 && (checkLineCircleIntersection(this.startVector, pointToInsert, circleCenter, 100) || checkLineCircleIntersection(pointToInsert, this.endVector, circleCenter, 100))){
-                    
-                    two.remove(this.transitionLine)
-                    
-                    var slope = calculateLineSlope(this.startVector, this.endVector);
-                    console.log(slope)
-                    if(slope == Infinity){
-                        pointToInsert.x += amount;
-                    }
-                    if(Math.abs(slope) < 0.05){
-                        pointToInsert.y += amount
-                    }
-                    else{
-                        pointToInsert.x += amount * slope;
-                        pointToInsert.y += amount*(1/slope);
-                    }
-                    
-                    this.transitionLine = two.makePath(x1,y1, pointToInsert.x, pointToInsert.y, x2, y2);
-    
-                    this.label.translation.x += (pointToInsert.x - oldMedian.x) * 0.55;
-                    this.label.translation.y += (pointToInsert.y - oldMedian.y) * .55;
-    
-                    deformationFactor += Math.sqrt((pointToInsert.x - oldMedian.x)^2 + (pointToInsert.y - oldMedian.y)^2);
-                    
-                    angle = Math.atan2(this.endVector.y - pointToInsert.y, this.endVector.x - pointToInsert.x);
-                    
-                    amount += .1;
-                    }
-              
+
+                if(states[i].name === this.from.name || states[i].name === this.to.name){
+                    continue;
                 }
+                
+                var circleCenter = {x: states[i].posX, y: states[i].posY};
+                
+                while(amount < 500 && (checkLineCircleIntersection(this.startVector, pointToInsert, circleCenter, 120) || checkLineCircleIntersection(pointToInsert, this.endVector, circleCenter, 120))){
+                
+                    pointToInsert = movePointAlongVector(pointToInsert, normalVecor, 10);
 
+                    angle = Math.atan2(pointToInsert.y - this.startVector.y, pointToInsert.x - this.startVector.x);
+                    endAngle = Math.atan2(this.endVector.y - pointToInsert.y, this.endVector.x - pointToInsert.x);
 
-    
+                    this.startVector = {x: this.from.posX + Math.cos(angle)*100,y: this.from.posY + Math.sin(angle)*100};
+                    this.endVector = {x: this.to.posX - Math.cos(endAngle)*100, y: this.to.posY - Math.sin(endAngle)*100};
+                                        
+                    amount += 1;
+                }
             }
+
+            this.transitionLine = two.makePath(this.startVector.x, this.startVector.y, pointToInsert.x, pointToInsert.y, this.endVector.x, this.endVector.y);
     
-            var v1 = {x:100, y:150}
-            var v2 = {x:150, y:10}
-            var v3 = {x:200, y:150}
-    
-            this.arrowhead = two.makePath(v1.x, v1.y, v2.x, v2.y ,v3.x, v3.y);
-    
-            var xOffset = Math.cos(angle) * -18; 
-            var yOffset = Math.sin(angle) * -18;
+            var labelPosition = movePointAlongVector(pointToInsert, normalVecor, 30);
+
+            this.label = two.makeText(this.via, labelPosition.x, labelPosition.y);
+            this.label.size = 30;
+            
+            this.arrowhead = two.makePath(100, 150, 150, 10, 200, 150);
         
             this.arrowhead.fill = "black"
             this.arrowhead.scale = .3
-            this.arrowhead.translation.x = this.endVector.x + xOffset
-            this.arrowhead.translation.y = this.endVector.y + yOffset
-            this.arrowhead.rotation = angle + (Math.PI/2);
-            console.log(deformationFactor)
+            this.arrowhead.translation.x = this.endVector.x + Math.cos(endAngle) * -15; 
+            this.arrowhead.translation.y = this.endVector.y + Math.sin(endAngle) * -15;
+            this.arrowhead.rotation = endAngle + (Math.PI/2) ;
         
-        }
-    
+        }    
         
         this.transitionLine.closed = false;
         this.transitionLine.fill = "transparent"
@@ -312,21 +307,41 @@ class FaTranisition{
         this.boundingBox = this.transitionLine.clone();
         this.boundingBox.linewidth = 40;
         this.boundingBox.noFill();
+        this.boundingBox.stroke = 'transparent';
+
         two.add(this.boundingBox);
 
         for(let i=0; i<states.length; i++){
+            states[i].deleteVisuals(two);
             states[i].createVisuals(two);
         }
 
-        two.update()
+        two.update();
 
+        this.boundingBox._renderer.elem.addEventListener('mousedown', () => {
+            document.dispatchEvent(new CustomEvent('transitionMouseDown', {detail: this}));
+        });
+
+        this.boundingBox._renderer.elem.addEventListener('mouseover', () => {
+            this.arrowhead.fill = 'green';
+            this.label.stroke = 'green';
+            this.transitionLine.stroke = 'green';
+            two.update();
+        });
+
+        this.boundingBox._renderer.elem.addEventListener('mouseout', () => {
+            this.arrowhead.fill = 'black';
+            this.label.stroke = 'black';
+            this.transitionLine.stroke = 'black';
+            two.update();
+        });
     }
 
     deleteVisuals(two){
         two.remove(this.transitionLine);
         two.remove(this.boundingBox);
         two.remove(this.arrowhead);
-        two.remove(this.label);
+        two.remove(this.label);        
         two.update();
     }
 
@@ -1110,4 +1125,21 @@ function numberToSubscript(number){
     }
 
     return output
+}
+
+function NFAToDFA(automaton){
+
+}
+
+function calculateNormalVector(point1, point2){
+    var dx = point2.x - point1.x;
+    var dy = point2.y - point1.y;
+    var normalVecor = {x: -dy, y: dx};
+    var length = Math.sqrt(normalVecor.x * normalVecor.x + normalVecor.y * normalVecor.y);
+
+    return {x: normalVecor.x / length, y: normalVecor.y / length};
+}
+
+function movePointAlongVector(point, vector, distance){
+    return {x: point.x + vector.x * distance, y: point.y + vector.y * distance};
 }
