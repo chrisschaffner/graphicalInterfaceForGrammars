@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function(){
+
     var canvas = document.getElementById("drawingArea");
     var canvasRect = canvas.getBoundingClientRect();
     var drawingAreaWidth = canvas.clientWidth;
@@ -13,10 +14,12 @@ document.addEventListener("DOMContentLoaded", function(){
     var makeScreenshotButton = document.getElementById("screenshot");
     var copyButton = document.getElementById("copy");
     var moveButton = document.getElementById("move");
-    var variablesOutput = document.getElementById("variablesOutput");
-    var terminalsOutput = document.getElementById("terminalsOutput");
-    var productionsOutput = document.getElementById("productionsOutput");
-    var startingOutput = document.getElementById("startingOutput");
+    var submitButton = document.getElementById("submit");
+    var typeDisplay = document.getElementById("type");
+    var variablesOutput = document.getElementById("variablesInput");
+    var terminalsOutput = document.getElementById("terminalsInput");
+    var productionsOutput = document.getElementById("productionsInput");
+    var startingOutput = document.getElementById("startingInput");
     var stateCount = 0;
     var transitionsCount = 0;
     var createdStates = [];
@@ -96,6 +99,7 @@ document.addEventListener("DOMContentLoaded", function(){
     
     makeScreenshotButton.addEventListener("click", function(){
         makeDrawingAreaScreenshot();
+        console.log(NFAToDFA(createdAutomaton))
     })    
 
     copyButton.addEventListener("click", function(event){
@@ -320,6 +324,37 @@ document.addEventListener("DOMContentLoaded", function(){
         grammarOutput(grammar);
     });
 
+    submitButton.addEventListener("click", function(event){
+        event.preventDefault();
+        
+        try{
+
+            grammar = userInputToGrammar(variablesOutput.value, terminalsOutput.value, productionsOutput.value, startingOutput.value);
+
+            console.log(grammar)
+
+            typeDisplay.textContent = "Type: " + calculateGrammarType(grammar);
+
+            createdAutomaton = createNFAFromGrammar(grammar);
+
+
+            two.clear()
+
+            createGraph(two, createdAutomaton);
+
+            //console.log(calculateOneStepDerivations("A", 3, grammar.productions));
+
+            console.log(decideWordProblem(grammar, "aaaa"));
+
+            two.update();
+        }
+
+        catch(error){
+            console.error(error);
+        }
+        
+    });
+
     function updateEditButtons(){
         createStateButton.style.backgroundColor = (stateCreationActive) ? "green" : "transparent";      
         createStateButton.style.color = (stateCreationActive) ? "white" : "black";
@@ -333,19 +368,23 @@ document.addEventListener("DOMContentLoaded", function(){
         moveButton.style.color = (moveActive) ? "white" : "black";
     }
 
+    function grammarOutput(grammar){
+
+        variablesOutput.value = "";
+        terminalsOutput.value = "";
+        productionsOutput.value = "";
+        startingOutput.value = "";
+    
+        variablesOutput.value = grammar.variables.join(", ");
+        terminalsOutput.value = grammar.terminals.join(", ");
+        productionsOutput.value = formatProductions(grammar.productions).join("\n");
+        startingOutput.value = grammar.starting;
+
+        typeDisplay.textContent = "Type: " + calculateGrammarType(grammar);
+    }
+
 
 });
 
-function grammarOutput(grammar){
 
-    variablesOutput.textContent = "";
-    terminalsOutput.textContent = "";
-    productionsOutput.textContent = "";
-    startingOutput.textContent = "";
-
-    variablesOutput.textContent = grammar.variables.join(", ");
-    terminalsOutput.textContent = grammar.terminals.join(", ");
-    productionsOutput.innerHTML = formatProductions(grammar.productions).join("<br>");
-    startingOutput.textContent = grammar.starting;
-}
 

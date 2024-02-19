@@ -1,5 +1,3 @@
-
-
 function scriptLoaded(){
     console.log("The specific script has finished loading.");
 }
@@ -98,6 +96,7 @@ class State{
     textLabel;
     startArrow;
     index;
+    subsetStates = [];
 
     constructor(name, isStart, isEnd, index){
         this.name = name;
@@ -215,10 +214,11 @@ class FaTranisition{
     arrowhead;
     label;
 
-    constructor(from, to, via){
+    constructor(from, to, via, index){
         this.from = from;
         this.to = to;
         this.via = via;
+        this.index = index;
     }
 
     toString(){
@@ -800,9 +800,11 @@ function createNFAFromGrammar(grammar){
     var states = []
     var transitions = []
 
+    var transitionIndex = 0;
+
 
     for(let i=0; i<variables.length; i++){
-        states.push(new State(variables[i], false, false));
+        states.push(new State(variables[i], false, false, i));
     }
 
     console.log(starting)
@@ -811,8 +813,6 @@ function createNFAFromGrammar(grammar){
     if (startingState) {
         startingState.isStart = true;
     }
-
-    states.push(new State("Ze", false, true));
 
     for(let i=0; i<variables.length; i++){
         for(let j=0; j<inputAlphabet.length; j++){
@@ -827,15 +827,18 @@ function createNFAFromGrammar(grammar){
                     let b = productions[k].right[1];
                     let stateB = states.find(element => element.name === b);
                     let stateI = states.find(element => element.name === variables[i]);
-                    transitions.push(new FaTranisition(stateI, stateB, inputAlphabet[j]));
+                    transitions.push(new FaTranisition(stateI, stateB, inputAlphabet[j], transitionIndex));
+                    transitionIndex++;
                 }
             }
     
             let productionToCheck = productions.find(element => (element.left.join("") === variables[i] && element.right.join("") === inputAlphabet[j]));
             if(productionToCheck != undefined){
+                states.push(new State("Ze", false, true));
                 let stateI = states.find(element => element.name === variables[i]);
                 let zeState = states.find(element => element.name === "Ze");
-                transitions.push(new FaTranisition(stateI, zeState, inputAlphabet[j]));
+                transitions.push(new FaTranisition(stateI, zeState, inputAlphabet[j], transitionIndex));
+                transitionIndex++;
             }
         }
         console.log(transitions)
@@ -848,7 +851,7 @@ function createNFAFromGrammar(grammar){
     
     }
 
-    console.log(states);
+    //console.log(calculateStatePredecessor(transitions, zeState));
 
     var automaton = new FiniteAutomaton(states, inputAlphabet, transitions);
     
@@ -1061,6 +1064,16 @@ function checkArrayEuquality(array1, array2){
     return true;
 }
 
+function checkArrayIntersection(array1, array2){
+    var size = Math.min(array1.length, array2.length);
+    for(let i=0; i<size; i++){
+        if(array1.includes(array2[i])){
+            return true
+        }
+    }
+    return false
+}
+
 function sentenceFormPredecessorsToString(sentenceForm){
     
     var predecessors = [];
@@ -1129,6 +1142,15 @@ function numberToSubscript(number){
 
 function NFAToDFA(automaton){
 
+    var dfaStates = createPowerSetOfStates(automaton.states);
+    
+    dfaStates.find(element => checkArrayEuquality(element.subsetStates, automaton.states.filter(state => state.isStart))).isStart = true;
+
+    dfaStates.filter(element => checkArrayIntersection(element.subsetStates.map(state => state.name), automaton.states.filter(state => state.isEnd == true).map(e => e.name))).forEach(state => state.isEnd = true);
+
+    console.log(dfaStates)
+
+
 }
 
 function calculateNormalVector(point1, point2){
@@ -1142,4 +1164,34 @@ function calculateNormalVector(point1, point2){
 
 function movePointAlongVector(point, vector, distance){
     return {x: point.x + vector.x * distance, y: point.y + vector.y * distance};
+}
+
+function createPowerSetOfStates(states){
+    var subsets = [];
+    var currentSubset = [];
+    var outputStates = [];
+    function depthFirstSearch(index){
+        if(index === states.length){
+
+            subsets.push([...currentSubset])
+            return
+            
+        }
+        currentSubset.push(states[index]);
+        depthFirstSearch(index+1);
+        currentSubset.pop();
+        depthFirstSearch(index+1);
+    }
+    depthFirstSearch(0);
+    subsets.pop();
+    for(let i=0; i<subsets.length; i++){
+        var subsetStates = []
+        for(let j=0; j<subsets[i].length; j++){
+            subsetStates.push(subsets[i][j]);
+        }
+        var state = new State('{' + subsetStates.map(state => state.name).join(", ") + '}', false, false, i)
+        state.subsetStates = subsetStates;
+        outputStates.push(state);
+    }
+    return outputStates
 }

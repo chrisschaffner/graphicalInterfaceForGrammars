@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphical Interface For Grammars</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap" rel="stylesheet">
+    <script src="node_modules/two.js/build/two.js"></script>
+    <script src="model.js" onload="scriptLoaded()"></script>
+    <script src="multiview.js"></script>
+   
+</head>
+<body>
+    <header>
+        <h1>Graphical Interface For Grammars</h1>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><p>Version 1.0</p></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="nav_bar">
+        <ul>
+            <li><a href="index.html">GRAMMAR TO GRAPH</a></li>
+            <li><a href="graphToGrammar.html">GRAPH TO GRAMMAR</a></li>
+            <li><a href="wordContainment.html">WORD CONTAINMENT</a></li>
+            <li><a href="multiview.html" class="active">MULTIVIEW</a></li>
+        </ul>
+
+    </div>
+
+    <div id="multiview">
+        <div id="graphArea">
+            <h2>Graph</h2>
+            <div id="drawingArea"></div>
+            <div id="buttons">
+                <button id="createState">Create State</button>
+                <button id="createTransition">Create Transition</button>
+                <button id="markEnd">Mark End</button>
+                <button id="delete">Delete State/Transition</button>
+                <button id="move">Move State</button>
+                <button id="clear">Clear</button>
+                <button id="screenshot">Make Screenshot</button>
+                <button id="copy">Copy grammar to clipboard</button>
+            </div>
+        </div>
+       
+
+    
+        <form id="grammarInputForm">
+            <h2>Grammar</h2>
+            <div>
+                <label for="variableInputs">Variables:</label>
+                <input type="text" id="variablesInput" name="variables" placeholder="e.g. A, B"><br><br>
+            </div>
+            <div>
+                <label for="terminalsInput">Terminal symbols:</label>
+                <input type="text" id="terminalsInput" name="terminals" placeholder="e.g. a, b, c"><br><br>
+            </div>
+            <div>
+                <label for="productionsInput">Productions:</label>
+                <textarea rows="5" cols="60" id="productionsInput" name="productions" placeholder="e.g.&#10;A->aB|cD&#10;B->Bc"></textarea>
+            </div>
+            <div>
+                <label for="startingInput">Starting symbol:</label>
+                <input type="text" id="startingInput" name="starting" placeholder="e.g. B"><br><br>
+            </div>
+            
+            <button id="submit">Submit</button>
+            <span id="type">Type: </span>
+            <button id="clear">Clear</button>
+            <button id="copy">Copy grammar to clipboard</button>
+            <button id="paste">Paste grammar from clipboard</button>
+        </form>
+
+    </div>
+
+    
+
+    
+
+
+
+    <div id="htmlInfo" data-name="target" data-value="graphToGrammar"></div>
+
+    
+</body>
+</html>

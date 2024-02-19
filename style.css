@@ -117,7 +117,7 @@ header nav ul li a:hover {
     -webkit-user-select: none;
 }
 
-#drawingArea button {
+/* #drawingArea button {
     
     margin-left: 5px;
     padding: 12px 20px;
@@ -131,7 +131,7 @@ header nav ul li a:hover {
 #drawingArea button:hover {
     color: black;
     background-color: white;
-}
+} */
 
 .nav_bar {
     margin-bottom: 50px;
@@ -246,7 +246,7 @@ header nav ul li a:hover {
     background-color: rgb(255, 188, 188);
 }
 
-#createState, #createTransition, #markEnd, #delete, #move {
+#createState, #createTransition, #markEnd, #delete, #move, #screenshot, #copy, #paste {
     background-color: white;
     padding: 12px 20px;
     margin-top: 10px;
@@ -257,7 +257,7 @@ header nav ul li a:hover {
     transition: all 0.3s ease;
 }
 
-#createState:hover, #createTransition:hover, #markEnd:hover, #delete:hover, #move:hover {
+#createState:hover, #createTransition:hover, #markEnd:hover, #delete:hover, #move:hover, #screenshot:hover, #copy:hover, #paste:hover {
     color: white;
     background-color: rgba(0, 128, 0, 0.5);
 }
@@ -281,27 +281,6 @@ header nav ul li a:hover {
 #productionsOutput, #productionsLabel {
     display: flex;
     justify-content:start;
-}
-
-
-
-
-
-#screenshot, #copy, #paste {
-    background-color: #005b0c;
-    color: white;
-    padding: 12px 20px;
-    margin-top: 10px;
-    margin-left: 20px;
-    border: 2px solid grey;
-    border-radius: 5px;
-    font-size: 15px;
-    transition: all 0.3s ease;
-}
-
-#screenshot:hover, #copy:hover, #paste:hover {
-    color:black;
-    background-color: white;
 }
 
 #WCoutput {
@@ -331,3 +310,29 @@ header nav ul li a:hover {
     color:black;
     background-color: white;
 }
+
+#multiview{
+    display: flex;
+    flex-direction: row;
+    margin-top: 50px;
+}
+
+
+#multiview #graphArea {
+
+    width: 50%;
+    margin-right: 50px;
+    padding-right: 50px;
+    border-right: 3px solid black;
+
+}
+
+#multiview #grammarInputForm {
+    
+    margin-top: 0;
+    
+    height: 600px;
+
+}
+
+
