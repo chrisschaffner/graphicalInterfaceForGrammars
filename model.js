@@ -119,6 +119,11 @@ class State{
 
     createVisuals(two){
 
+        two.remove(this.stateCircle);
+        two.remove(this.endCircle);
+        two.remove(this.textLabel);
+        two.remove(this.startArrow); 
+
         this.stateCircle = new Two.Circle(this.posX, this.posY, 100);
         this.stateCircle.fill = 'transparent';
         this.stateCircle.stroke = 'black';
@@ -175,29 +180,12 @@ class State{
     }
 
     deleteVisuals(two){
-        console.log("Delete " + this.index);
+        //console.log("Delete " + this.index);
         two.remove(this.stateCircle);
         two.remove(this.endCircle);
         two.remove(this.textLabel);
         two.remove(this.startArrow); 
         two.update();
-    }
-
-    setEnd(two, bool){
-        
-        two.remove(this.textLabel);
-        two.remove(this.stateCircle);
-        
-        if(bool){
-
-            this.endCircle.linewidth = 8;
-
-            two.add(this.textLabel);
-            two.add(this.endCircle);
-            two.add(this.stateCircle);
-            two.update();
-        }
-        
     }
 
 }
@@ -611,28 +599,38 @@ function calculateLineSlope(point1, point2){
 }
 
 function createGraph(two, automaton){
-    var states = automaton.states
-    var transitions = automaton.transitions;
 
-    calculateStatesGenerations(states, transitions);
+    createStatesGenerations(automaton.states, automaton.transitions);
+    automaton.states = automaton.states.filter(state => state.generation != undefined);
+    
+    for(let i=0; i<automaton.states.length; i++){
+        
+        console.log(automaton.states[i].generation);
+     
+    }
+    
     calculateGenerationsArray(automaton);
-    calculateStatePositions(automaton);
 
-    for(let i=0; i<states.length; i++){
-        states[i].createVisuals(two);
+    calculateStatePositions(automaton); 
+
+    automaton.transitions = automaton.transitions.filter(t => automaton.states.includes(t.from) && automaton.states.includes(t.to));
+    console.log(automaton.transitions);
+
+    for(let i=0; i<automaton.states.length; i++){
+                
+        automaton.states[i].createVisuals(two);
+    
     }
 
-
-    for (let i = 0; i < transitions.length; i++) {
-            //createTwoTransition(two, transitions[i], states);
-            transitions[i].createVisuals(two, states);
-        }
+    for (let i = 0; i < automaton.transitions.length; i++) {
+            automaton.transitions[i].createVisuals(two, automaton.states);
+    }
 }
 
 function calculateStateSuccessors(faTransitions, state){
     var successors = [];
     for(let i=0; i<faTransitions.length; i++){
-        if(faTransitions[i].from == state && faTransitions[i].to != state){
+        if(faTransitions[i].from === state && faTransitions[i].to !== state){
             successors.push(faTransitions[i].to);
         }
 
@@ -651,28 +649,69 @@ function calculateStatePredecessor(faTransitions, state){
     return predecessor;
 }
 
-function calculateStatesGenerations(states, faTransitions){
+function calculateStatePredecessors(faTransitions, state){
+    return Array.from(new Set((faTransitions.filter(trans => trans.to === state && trans.from !== state).map(t => t.from))));
+}
+
+/* function calculateStatesGenerations(states, faTransitions){
 
     
 
     for(let i=0; i<states.length; i++){
 
-        states[i].setGeneration(calculateStateGeneration(states[i], faTransitions));
+        states[i].generation = calculateStateGeneration(states[i], faTransitions);
     }
 }
 
 function calculateStateGeneration(state, faTransitions){
 
+    const pred = calculateStatePredecessor(faTransitions, state);
+
+
     if(state.isStart){
+        console.log(state.name + " is start");
         return 0
     }
+    else if(calculateStatePredecessor(faTransitions, state) == undefined){
+        console.log(state.name + " has no predecessors");
+        return -1
+    }
+    else if(calculateStatePredecessor(faTransitions, state).generation == -1){
+        console.log(state.name + " has unreachable predecessors" + calculateStatePredecessor(faTransitions, state).name);
+        return -1
+    }
     else{
-
-        if(calculateStatePredecessor(faTransitions, state) == undefined){
-            return 0;
-        }
+        console.log(state.name + " has predecessors");
 
         return calculateStateGeneration(calculateStatePredecessor(faTransitions, state), faTransitions) + 1;
+
+    }
+} */
+
+function createStatesGenerations(states, transitions){
+    var visited = new Set();
+    var statesToVisit = [];
+    var startStates = states.filter(state => state.isStart);
+
+    for(const startState of startStates){
+        startState.generation = 0;
+        statesToVisit.push(startState);
+        visited.add(startState);
+
+        while(statesToVisit.length != 0){
+            var currentState = statesToVisit.shift();
+            var successors = calculateStateSuccessors(transitions, currentState);
+            for(const successor of successors){
+                if(!visited.has(successor)){
+                    successor.generation = currentState.generation + 1;
+                    statesToVisit.push(successor);
+                    visited.add(successor);
+                }
+                else {
+                    break;
+                }
+            }
+        }
     }
 }
 
@@ -694,7 +733,7 @@ function calculateGenerationsArray(automaton){
     let maxGeneration = 0;
 
     states.forEach(state => {
-        if (state.generation > maxGeneration) {
+        if (state.generation != undefined && state.generation > maxGeneration) {
             maxGeneration = state.generation;
         }
     });
@@ -708,7 +747,10 @@ function calculateGenerationsArray(automaton){
 
     for(let i=0; i<states.length; i++){
         var stateGeneration = states[i].generation;
-        automaton.generationsArray[stateGeneration].push(states[i]);
+        if(stateGeneration != undefined){
+            automaton.generationsArray[stateGeneration].push(states[i]);
+
+        }
     }
 
     console.log(automaton.generationsArray);
@@ -948,6 +990,14 @@ function calculateStateSuccessorVia(transitions, state, via){
 
 }
 
+function calculateStateSuccessorsVia(transitions, state, via){
+
+    return transitions.filter(element => element.from === state && element.via.includes(via)).map(e => e.to);
+
+    
+
+}
+
 function formatProductions(productions) {
     var groupedProductions = {};
 
@@ -1056,8 +1106,12 @@ function checkArrayEuquality(array1, array2){
     if(array1.length !== array2.length){
         return false;
     }
-    for(let i=0; i<array1.length; i++){
-        if(array1[i] !== array2[i]){
+
+    var array1Sorted = array1.slice().sort();
+    var array2Sorted = array2.slice().sort();
+
+    for(let i=0; i<array1Sorted.length; i++){
+        if(array1Sorted[i] !== array2Sorted[i]){
             return false;
         }
     }
@@ -1148,7 +1202,32 @@ function NFAToDFA(automaton){
 
     dfaStates.filter(element => checkArrayIntersection(element.subsetStates.map(state => state.name), automaton.states.filter(state => state.isEnd == true).map(e => e.name))).forEach(state => state.isEnd = true);
 
-    console.log(dfaStates)
+    var dfaTransitions = [];
+
+    var transitionIndex = 0;
+
+
+    for(let i=0; i<dfaStates.length; i++){
+        var state = dfaStates[i];
+        for(let j=0; j<automaton.inputAlphabet.length; j++){
+            var successorStates = new Set();
+            for(let k=0; k<state.subsetStates.length; k++){
+                var subsetSuccessors = calculateStateSuccessorsVia(automaton.transitions, state.subsetStates[k], automaton.inputAlphabet[j]);
+                
+                
+                subsetSuccessors.forEach(successor => successorStates.add(successor));
+            }
+
+            var matchingSubsetState = dfaStates.find(s => checkArrayEuquality(s.subsetStates.map(e => e.name), Array.from(successorStates).map(t => t.name)));
+            console.log(matchingSubsetState)
+            if(matchingSubsetState != undefined){
+                dfaTransitions.push(new FaTranisition(state, matchingSubsetState, automaton.inputAlphabet[j], transitionIndex));
+                transitionIndex++;
+            }
+        }
+    }
+
+    return new FiniteAutomaton(dfaStates, automaton.inputAlphabet, dfaTransitions);
 
 
 }
@@ -1189,7 +1268,7 @@ function createPowerSetOfStates(states){
         for(let j=0; j<subsets[i].length; j++){
             subsetStates.push(subsets[i][j]);
         }
-        var state = new State('{' + subsetStates.map(state => state.name).join(", ") + '}', false, false, i)
+        var state = new State('{' + subsetStates.map(state => state.name).join("") + '}', false, false, i)
         state.subsetStates = subsetStates;
         outputStates.push(state);
     }

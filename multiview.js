@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var createStateButton = document.getElementById("createState");
     var createTransitionButton = document.getElementById("createTransition");
     var markEndButton = document.getElementById("markEnd");
+    var markStartButton = document.getElementById("markStart");
     var deleteButton = document.getElementById("delete");
     var makeScreenshotButton = document.getElementById("screenshot");
     var copyButton = document.getElementById("copy");
@@ -31,6 +32,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var stateCreationActive = false;
     var transitionCreationActive = false;
     var endMarkingActive = false;
+    var startMarkingActive = false;
     var deleteActive = false;
     var moveActive = false;
     var movingState;
@@ -44,15 +46,29 @@ document.addEventListener("DOMContentLoaded", function(){
         transitionCreationActive = false;
         deleteActive = false;
         endMarkingActive = !endMarkingActive;
+        startMarkingActive = false;
+        moveActive = false;
         updateEditButtons();
         two.update();
     });
+
+    markStartButton.addEventListener("click", function(){
+        stateCreationActive = false;
+        transitionCreationActive = false;
+        deleteActive = false;
+        endMarkingActive = false;
+        startMarkingActive = !startMarkingActive;
+        moveActive = false;
+        updateEditButtons();
+        two.update();
+    })
 
     deleteButton.addEventListener("click", function(){
 
         stateCreationActive = false;
         transitionCreationActive = false;
         endMarkingActive = false;
+        startMarkingActive = false;
         deleteActive = !deleteActive;
         moveActive = false;
         updateEditButtons();
@@ -65,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function(){
         stateCreationActive = !stateCreationActive;
         transitionCreationActive = false;
         endMarkingActive = false;
+        startMarkingActive = false;
         deleteActive = false;
         moveActive = false;
         updateEditButtons();
@@ -75,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function(){
         stateCreationActive = false;
         transitionCreationActive = !transitionCreationActive;
         endMarkingActive = false;
+        startMarkingActive = false;
         deleteActive = false;
         moveActive = false;
         updateEditButtons();
@@ -98,8 +116,13 @@ document.addEventListener("DOMContentLoaded", function(){
     });
     
     makeScreenshotButton.addEventListener("click", function(){
-        makeDrawingAreaScreenshot();
-        console.log(NFAToDFA(createdAutomaton))
+        //makeDrawingAreaScreenshot();
+        createdAutomaton = NFAToDFA(createdAutomaton);
+        two.clear();
+        createGraph(two, createdAutomaton);
+        two.update();
+
+
     })    
 
     copyButton.addEventListener("click", function(event){
@@ -113,6 +136,7 @@ document.addEventListener("DOMContentLoaded", function(){
         stateCreationActive = false;
         transitionCreationActive = false;
         endMarkingActive = false;
+        startMarkingActive = false;
         deleteActive = false;
         moveActive = !moveActive;
         updateEditButtons();
@@ -239,8 +263,13 @@ document.addEventListener("DOMContentLoaded", function(){
 
         if(endMarkingActive){
             state.isEnd = true;
-            state.setEnd(two, true);
+            state.createVisuals(two);
             
+        }
+
+        if(startMarkingActive){
+            state.isStart = true;
+            state.createVisuals(two);
         }
 
         if(deleteActive){
@@ -362,6 +391,8 @@ document.addEventListener("DOMContentLoaded", function(){
         createTransitionButton.style.color = (transitionCreationActive) ? "white" : "black";
         markEndButton.style.backgroundColor = (endMarkingActive) ? "green" : "transparent";     
         markEndButton.style.color = (endMarkingActive) ? "white" : "black";
+        markStartButton.style.backgroundColor = (startMarkingActive) ? "green" : "transparent";     
+        markStartButton.style.color = (startMarkingActive) ? "white" : "black";
         deleteButton.style.backgroundColor = (deleteActive) ? "green" : "transparent";      
         deleteButton.style.color = (deleteActive) ? "white" : "black";
         moveButton.style.backgroundColor = (moveActive) ? "green" : "transparent";     
