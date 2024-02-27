@@ -35,9 +35,11 @@
     </div>
 
     <div id="multiview">
+
         <div id="graphArea">
             <h2>Graph</h2>
             <div id="drawingArea"></div>
+            <p id="console">Start by selecting "Create State"</p>
             <div id="buttons">
                 <button id="createState">Create State</button>
                 <button id="createTransition">Create Transition</button>
@@ -47,10 +49,17 @@
                 <button id="move">Move State</button>
                 <button id="clear">Clear</button>
                 <button id="screenshot">Make Screenshot</button>
-                <button id="copy">Copy grammar to clipboard</button>
+                <button id="determinize">Determinize Automaton</button>
+                <span id="isDFA">DFA </span>
             </div>
         </div>
-       
+
+        <div id="convertButtons">
+            <button id="leftarrow"></button>
+            <button id="rightarrow"></button>
+            <input type="checkbox" id="auto" name="auto" checked>
+            <label for="auto">Auto</label> 
+        </div>
 
     
         <form id="grammarInputForm">
@@ -72,7 +81,6 @@
                 <input type="text" id="startingInput" name="starting" placeholder="e.g. B"><br><br>
             </div>
             
-            <button id="submit">Submit</button>
             <span id="type">Type: </span>
             <button id="clear">Clear</button>
             <button id="copy">Copy grammar to clipboard</button>
@@ -80,12 +88,6 @@
         </form>
 
     </div>
-
-    
-
-    
-
-
 
     <div id="htmlInfo" data-name="target" data-value="graphToGrammar"></div>
 

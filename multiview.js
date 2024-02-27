@@ -13,20 +13,21 @@ document.addEventListener("DOMContentLoaded", function(){
     var markStartButton = document.getElementById("markStart");
     var deleteButton = document.getElementById("delete");
     var makeScreenshotButton = document.getElementById("screenshot");
+    var determinizeButton = document.getElementById("determinize");
     var copyButton = document.getElementById("copy");
     var moveButton = document.getElementById("move");
-    var submitButton = document.getElementById("submit");
-    var typeDisplay = document.getElementById("type");
-    var variablesOutput = document.getElementById("variablesInput");
-    var terminalsOutput = document.getElementById("terminalsInput");
-    var productionsOutput = document.getElementById("productionsInput");
-    var startingOutput = document.getElementById("startingInput");
+    var pasteButton = document.getElementById("paste");
+    var autoConvertInput = document.getElementById("auto");
+    var leftArrowButton = document.getElementById("leftarrow");
+    var rightArrowButton = document.getElementById("rightarrow");
+    rightArrowButton.style.backgroundImage = "url('arrow_right_selected.svg')";
+    var InfoConsole = document.getElementById("console");
     var stateCount = 0;
     var transitionsCount = 0;
     var createdStates = [];
     var createdTransitions = [];
     var createdInputAlphabet = [];
-    var createdAutomaton = new FiniteAutomaton(createdStates, createdInputAlphabet, createdTransitions);
+    var createdAutomaton = new FiniteAutomaton(createdStates, createdInputAlphabet, createdTransitions, two);
     var userSelectedStateFrom;
     var userSelectedStateTo;
     var stateCreationActive = false;
@@ -36,8 +37,14 @@ document.addEventListener("DOMContentLoaded", function(){
     var deleteActive = false;
     var moveActive = false;
     var movingState;
+    var variablesOutput = document.getElementById("variablesInput");
+    var terminalsOutput = document.getElementById("terminalsInput");
+    var productionsOutput = document.getElementById("productionsInput");
+    var startingOutput = document.getElementById("startingInput");
 
-    var grammar;
+    var grammar = new Grammar([],[],[], null);
+    var automatonObserver = new AutomatonObserver(createdAutomaton, grammar, 0);
+    createdAutomaton.addObserver(automatonObserver);    
 
 
     markEndButton.addEventListener("click", function(){
@@ -50,6 +57,8 @@ document.addEventListener("DOMContentLoaded", function(){
         moveActive = false;
         updateEditButtons();
         two.update();
+        endMarkingActive ? messageToConsole("Click a state to mark it as end state", "black") : clearConsole();
+
     });
 
     markStartButton.addEventListener("click", function(){
@@ -61,6 +70,9 @@ document.addEventListener("DOMContentLoaded", function(){
         moveActive = false;
         updateEditButtons();
         two.update();
+        startMarkingActive ? messageToConsole("Click a state to mark it as start state", "black") : clearConsole();
+
+        
     })
 
     deleteButton.addEventListener("click", function(){
@@ -73,10 +85,10 @@ document.addEventListener("DOMContentLoaded", function(){
         moveActive = false;
         updateEditButtons();
         two.update();
+        deleteActive ? messageToConsole("Click a state or transition to delete", "black") : clearConsole();
     });
 
     createStateButton.addEventListener("click", function(){
-        
         
         stateCreationActive = !stateCreationActive;
         transitionCreationActive = false;
@@ -85,6 +97,8 @@ document.addEventListener("DOMContentLoaded", function(){
         deleteActive = false;
         moveActive = false;
         updateEditButtons();
+        stateCreationActive ? messageToConsole("To create a state, click in the drawing area where you want to place the state", "black") : clearConsole();
+
     });
     
     createTransitionButton.addEventListener("click", function(){
@@ -96,32 +110,28 @@ document.addEventListener("DOMContentLoaded", function(){
         deleteActive = false;
         moveActive = false;
         updateEditButtons();
+        transitionCreationActive ? messageToConsole("To make a transition, click a state and drag the mouse to the other state and release the mouse", "black") : clearConsole();
+        
 
     });
       
     clearButton.addEventListener("click", function(){
         
-        
-        console.log("End")
-        two.clear();
-        two.update();
-        createdAutomaton.clear();
-        variablesOutput.textContent = "";
-        terminalsOutput.textContent = "";
-        productionsOutput.textContent = "";
-        startingOutput.textContent = "";
+        createdAutomaton.clear(two);
         stateCount = 0;
                     
 
     });
     
-    makeScreenshotButton.addEventListener("click", function(){
-        //makeDrawingAreaScreenshot();
-        createdAutomaton = NFAToDFA(createdAutomaton);
-        two.clear();
-        createGraph(two, createdAutomaton);
-        two.update();
+    determinizeButton.addEventListener("click", function(){
+        
+        nfaToDfa = NFAToDFA(createdAutomaton, two);
 
+        createdAutomaton.states = nfaToDfa.states;
+        createdAutomaton.transitions = nfaToDfa.transitions;
+        createdAutomaton.inputAlphabet = nfaToDfa.inputAlphabet;
+
+        createdAutomaton.arrangeGraph(two);
 
     })    
 
@@ -140,7 +150,23 @@ document.addEventListener("DOMContentLoaded", function(){
         deleteActive = false;
         moveActive = !moveActive;
         updateEditButtons();
+        moveActive ? messageToConsole("To move a state, drag and drop it to its new position", "black") : clearConsole();
 
+
+    });
+
+    autoConvertInput.addEventListener("change", function(){
+        console.log("trigger")
+
+        automatonObserver.updateGrammar = this.checked;
+        if(this.checked){
+            rightArrowButton.style.backgroundImage = "url('arrow_right_selected.svg')";
+        }
+        else{
+            rightArrowButton.style.backgroundImage = "url('arrow_right.svg')";
+
+        }
+        updateEditButtons();
     });
 
     canvas.addEventListener("wheel", function(event){
@@ -155,7 +181,6 @@ document.addEventListener("DOMContentLoaded", function(){
         var mousePositionY = event.clientY - canvasRect.top + pageScrollY;
 
         var isMouseInsideCanvas = (mousePositionX >= 0 && mousePositionX <= canvas.clientWidth && mousePositionY >= 0 && mousePositionY <= canvas.clientHeight);
-        console.log(isMouseInsideCanvas)
 
         if(stateCreationActive && isMouseInsideCanvas){
 
@@ -171,14 +196,9 @@ document.addEventListener("DOMContentLoaded", function(){
 
             var createdState = new State("Z" + numberToSubscript(stateCount), stateCount==0, false, stateCount);
             createdState.setPosition((mousePositionX - drawingAreaShiftX)/drawingAreaScale, (mousePositionY - drawingAreaShiftY)/drawingAreaScale, two);
-            createdState.createVisuals(two);
-            createdAutomaton.states.push(createdState);
-
-            grammar = createGrammarFromDFA(createdAutomaton);
-            grammarOutput(grammar);
+            createdAutomaton.addState(createdState, two);
             
-            stateCount += 1;     
-            two.update();      
+            stateCount += 1;        
                 
         }
 
@@ -208,15 +228,14 @@ document.addEventListener("DOMContentLoaded", function(){
 
         if(movingState != undefined && moveActive){
 
-            movingState.setPosition((mousePositionX - drawingAreaShiftX)/drawingAreaScale, (mousePositionY - drawingAreaShiftY)/drawingAreaScale, two);
+            /* movingState.setPosition((mousePositionX - drawingAreaShiftX)/drawingAreaScale, (mousePositionY - drawingAreaShiftY)/drawingAreaScale, two);
             movingState.deleteVisuals(two);
-            movingState.createVisuals(two);
+            movingState.createVisuals(two); */
 
+            var newPosition = {x:(mousePositionX - drawingAreaShiftX)/drawingAreaScale, y:(mousePositionY - drawingAreaShiftY)/drawingAreaScale};
 
-            for(let i=0; i<createdAutomaton.transitions.length; i++){
-                createdAutomaton.transitions[i].deleteVisuals(two);
-                createdAutomaton.transitions[i].createVisuals(two, createdAutomaton.states);
-            }
+            createdAutomaton.moveState(movingState, newPosition, two);
+
 
         }
     });
@@ -243,12 +262,13 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
     window.addEventListener("resize", function(){
-    var drawingAreaWidth = document.getElementById("drawingArea").clientWidth;
-    var drawingAreaHeight = this.document.getElementById("drawingArea").clientHeight;
+    
+        var drawingAreaWidth = document.getElementById("drawingArea").clientWidth;
+        var drawingAreaHeight = document.getElementById("drawingArea").clientHeight;
 
-    two.width = drawingAreaWidth;
-    two.height = drawingAreaHeight;
-    two.update();
+        two.width = drawingAreaWidth;
+        two.height = drawingAreaHeight;
+        two.update();
 
     });
 
@@ -262,22 +282,30 @@ document.addEventListener("DOMContentLoaded", function(){
         }
 
         if(endMarkingActive){
-            state.isEnd = true;
-            state.createVisuals(two);
+            createdAutomaton.markEnd(state, two);
             
         }
-
+        console.log(startMarkingActive)
         if(startMarkingActive){
-            state.isStart = true;
-            state.createVisuals(two);
+            console.log("D")
+            createdAutomaton.markStart(state, two);
+            console.log("FFFFs")
+            
+
+            if(createdAutomaton.states.filter(state => state.isStart == true).length > 1){
+                console.log("D")
+                messageToConsole("More than one start state, auto grammar conversion is disabled!", "red");
+                if(autoConvertInput.checked){
+                    autoConvertInput.checked = false;
+                    autoConvertInput.dispatchEvent(new Event('change'));
+                }
+            }
+
         }
 
         if(deleteActive){
             
-            var indexToDelete = createdAutomaton.states.findIndex(element => element.index === state.index);
-            console.log(indexToDelete)
-            createdAutomaton.states[indexToDelete].deleteVisuals(two);
-            createdAutomaton.states.splice(indexToDelete, 1);
+            createdAutomaton.removeState(state, two);
         
         }
 
@@ -286,10 +314,6 @@ document.addEventListener("DOMContentLoaded", function(){
             movingState = state;
 
         }
-
-        grammar = createGrammarFromDFA(createdAutomaton);
-        grammarOutput(grammar);
-        two.update();
     });
 
     document.addEventListener('stateMouseUp', function(event){
@@ -315,14 +339,8 @@ document.addEventListener("DOMContentLoaded", function(){
             var createdTransition = new FaTranisition(userSelectedStateFrom, userSelectedStateTo, userViaInput);
             createdTransition.index = transitionsCount;
             transitionsCount += 1;
-            createdAutomaton.transitions.push(createdTransition);
-            createdTransition.createVisuals(two, createdAutomaton.states);
-            
-            
-            grammar = createGrammarFromDFA(createdAutomaton);
-            grammarOutput(grammar);
-            
-            two.update();
+            createdAutomaton.addTransition(createdTransition, two);
+
         }
 
         movingState = undefined;
@@ -334,9 +352,9 @@ document.addEventListener("DOMContentLoaded", function(){
         var transition = event.detail;
 
         if(deleteActive){
-            var indexToDelete = createdAutomaton.transitions.findIndex(element => element.index === transition.index);
-            createdAutomaton.transitions[indexToDelete].deleteVisuals(two);
-            createdAutomaton.transitions.splice(indexToDelete, 1);
+            
+            transition.deleteVisuals(two);
+            createdAutomaton.removeTranstion(transition, two);
 
             for(let i=0; i<transition.via.length; i++){
 
@@ -348,34 +366,17 @@ document.addEventListener("DOMContentLoaded", function(){
                 }
             }
         }
-
-        grammar = createGrammarFromDFA(createdAutomaton);
-        grammarOutput(grammar);
     });
 
-    submitButton.addEventListener("click", function(event){
-        event.preventDefault();
-        
+    leftArrowButton.addEventListener("click", function(){
         try{
 
             grammar = userInputToGrammar(variablesOutput.value, terminalsOutput.value, productionsOutput.value, startingOutput.value);
-
-            console.log(grammar)
-
-            typeDisplay.textContent = "Type: " + calculateGrammarType(grammar);
-
-            createdAutomaton = createNFAFromGrammar(grammar);
-
-
-            two.clear()
-
-            createGraph(two, createdAutomaton);
-
-            //console.log(calculateOneStepDerivations("A", 3, grammar.productions));
-
-            console.log(decideWordProblem(grammar, "aaaa"));
-
-            two.update();
+            nfaFromGrammar = createNFAFromGrammar(grammar, two);
+            createdAutomaton.states = nfaFromGrammar.states;
+            createdAutomaton.transitions = nfaFromGrammar.transitions;
+            createdAutomaton.inputAlphabet = nfaFromGrammar.inputAlphabet;
+            createdAutomaton.arrangeGraph(two);
         }
 
         catch(error){
@@ -384,7 +385,26 @@ document.addEventListener("DOMContentLoaded", function(){
         
     });
 
+    rightArrowButton.addEventListener("click", function(){
+        grammar = createGrammarFromNFA(createdAutomaton);
+        grammar.updateOutput();
+        
+        
+    });
+
+    pasteButton.addEventListener("click", function(event){
+
+        event.preventDefault();
+        variablesOutput.value = sessionStorage.getItem("variables");
+        terminalsOutput.value = sessionStorage.getItem("terminals");
+        productionsOutput.value  = sessionStorage.getItem("productions");
+        startingOutput.value = sessionStorage.getItem("starting");
+        console.log("Pasted Input from session storage");
+
+    });
+
     function updateEditButtons(){
+
         createStateButton.style.backgroundColor = (stateCreationActive) ? "green" : "transparent";      
         createStateButton.style.color = (stateCreationActive) ? "white" : "black";
         createTransitionButton.style.backgroundColor = (transitionCreationActive) ? "green" : "transparent";     
@@ -397,25 +417,15 @@ document.addEventListener("DOMContentLoaded", function(){
         deleteButton.style.color = (deleteActive) ? "white" : "black";
         moveButton.style.backgroundColor = (moveActive) ? "green" : "transparent";     
         moveButton.style.color = (moveActive) ? "white" : "black";
+        
     }
 
-    function grammarOutput(grammar){
-
-        variablesOutput.value = "";
-        terminalsOutput.value = "";
-        productionsOutput.value = "";
-        startingOutput.value = "";
-    
-        variablesOutput.value = grammar.variables.join(", ");
-        terminalsOutput.value = grammar.terminals.join(", ");
-        productionsOutput.value = formatProductions(grammar.productions).join("\n");
-        startingOutput.value = grammar.starting;
-
-        typeDisplay.textContent = "Type: " + calculateGrammarType(grammar);
+    function messageToConsole(message, color){
+        InfoConsole.textContent = message;
+        InfoConsole.style.color = color;
     }
 
-
+    function clearConsole(){
+        InfoConsole.textContent = "";
+    }
 });
-
-
-

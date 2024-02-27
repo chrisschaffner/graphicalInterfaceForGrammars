@@ -8,12 +8,22 @@ class Grammar {
     terminals
     productions
     starting
+    variablesIO;
+    terminalsIO;
+    productionsIO;
+    startingIO;
+    typeDisplay;
 
     constructor(variables, terminals, productions, starting){
         this.variables = variables;
         this.terminals = terminals;
         this.starting = starting;
         this.productions = productions;
+        this.variablesIO = document.getElementById("variablesInput");
+        this.terminalsIO = document.getElementById("terminalsInput");
+        this.productionsIO = document.getElementById("productionsInput");
+        this.startingIO = document.getElementById("startingInput");
+        this.typeDisplay = document.getElementById("type");
     }
 
     toString(){
@@ -33,6 +43,20 @@ class Grammar {
     }
     get starting(){  
         return this.starting
+    }
+
+    updateOutput(){
+        this.variablesIO.value = "";
+        this.terminalsIO.value = "";
+        this.productionsIO.value = "";
+        this.startingIO.value = "";
+    
+        this.variablesIO.value = this.variables.join(", ");
+        this.terminalsIO.value = this.terminals.join(", ");
+        this.productionsIO.value = formatProductions(this.productions).join("\n");
+        this.startingIO.value = this.starting;
+
+        this.typeDisplay.textContent = "Type: " + calculateGrammarType(this);
     }
     
 }
@@ -55,8 +79,10 @@ class FiniteAutomaton{
     inputAlphabet;
     transitions = [];
     generationsArray;
+    observers = [];
+    dfaDisplay;
 
-    constructor(states, inputAlphabet, transitions){
+    constructor(states, inputAlphabet, transitions, two){
         this.states = states
         this.inputAlphabet = inputAlphabet;
 
@@ -71,16 +97,93 @@ class FiniteAutomaton{
                 }
             }
         }
+
+        this.dfaDisplay = document.getElementById("isDFA");
+
+        this.notfiyObservers(two);
     }
 
-    clear(){
+    arrangeGraph(two){
+        createStatesGenerations(this.states, this.transitions);
+        this.states = this.states.filter(state => state.generation != undefined);
+        calculateGenerationsArray(this);
+        calculateStatePositions(this); 
+        this.transitions = this.transitions.filter(t => this.states.includes(t.from) && this.states.includes(t.to));
+    
+        this.notfiyObservers(two);
+    }
+
+    clear(two){
+        this.states.forEach(s => s.deleteVisuals(two));
+        this.transitions.forEach(t => t.deleteVisuals(two));
         this.states = [];
         this.inputAlphabet = []; 
         this.transitions = [];
         this.generationsArray = [];
+        this.notfiyObservers(two);
     }
 
-    
+    addState(state, two){
+        this.states.push(state);
+        this.notfiyObservers(two);
+    }
+
+    removeState(state, two){
+        state.deleteVisuals(two);
+        this.states = this.states.filter(s => s.name !== state.name);
+        this.notfiyObservers(two);
+    }
+
+    moveState(state, position, two){
+        state.setPosition(position.x, position.y);
+        console.log(position)
+        this.notfiyObservers(two);
+    }
+
+    addTransition(transition, two){
+        this.transitions.push(transition);
+        this.notfiyObservers(two);
+    }
+
+    markStart(state, two){
+        state.isStart = true;
+        console.log(this.observers)
+        this.notfiyObservers(two);
+
+    }
+
+    markEnd(state, two){
+        state.isEnd = true;
+        this.notfiyObservers(two);
+    }
+
+    removeTranstion(transition, two){
+        transition.deleteVisuals(two);
+        this.transitions = this.transitions.filter(t => t.index !== transition.index);
+        this.notfiyObservers(two);
+    }
+
+    addObserver(observer){
+        this.observers.push(observer);
+    }
+
+    removeObserver(observer){
+        this.observers = this.observers.filter(obs => obs.index !== observer.index);
+    }
+
+    notfiyObservers(two){
+        console.log("Notidy")
+        this.observers.forEach(obs => obs.update(two));
+        console.log("Observers:");
+        console.log(this.observers);
+        
+    }
+
+    updateDFADisplay(bool){
+        this.dfaDisplay.textContent = bool? 'DFA' : 'NFA';
+        console.log("Changed");
+        
+    }
 
 }
 
@@ -107,22 +210,23 @@ class State{
 
     
 
-    setPosition(posX, posY, two){
+    setPosition(posX, posY){
         this.posX = posX;
         this.posY = posY;
-        two.update();
+        //two.update();
     }
 
     setGeneration(generation){
         this.generation = generation;
     }
 
-    createVisuals(two){
+    createVisuals(two){          
 
         two.remove(this.stateCircle);
         two.remove(this.endCircle);
         two.remove(this.textLabel);
-        two.remove(this.startArrow); 
+        two.remove(this.startArrow);
+        
 
         this.stateCircle = new Two.Circle(this.posX, this.posY, 100);
         this.stateCircle.fill = 'transparent';
@@ -214,6 +318,12 @@ class FaTranisition{
     }
 
     createVisuals(two, states){
+
+        two.remove(this.transitionLine);
+        two.remove(this.boundingBox);
+        two.remove(this.arrowhead);
+        two.remove(this.label);
+
     
         if (this.from == this.to){
     
@@ -350,10 +460,53 @@ class SentenceForm{
     }
 }
 
+class AutomatonObserver{
+    index;
+    updateGrammar = true;
+
+    constructor(dfa, grammar, index){
+        this.dfa = dfa;
+        this.grammar = grammar || {};
+        this.index = index;
+    }
+
+    update(two){
+
+        var isDFA = checkAutomatonDeterminism(this.dfa);
+        this.dfa.updateDFADisplay(isDFA);
+        createAutomatonVisuals(two, this.dfa);
+        
+        
+        if(this.updateGrammar){
+            Object.assign(this.grammar, createGrammarFromNFA(this.dfa));
+            try{
+                this.grammar.updateOutput();
+            }
+            catch(error){
+                console.log(error)
+            }
+        }
+    }
+}
+
+
+
+/**
+ * Callback function to filter out only unique items in an array
+ * @param {Int} value 
+ * @param {Int} index 
+ * @param {Array} array 
+ * @returns whether the element is unique or not
+ */
 function onlyUnique(value, index, array) {
     return array.indexOf(value) === index;
   }
-
+/**
+ * Calculates the lenght of a path definded by two points
+ * @param {Point} point1 
+ * @param {Point} point2 
+ * @returns the lenght of the paht
+ */
 function computeLineLength(point1, point2) {
    
     const x1 = point1.x;
@@ -363,16 +516,19 @@ function computeLineLength(point1, point2) {
 
     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 }
+/**
+ * Checks if user input values represent a valid grammar
+ * @param {Array} variables 
+ * @param {Array} terminals 
+ * @param {Array} productions 
+ * @param {Array} starting 
+ * @returns whether the user input is a valid grammar
+ */
+function checkCorrectGrammarForm(variablesInputValue, terminalsInputValue, startingInputValue){
 
-function checkCorrectGrammarForm(variables, terminals, productions, starting){
-
-    for (let i=0; i<variables.length; i++){
-
-       /*  if (!checkUpperCaseLetter(variables[i][0])){
-            console.log("Invalid variables, please enter only letters/numbers")
-            return false
-        } */
-    }
+    var variables = variablesInputValue.replace(/\s/g, '').split(","); 
+    var terminals = terminalsInputValue.replace(/\s/g, '').split(",");
+    var starting = startingInputValue.replace(/\s/g, '');
 
     if(terminals.length == 0){
         console.log("Invalid terminals")
@@ -380,12 +536,6 @@ function checkCorrectGrammarForm(variables, terminals, productions, starting){
     }
 
     console.log("Passed terminals check");
-
-    for(let i=0; i<productions.length; i++){
-        if(!checkProduction(productions[i], variables, terminals)){
-            return false
-        }  
-    }
 
     console.log("Passed productions check");
 
@@ -399,15 +549,13 @@ function checkCorrectGrammarForm(variables, terminals, productions, starting){
 
 }
 
-function checkUpperCaseLetter(char){
-    return (65 <= char.charCodeAt(0) && char.charCodeAt(0) <= 90)
-}
-
-function checkLowerCaseLetter(char){
-    console.log(char.charCodeAt(0));
-    return ((97 <= char.charCodeAt(0) && char.charCodeAt(0) <= 122) || char.charCodeAt(0) == 949)
-}
-
+/**
+ * Check if a production is valid, i.e. contains only terminals or variables
+ * @param {Production} production 
+ * @param {Variable} variables 
+ * @param {Array} terminals 
+ * @returns whether the production is valid
+ */
 function checkProduction(production, variables, terminals){
     var leftSide = production.left;
     var rightSide = production.right;
@@ -438,7 +586,14 @@ function checkProduction(production, variables, terminals){
 
     return true;
 }
-
+/**
+ * Transforms valid user input into a grammar
+ * @param {String} variablesInputValue 
+ * @param {String} terminalsInputValue 
+ * @param {String} productionsInputValue 
+ * @param {String} startingInputValue 
+ * @returns a new grammar based on user input
+ */
 function userInputToGrammar(variablesInputValue, terminalsInputValue, productionsInputValue, startingInputValue){
    
     var variables = variablesInputValue.replace(/\s/g, '').split(","); 
@@ -534,99 +689,34 @@ function userInputToGrammar(variablesInputValue, terminalsInputValue, production
     console.log(productions)
     return new Grammar(variables, terminals, productions, starting)
 }
-
-function checkFiniteAutomaton(states, inputAlphabet, startStates, endStates, faTransitions){
-    if (startState.length < 1){
-        console.log("Missing start state!");
-        return false;
-    }
-    for(let i=0; i<startStates.length; i++){
-        if (!states.includes(startStates[i])){
-            return false;
-        }
-    }
-    for(let i=0; i<endStates.length; i++){
-        if (!states.includes(endStates[i])){
-            return false;
-        }
-    }
-
-    const alphabetStatesIntersects = inputAlphabet.filter(value => states.includes(value));
-
-    if(alphabetStatesIntersects.length > 0){
-        console.log("Input alphabet and states can not intersect!");
-        return false;
-    }
-
-    for(let i=0; i<faTransitions; i++){
-        if(!checkFaTransition(faTransitions[i, inputAlphabet, states])){
-            return false;
-        }
-    }
-
-}
-
-function checkFaTransition(transition, alphabet, states){
-    var from = transition.from;
-    var to = transition.to;
-    var via = transition.via;
-
-
-    if(!states.includes(from) && !states.includes(to)){
-        console.log("Transition invalid!");
-        return false;
-    }
-
-    for(let i=0; i<via.length; i++){
-        if(!alphabet.includes(via[i])){
-            console.log("Invalid transition!");
-            return false;
-        }
-    }
-
-    
-
-}
-
+/**
+ * Calculates the middle point of a path defined by two points
+ * @param {Point} point1 
+ * @param {Point} point2 
+ * @returns the middle point
+ */
 function calculateMedianVertex(point1, point2){
     return {x: (point2.x+point1.x)/2, y: (point2.y+point1.y)/2}
 
     
 }
 
-function calculateLineSlope(point1, point2){
-    return ((point2.y-point1.y)/(point1.x-point2.x))
+/**
+ * Creates visuals for the states and transitions of an automaton
+ * @param {Two} two 
+ * @param {FiniteAutomaton} automaton 
+ */
+function createAutomatonVisuals(two, automaton){
+    two.clear();
+    automaton.states.forEach(state => state.createVisuals(two));
+    automaton.transitions.forEach(transition => transition.createVisuals(two, automaton.states));
 }
-
-function createGraph(two, automaton){
-
-    createStatesGenerations(automaton.states, automaton.transitions);
-    automaton.states = automaton.states.filter(state => state.generation != undefined);
-    
-    for(let i=0; i<automaton.states.length; i++){
-        
-        console.log(automaton.states[i].generation);
-     
-    }
-    
-    calculateGenerationsArray(automaton);
-
-    calculateStatePositions(automaton); 
-
-    automaton.transitions = automaton.transitions.filter(t => automaton.states.includes(t.from) && automaton.states.includes(t.to));
-    console.log(automaton.transitions);
-
-    for(let i=0; i<automaton.states.length; i++){
-                
-        automaton.states[i].createVisuals(two);
-    
-    }
-
-    for (let i = 0; i < automaton.transitions.length; i++) {
-            automaton.transitions[i].createVisuals(two, automaton.states);
-    }
-}
-
+/**
+ * Finds the successor state(s) for a given state
+ * @param {Array[]} faTransitions 
+ * @param {State} state 
+ * @returns the successor states
+ */
 function calculateStateSuccessors(faTransitions, state){
     var successors = [];
     for(let i=0; i<faTransitions.length; i++){
@@ -637,57 +727,20 @@ function calculateStateSuccessors(faTransitions, state){
     }
     return successors;
 }
-
-function calculateStatePredecessor(faTransitions, state){
-    var predecessor;
-    for(let i=0; i<faTransitions.length; i++){
-        if(faTransitions[i].to == state && faTransitions[i].from != state){
-            predecessor = faTransitions[i].from;
-        }
-
-    }
-    return predecessor;
-}
-
+/**
+ * Finds the predecessor state(s) for a given state
+ * @param {Array} faTransitions 
+ * @param {State} state 
+ * @returns the predecessor states
+ */
 function calculateStatePredecessors(faTransitions, state){
     return Array.from(new Set((faTransitions.filter(trans => trans.to === state && trans.from !== state).map(t => t.from))));
 }
-
-/* function calculateStatesGenerations(states, faTransitions){
-
-    
-
-    for(let i=0; i<states.length; i++){
-
-        states[i].generation = calculateStateGeneration(states[i], faTransitions);
-    }
-}
-
-function calculateStateGeneration(state, faTransitions){
-
-    const pred = calculateStatePredecessor(faTransitions, state);
-
-
-    if(state.isStart){
-        console.log(state.name + " is start");
-        return 0
-    }
-    else if(calculateStatePredecessor(faTransitions, state) == undefined){
-        console.log(state.name + " has no predecessors");
-        return -1
-    }
-    else if(calculateStatePredecessor(faTransitions, state).generation == -1){
-        console.log(state.name + " has unreachable predecessors" + calculateStatePredecessor(faTransitions, state).name);
-        return -1
-    }
-    else{
-        console.log(state.name + " has predecessors");
-
-        return calculateStateGeneration(calculateStatePredecessor(faTransitions, state), faTransitions) + 1;
-
-    }
-} */
-
+/**
+ * Assigns each state the number of steps needed to reach that state from the start state (BFS)
+ * @param {Array} states 
+ * @param {Array} transitions 
+ */
 function createStatesGenerations(states, transitions){
     var visited = new Set();
     var statesToVisit = [];
@@ -709,12 +762,16 @@ function createStatesGenerations(states, transitions){
                 }
                 else {
                     break;
+                    
                 }
             }
         }
     }
 }
-
+/**
+ * Calculates the state positions based on their generation value
+ * @param {FiniteAutomaton} automaton 
+ */
 function calculateStatePositions(automaton){
     
     for(let i=0; i<automaton.generationsArray.length; i++){
@@ -726,7 +783,10 @@ function calculateStatePositions(automaton){
     }
 
 }
-
+/**
+ * Creates an 2D-Array that stores the count of states in each generation for layout generation
+ * @param {FiniteAutomaton} automaton 
+ */
 function calculateGenerationsArray(automaton){
     var states = automaton.states;
 
@@ -756,7 +816,13 @@ function calculateGenerationsArray(automaton){
     console.log(automaton.generationsArray);
 
 }
-
+/**
+ * Checks if the path of transition intersects with the circle of any state
+ * @param {Two} two 
+ * @param {FaTranisition} transition 
+ * @param {Array} states 
+ * @returns whether path and state circles intersect
+ */
 function checkTransitionStatesIntersection(two, transition, states) {
 
     
@@ -795,7 +861,14 @@ function checkTransitionStatesIntersection(two, transition, states) {
     }
 
 }
-
+/**
+ * Checks if a path given by two points intersects with a circle given by center and radius
+ * @param {Point} lineStart 
+ * @param {Point} lineEnd 
+ * @param {Point} circleCenter 
+ * @param {Int} circleRadius 
+ * @returns whether path and circle intersect
+ */
 function checkLineCircleIntersection(lineStart, lineEnd, circleCenter, circleRadius){
     const startToCenterVector = { x: circleCenter.x - lineStart.x, y: circleCenter.y - lineStart.y };
 
@@ -831,8 +904,13 @@ function checkLineCircleIntersection(lineStart, lineEnd, circleCenter, circleRad
     // Check if the distance is less than or equal to the square of the circle radius
     return distanceToClosestPointSquared <= circleRadius * circleRadius;
 }
-
-function createNFAFromGrammar(grammar){
+/**
+ * Converts a grammar into a NFA
+ * @param {Grammar} grammar 
+ * @param {Two} two 
+ * @returns a NFA
+ */
+function createNFAFromGrammar(grammar, two){
     
     var variables = grammar.variables;
     var starting = grammar.starting;
@@ -843,6 +921,10 @@ function createNFAFromGrammar(grammar){
     var transitions = []
 
     var transitionIndex = 0;
+
+    var zeStateCount = variables.filter(variable => variable.startsWith("Ze")).length;
+    console.log(zeStateCount)
+    states.push(new State("Ze" + numberToSubscript(zeStateCount), false, true));
 
 
     for(let i=0; i<variables.length; i++){
@@ -861,7 +943,6 @@ function createNFAFromGrammar(grammar){
     
             for(let k=0; k<productions.length; k++){
 
-                console.log([variables[i]])
                 if(productions[k].right.length === 2 &&
                    productions[k].left.join("") === variables[i] &&
                    productions[k].right[0] === inputAlphabet[j]){
@@ -872,13 +953,19 @@ function createNFAFromGrammar(grammar){
                     transitions.push(new FaTranisition(stateI, stateB, inputAlphabet[j], transitionIndex));
                     transitionIndex++;
                 }
+                else if(productions[k].left.length === 1 && productions[k].right[0] === variables[i]){
+                    let stateLeft = states.find(state => state.name === productions[k].left[0])
+                    let stateRight = states.find(element => element.name === variables[i]);
+
+                    transitions.push(new FaTranisition(stateLeft, stateRight, 'ε'));
+                }
             }
     
             let productionToCheck = productions.find(element => (element.left.join("") === variables[i] && element.right.join("") === inputAlphabet[j]));
             if(productionToCheck != undefined){
-                states.push(new State("Ze", false, true));
+                
                 let stateI = states.find(element => element.name === variables[i]);
-                let zeState = states.find(element => element.name === "Ze");
+                let zeState = states.find(element => element.name === ("Ze" + numberToSubscript(zeStateCount)));
                 transitions.push(new FaTranisition(stateI, zeState, inputAlphabet[j], transitionIndex));
                 transitionIndex++;
             }
@@ -895,12 +982,16 @@ function createNFAFromGrammar(grammar){
 
     //console.log(calculateStatePredecessor(transitions, zeState));
 
-    var automaton = new FiniteAutomaton(states, inputAlphabet, transitions);
+    var automaton = new FiniteAutomaton(states, inputAlphabet, transitions, two);
     
 
     return automaton;
 }
-
+/**
+ * Calculates the grammar type (from 0-3)
+ * @param {Grammar} grammar 
+ * @returns the grammar type
+ */
 function calculateGrammarType(grammar){
     
     var productions = grammar.productions;
@@ -932,7 +1023,11 @@ function calculateGrammarType(grammar){
     return 0
 
 }
-
+/**
+ * Converts a DFA into a grammar
+ * @param {FiniteAutomaton} automaton 
+ * @returns a Grammar
+ */
 function createGrammarFromDFA(automaton){
     console.log(automaton)
     var variables = [];
@@ -980,6 +1075,58 @@ function createGrammarFromDFA(automaton){
     return new Grammar(variables, terminals, productions, starting);
 }
 
+function createGrammarFromNFA(automaton){
+    console.log(automaton)
+    var variables = [];
+    var terminals;
+    var productions = [];
+    var starting;
+
+    for(i=0; i<automaton.states.length; i++){
+        variables.push(automaton.states[i].name);
+    }
+
+    var startStates = automaton.states.filter(element => element.isStart === true);
+
+    if(startStates.length == 1){
+        starting = startStates[0].name;
+
+        if(startStates[0].isEnd){
+            console.log("FFF")
+            productions.push(new Production(startStates[0].name, "ε"));
+        }
+    }
+    else { 
+        variables.push("Z");
+        startStates.forEach(state => productions.push(new Production("Z", state.name)));
+        starting = "Z";
+    }
+
+    terminals = automaton.inputAlphabet;
+
+    for(let i=0; i<automaton.states.length; i++){
+        for(let j=0; j<automaton.inputAlphabet.length; j++){
+            console.log("AAA")
+            var successors = calculateStateSuccessorsVia(automaton.transitions, automaton.states[i], automaton.inputAlphabet[j], true);
+            if(successors){
+
+                successors.forEach(succ => productions.push(new Production(automaton.states[i].name, automaton.inputAlphabet[j] + succ.name)));
+                successors.filter(succ => succ.isEnd).forEach(s => productions.push(new Production(automaton.states[i].name, automaton.inputAlphabet[j])));
+
+            }
+        }
+    }
+
+    return new Grammar(variables, terminals, productions, starting);
+
+}
+/**
+ * Finds one successor of a given state using the given terminal symbol
+ * @param {Array} transitions 
+ * @param {State} state 
+ * @param {String} via 
+ * @returns the successor
+ */
 function calculateStateSuccessorVia(transitions, state, via){
 
     var successorTransition = transitions.find(element => element.from === state && element.via.includes(via));
@@ -989,15 +1136,31 @@ function calculateStateSuccessorVia(transitions, state, via){
     }
 
 }
+/**
+ * Finds the successors of a given state using the given terminal symbol either with or without self-transitions
+ * @param {Array} transitions 
+ * @param {State} state 
+ * @param {String} via
+ * @param {Boolean} withSelf whether self transitions are respected
+ * @returns the successors
+ */
+function calculateStateSuccessorsVia(transitions, state, via, withSelf){
 
-function calculateStateSuccessorsVia(transitions, state, via){
+    if(withSelf){
+        return transitions.filter(element => element.from === state && element.via.includes(via)).map(e => e.to);
+    }
+    else{
+        return transitions.filter(element => element.from === state && element.to !== state && element.via.includes(via)).map(e => e.to);
 
-    return transitions.filter(element => element.from === state && element.via.includes(via)).map(e => e.to);
+    }
 
-    
 
 }
-
+/**
+ * Formats an array of productions in a readable way
+ * @param {Array} productions 
+ * @returns the formatted productions
+ */
 function formatProductions(productions) {
     var groupedProductions = {};
 
@@ -1015,10 +1178,17 @@ function formatProductions(productions) {
 
     return formattedProductions;
 }
-
+/**
+ * Makes a screenshot of the graph and saves it locally
+ */
 function makeDrawingAreaScreenshot(){
 }
-
+/**
+ * Checks if the given word contains only the given terminals
+ * @param {Array} terminals 
+ * @param {String} word 
+ * @returns 
+ */
 function checkWordAlphabet(terminals, word){
     
     var wordIsOverAlphabet = true;
@@ -1029,7 +1199,12 @@ function checkWordAlphabet(terminals, word){
 
     return wordIsOverAlphabet;
 }
-
+/**
+ * Checks if the grammar can create the given word
+ * @param {Grammar} grammar 
+ * @param {String} word 
+ * @returns 
+ */
 function decideWordProblem(grammar, word){
 
 
@@ -1053,7 +1228,13 @@ function decideWordProblem(grammar, word){
     
     return (l.find(element => element.form === word));
 }
-
+/**
+ * Helper function that calculate the derivations of all current sentence forms
+ * @param {SentenceForm} l the set of sentence forms
+ * @param {SentenceForm} n the max lenght of sentence forms allowed
+ * @param {Array} productions 
+ * @returns 
+ */
 function next(l, n, productions){
 
     var successorDerivations = l.slice();
@@ -1069,7 +1250,13 @@ function next(l, n, productions){
     return successorDerivations.filter(filterOutUniqueForms);
     
 }
-    
+/**
+ * Calculates the successor sentence forms by applying all valid productions to the given sentence form
+ * @param {SentenceForm} sentenceForm 
+ * @param {Int} maxLenght 
+ * @param {Array} productions 
+ * @returns the successor sentence forms
+ */
 function calculateOneStepDerivations(sentenceForm, maxLenght, productions){
     
     var derivations = [];
@@ -1101,7 +1288,12 @@ function calculateOneStepDerivations(sentenceForm, maxLenght, productions){
 
     return derivations;
 }
-
+/**
+ * Checks if two arrays contains exactly the same elements
+ * @param {Array} array1 
+ * @param {Array2} array2 
+ * @returns whether two arrays elements are equal
+ */
 function checkArrayEuquality(array1, array2){
     if(array1.length !== array2.length){
         return false;
@@ -1117,7 +1309,12 @@ function checkArrayEuquality(array1, array2){
     }
     return true;
 }
-
+/**
+ * Checks if two arrays share at least one element
+ * @param {Array} array1 
+ * @param {Array} array2 
+ * @returns 
+ */
 function checkArrayIntersection(array1, array2){
     var size = Math.min(array1.length, array2.length);
     for(let i=0; i<size; i++){
@@ -1127,7 +1324,11 @@ function checkArrayIntersection(array1, array2){
     }
     return false
 }
-
+/**
+ * Converts the trace of predecessor forms into a string
+ * @param {SentenceForm} sentenceForm 
+ * @returns the string representation of the trace
+ */
 function sentenceFormPredecessorsToString(sentenceForm){
     
     var predecessors = [];
@@ -1144,11 +1345,22 @@ function sentenceFormPredecessorsToString(sentenceForm){
 
     return outputString;
 }
-
+/**
+ * Filters out the unique sentence forms (by value, not reference)
+ * @param {any} value 
+ * @param {Int} index 
+ * @param {any} self 
+ * @returns the filtered array
+ */
 const filterOutUniqueForms = (value, index, self) => {
     return self.findIndex(obj => obj.form === value.form) === index;
 };
-
+/**
+ * Generates example words that can be created by the grammar
+ * @param {Grammar} grammar 
+ * @param {Int} maxCount 
+ * @returns example words
+ */
 function generateTerminalsForms(grammar, maxCount){
 
     var n = 7;
@@ -1175,14 +1387,24 @@ function generateTerminalsForms(grammar, maxCount){
 
 
 }
-
+/**
+ * Saves the user input in the browser's session storage
+ * @param {Array} variables 
+ * @param {Array} terminals 
+ * @param {Array} productions 
+ * @param {Array} starting 
+ */
 function grammarformToSessionStorage(variables, terminals, productions, starting){
     sessionStorage.setItem("variables", variables);
     sessionStorage.setItem("terminals", terminals);
     sessionStorage.setItem("productions", productions);
     sessionStorage.setItem("starting", starting);
 }
-
+/**
+ * Creates a number in subscript
+ * @param {Int} number 
+ * @returns the number in subscript
+ */
 function numberToSubscript(number){
     var input = number.toString();
     var output = "";
@@ -1193,8 +1415,13 @@ function numberToSubscript(number){
 
     return output
 }
-
-function NFAToDFA(automaton){
+/**
+ * Converts a NFA into a DFA
+ * @param {FiniteAutomaton} automaton 
+ * @param {Two} two 
+ * @returns a deterministic automaton
+ */
+function NFAToDFA(automaton, two){
 
     var dfaStates = createPowerSetOfStates(automaton.states);
     
@@ -1212,7 +1439,7 @@ function NFAToDFA(automaton){
         for(let j=0; j<automaton.inputAlphabet.length; j++){
             var successorStates = new Set();
             for(let k=0; k<state.subsetStates.length; k++){
-                var subsetSuccessors = calculateStateSuccessorsVia(automaton.transitions, state.subsetStates[k], automaton.inputAlphabet[j]);
+                var subsetSuccessors = calculateStateSuccessorsVia(automaton.transitions, state.subsetStates[k], automaton.inputAlphabet[j], false);
                 
                 
                 subsetSuccessors.forEach(successor => successorStates.add(successor));
@@ -1227,11 +1454,16 @@ function NFAToDFA(automaton){
         }
     }
 
-    return new FiniteAutomaton(dfaStates, automaton.inputAlphabet, dfaTransitions);
+    return new FiniteAutomaton(dfaStates, automaton.inputAlphabet, dfaTransitions, two);
 
 
 }
-
+/**
+ * Calculates the normalized normal vector of a path given by two points
+ * @param {Point} point1 
+ * @param {Point} point2 
+ * @returns the normalized normal vector
+ */
 function calculateNormalVector(point1, point2){
     var dx = point2.x - point1.x;
     var dy = point2.y - point1.y;
@@ -1240,11 +1472,21 @@ function calculateNormalVector(point1, point2){
 
     return {x: normalVecor.x / length, y: normalVecor.y / length};
 }
-
+/**
+ * Moves a point along the given vector by the given distance
+ * @param {Point} point 
+ * @param {Point} vector 
+ * @param {Int} distance 
+ * @returns the moved point
+ */
 function movePointAlongVector(point, vector, distance){
     return {x: point.x + vector.x * distance, y: point.y + vector.y * distance};
 }
-
+/**
+ * Creates the power set of states (excluding the empty set)
+ * @param {Array} states 
+ * @returns the power set of states
+ */
 function createPowerSetOfStates(states){
     var subsets = [];
     var currentSubset = [];
@@ -1273,4 +1515,26 @@ function createPowerSetOfStates(states){
         outputStates.push(state);
     }
     return outputStates
+}
+/**
+ * Checks if the given automaton is DFA or NFA
+ * @param {FiniteAutomaton} automaton 
+ * @returns whether the automaton is DFA or NFA
+ */
+function checkAutomatonDeterminism(automaton){
+
+    console.log("FSA")
+    if(automaton.states.filter(state => state.isStart).length > 1){
+        return false;
+    }
+    for(let i=0; i<automaton.states.length; i++){
+        for(let j=0; j<automaton.inputAlphabet.length; j++){
+            var successors = calculateStateSuccessorsVia(automaton.transitions, automaton.states[i], automaton.inputAlphabet[j], true);
+            console.log(successors);
+            if(successors.length > 1 || successors.length == 0){
+                return false;
+            }
+        }
+    }
+    return true;
 }

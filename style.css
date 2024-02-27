@@ -198,6 +198,15 @@ header nav ul li a:hover {
     font-size: 15px;
 }
 
+#isDFA {
+    padding: 12px 20px;
+    color: white;
+    background-color:#005b0c;
+    border: 2px solid grey;
+    border-radius: 5px;
+    font-size: 15px;
+}
+
 #exampleButton {
     padding: 12px 20px;
     margin-bottom: 40px;
@@ -246,7 +255,7 @@ header nav ul li a:hover {
     background-color: rgb(255, 188, 188);
 }
 
-#createState, #createTransition, #markEnd, #markStart, #delete, #move, #screenshot, #copy, #paste {
+#createState, #createTransition, #markEnd, #markStart, #delete, #move, #screenshot, #determinize, #copy, #paste {
     background-color: white;
     padding: 12px 20px;
     margin-top: 10px;
@@ -257,7 +266,7 @@ header nav ul li a:hover {
     transition: all 0.3s ease;
 }
 
-#createState:hover, #createTransition:hover, #markEnd:hover, #markStart:hover,#delete:hover, #move:hover, #screenshot:hover, #copy:hover, #paste:hover {
+#createState:hover, #createTransition:hover, #markEnd:hover, #markStart:hover,#delete:hover, #move:hover, #screenshot:hover, #determinize:hover, #copy:hover, #paste:hover {
     color: white;
     background-color: rgba(0, 128, 0, 0.5);
 }
@@ -321,17 +330,85 @@ header nav ul li a:hover {
 #multiview #graphArea {
 
     width: 50%;
-    margin-right: 50px;
-    padding-right: 50px;
-    border-right: 3px solid black;
+    margin-right: 0px;
+    padding-right: 00px;
+    border-right: 3px solid transparent;
+    box-sizing: border-box;
+    
 
 }
 
+#console {
+    
+    height: 20px;
+    font-size: 20px;
+    color: black;
+}
+
+#multiview #convertButtons {
+
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-left: 10px;
+    flex-shrink: 0;
+    padding-right: 10px;
+    
+    
+    
+    
+
+}
+
+#multiview #leftarrow {
+    border: none;
+    width: 70px;
+    height: 40px;
+    background-color: transparent;
+    background-image: url('arrow_left.svg');
+    background-size: contain; 
+    background-repeat: no-repeat;
+}
+
+#multiview #leftarrow:hover {
+    background-image: url('arrow_left_selected.svg');
+}
+
+#multiview #rightarrow {
+    background-color: transparent;
+    border: none;
+    width: 70px;
+    height: 40px;
+    background-image: url('arrow_right.svg');
+    background-size: contain; 
+    background-repeat: no-repeat;
+}
+
+#multiview #rightarrow:hover {
+    background-image: url('arrow_right_selected.svg') !important;
+}
+
+#autoConvert {
+    background-color: #005b0c;
+    color: white;
+    padding: 12px 20px;
+    border: 2px solid grey;
+    border-radius: 5px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+
+
 #multiview #grammarInputForm {
     
+    width: 50%;
     margin-top: 0;
-    
     height: 600px;
+    
 
 }
 
