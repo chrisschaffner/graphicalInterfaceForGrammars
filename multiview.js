@@ -1,3 +1,5 @@
+
+
 document.addEventListener("DOMContentLoaded", function(){
 
     var canvas = document.getElementById("drawingArea");
@@ -100,6 +102,10 @@ document.addEventListener("DOMContentLoaded", function(){
         stateCreationActive ? messageToConsole("To create a state, click in the drawing area where you want to place the state", "black") : clearConsole();
 
     });
+
+    makeScreenshotButton.addEventListener("click", function(){
+        
+    })
     
     createTransitionButton.addEventListener("click", function(){
 
@@ -428,4 +434,13 @@ document.addEventListener("DOMContentLoaded", function(){
     function clearConsole(){
         InfoConsole.textContent = "";
     }
+
+    
+
+
+
+
+
+
+    
 });

@@ -136,7 +136,6 @@ class FiniteAutomaton{
 
     moveState(state, position, two){
         state.setPosition(position.x, position.y);
-        console.log(position)
         this.notfiyObservers(two);
     }
 
@@ -147,7 +146,7 @@ class FiniteAutomaton{
 
     markStart(state, two){
         state.isStart = true;
-        console.log(this.observers)
+    
         this.notfiyObservers(two);
 
     }
@@ -172,17 +171,11 @@ class FiniteAutomaton{
     }
 
     notfiyObservers(two){
-        console.log("Notidy")
         this.observers.forEach(obs => obs.update(two));
-        console.log("Observers:");
-        console.log(this.observers);
-        
     }
 
     updateDFADisplay(bool){
         this.dfaDisplay.textContent = bool? 'DFA' : 'NFA';
-        console.log("Changed");
-        
     }
 
 }
@@ -200,6 +193,7 @@ class State{
     startArrow;
     index;
     subsetStates = [];
+    angles = [];
 
     constructor(name, isStart, isEnd, index){
         this.name = name;
@@ -208,25 +202,30 @@ class State{
         this.index = index;
     }
 
-    
-
     setPosition(posX, posY){
         this.posX = posX;
         this.posY = posY;
-        //two.update();
+    }
+
+    addAngle(angle){
+        this.angles.push(angle);
+    }
+
+    removeAngle(angle){
+        this.angles = this.angles.filter(a => a !== angle);
     }
 
     setGeneration(generation){
         this.generation = generation;
     }
 
-    createVisuals(two){          
+    createVisuals(two){       
 
         two.remove(this.stateCircle);
         two.remove(this.endCircle);
         two.remove(this.textLabel);
-        two.remove(this.startArrow);
-        
+        two.remove(this.startArrow);    
+
 
         this.stateCircle = new Two.Circle(this.posX, this.posY, 100);
         this.stateCircle.fill = 'transparent';
@@ -244,10 +243,10 @@ class State{
             this.endCircle.linewidth = 8;
         }
 
-        if(this.isStart){
+        /* if(this.isStart){
             this.startArrow = two.makeArrow(this.posX-200, this.posY, this.posX-100, this.posY, 40);
             this.startArrow.linewidth = 8;
-        }
+        } */
 
         two.add(this.textLabel);
         two.add(this.endCircle);
@@ -284,13 +283,35 @@ class State{
     }
 
     deleteVisuals(two){
-        //console.log("Delete " + this.index);
         two.remove(this.stateCircle);
         two.remove(this.endCircle);
         two.remove(this.textLabel);
         two.remove(this.startArrow); 
         two.update();
     }
+
+    createStartArrow(two){
+
+        two.remove(this.startArrow);
+
+        var startArrowAngle = 180;
+        var counter = 0;
+        while(counter < 50 && this.angles.some(angle => inRange(angle, startArrowAngle -10, startArrowAngle + 10, 0))){
+            console.log("THis should only appear once")
+            startArrowAngle = (startArrowAngle + 45) % 360;
+            counter++;
+        }
+
+        var startPosition = {x:this.posX + Math.cos(startArrowAngle* Math.PI/180)*200, y:this.posY + Math.sin(startArrowAngle* Math.PI/180)*200};
+        var endPosition = {x:this.posX + Math.cos(startArrowAngle* Math.PI/180)*100, y:this.posY + Math.sin(startArrowAngle* Math.PI/180)*100};
+
+        this.startArrow = two.makeArrow(startPosition.x, startPosition.y, endPosition.x, endPosition.y, 40);
+        this.startArrow.linewidth = 8;
+
+        two.update();
+    }
+
+
 
 }
 
@@ -305,6 +326,8 @@ class FaTranisition{
     boundingBox;
     arrowhead;
     label;
+    startStateAngle;
+    endStateAngle;
 
     constructor(from, to, via, index){
         this.from = from;
@@ -326,21 +349,37 @@ class FaTranisition{
 
     
         if (this.from == this.to){
-    
-            var x1 = this.from.posX + Math.cos(-Math.PI/2)*100;
-            var y1 = this.from.posY + Math.sin(-Math.PI/2)*100; 
-            var x2 = this.from.posX + Math.cos(-1*Math.PI/3)*200;
-            var y2 = this.from.posY + Math.sin(-1*Math.PI/3)*200;
-            var x3 = this.from.posX + Math.cos(-1*Math.PI/6) * 100;
-            var y3 = this.from.posY + Math.sin(-1*Math.PI/6) * 100;
-    
+
+            var selfEndAngle = 330;
+            var selfStartAngle = 300;
+
+            var counter = 0;
+            while(counter <= 100 && this.from.angles.filter(angle => (angle !== selfStartAngle && angle !== selfEndAngle)).some(a => inRange(a, selfStartAngle, selfEndAngle, 10))){
+                console.log("AÆ");
+                selfEndAngle = (selfEndAngle + 30) % 360;
+                selfStartAngle = (selfStartAngle + 30) % 360;
+                counter++;
+            }
+
             
-            this.transitionLine = two.makePath(x1, y1, x2, y2, x3, y3);
-            this.transitionLine.opacity = .3;
-    
-            this.label = two.makeText(this.via, x2+30, y2-30);
-            this.label.size = 30;
-            this.label.opacity = .3    
+            this.startStateAngle = selfStartAngle;
+            this.endStateAngle = selfEndAngle;
+
+            this.startVector = {x: this.from.posX + Math.cos(selfStartAngle * Math.PI/180)*100,y: this.from.posY + Math.sin(selfStartAngle * Math.PI/180)*100};
+            this.endVector = {x: this.from.posX + Math.cos(selfEndAngle * Math.PI/180)*100, y: this.from.posY + Math.sin(selfEndAngle * Math.PI/180)*100};
+            var pointToInsert = calculateMedianVertex(this.startVector, this.endVector);
+            var normalVecor = calculateNormalVector(this.endVector, this.startVector);
+            pointToInsert = movePointAlongVector(pointToInsert, normalVecor, 75);
+
+            angle = Math.atan2(pointToInsert.y - this.startVector.y, pointToInsert.x - this.startVector.x);
+            endAngle = Math.atan2(this.endVector.y - pointToInsert.y, this.endVector.x - pointToInsert.x);
+            
+            this.transitionLine = two.makePath(this.startVector.x, this.startVector.y, pointToInsert.x, pointToInsert.y, this.endVector.x, this.endVector.y);
+            this.transitionLine.opacity = 1;
+
+            this.arrowhead = two.makePath(100, 150, 150, 10, 200, 150);
+            this.arrowhead.translation.x = this.endVector.x + Math.cos(endAngle) * -15; 
+            this.arrowhead.translation.y = this.endVector.y + Math.sin(endAngle) * -15;
         }
     
         else{
@@ -371,6 +410,7 @@ class FaTranisition{
 
                     angle = Math.atan2(pointToInsert.y - this.startVector.y, pointToInsert.x - this.startVector.x);
                     endAngle = Math.atan2(this.endVector.y - pointToInsert.y, this.endVector.x - pointToInsert.x);
+                    
 
                     this.startVector = {x: this.from.posX + Math.cos(angle)*100,y: this.from.posY + Math.sin(angle)*100};
                     this.endVector = {x: this.to.posX - Math.cos(endAngle)*100, y: this.to.posY - Math.sin(endAngle)*100};
@@ -379,22 +419,21 @@ class FaTranisition{
                 }
             }
 
-            this.transitionLine = two.makePath(this.startVector.x, this.startVector.y, pointToInsert.x, pointToInsert.y, this.endVector.x, this.endVector.y);
-    
-            var labelPosition = movePointAlongVector(pointToInsert, normalVecor, 30);
+            this.transitionLine = two.makePath(this.startVector.x, this.startVector.y, pointToInsert.x, pointToInsert.y, this.endVector.x, this.endVector.y);    
 
-            this.label = two.makeText(this.via, labelPosition.x, labelPosition.y);
-            this.label.size = 30;
-            
             this.arrowhead = two.makePath(100, 150, 150, 10, 200, 150);
-        
-            this.arrowhead.fill = "black"
-            this.arrowhead.scale = .3
             this.arrowhead.translation.x = this.endVector.x + Math.cos(endAngle) * -15; 
             this.arrowhead.translation.y = this.endVector.y + Math.sin(endAngle) * -15;
-            this.arrowhead.rotation = endAngle + (Math.PI/2) ;
-        
+
+            this.startStateAngle = Math.floor(((Math.atan2(this.startVector.y - this.from.posY, this.startVector.x - this.from.posX) * (180/Math.PI)) + 360) % 360);
+            this.endStateAngle = Math.floor(((Math.atan2(this.endVector.y - this.to.posY, this.endVector.x - this.to.posX) * (180/Math.PI)) + 360) % 360);            
+
+
         }    
+        
+        this.arrowhead.fill = "black"
+        this.arrowhead.scale = .3
+        this.arrowhead.rotation = endAngle + (Math.PI/2) ;
         
         this.transitionLine.closed = false;
         this.transitionLine.fill = "transparent"
@@ -407,12 +446,23 @@ class FaTranisition{
         this.boundingBox.noFill();
         this.boundingBox.stroke = 'transparent';
 
+        var labelPosition = movePointAlongVector(pointToInsert, normalVecor, 30);
+        this.label = two.makeText(this.via, labelPosition.x, labelPosition.y);
+        this.label.size = 30;
+
         two.add(this.boundingBox);
 
         for(let i=0; i<states.length; i++){
             states[i].deleteVisuals(two);
             states[i].createVisuals(two);
         }
+
+        /* if(this.startStateAngle && this.endStateAngle){
+            this.from.addAngle(this.startStateAngle);
+            this.to.addAngle(this.endStateAngle);
+        } */
+
+        
 
         two.update();
 
@@ -433,6 +483,19 @@ class FaTranisition{
             this.transitionLine.stroke = 'black';
             two.update();
         });
+    }
+
+    calculateAngles(){
+
+        if(this.from == this.to){
+            return
+        }
+
+        var angle = Math.atan2(this.to.posY - this.from.posY, this.to.posX - this.from.posX);
+        this.startVector = {x: this.from.posX + Math.cos(angle)*100,y: this.from.posY + Math.sin(angle)*100};
+        this.endVector = {x: this.to.posX - Math.cos(angle)*100, y: this.to.posY - Math.sin(angle)*100};
+        this.startStateAngle = Math.floor(((Math.atan2(this.startVector.y - this.from.posY, this.startVector.x - this.from.posX) * (180/Math.PI)) + 360) % 360);
+        this.endStateAngle = Math.floor(((Math.atan2(this.endVector.y - this.to.posY, this.endVector.x - this.to.posX) * (180/Math.PI)) + 360) % 360); 
     }
 
     deleteVisuals(two){
@@ -483,7 +546,7 @@ class AutomatonObserver{
                 this.grammar.updateOutput();
             }
             catch(error){
-                console.log(error)
+                //console.log(error)
             }
         }
     }
@@ -709,7 +772,18 @@ function calculateMedianVertex(point1, point2){
 function createAutomatonVisuals(two, automaton){
     two.clear();
     automaton.states.forEach(state => state.createVisuals(two));
+    automaton.states.forEach(state => state.angles = []);
+    automaton.transitions.forEach(transition => transition.calculateAngles());
+
+    automaton.transitions.forEach(trans => {
+        trans.from.addAngle(trans.startStateAngle);
+        trans.to.addAngle(trans.endStateAngle);
+    })
     automaton.transitions.forEach(transition => transition.createVisuals(two, automaton.states));
+    automaton.states.filter(s => s.isStart).forEach(state => state.createStartArrow(two));
+
+    automaton.states.forEach(state => console.log(state.angles))
+    
 }
 /**
  * Finds the successor state(s) for a given state
@@ -870,38 +944,29 @@ function checkTransitionStatesIntersection(two, transition, states) {
  * @returns whether path and circle intersect
  */
 function checkLineCircleIntersection(lineStart, lineEnd, circleCenter, circleRadius){
+
     const startToCenterVector = { x: circleCenter.x - lineStart.x, y: circleCenter.y - lineStart.y };
 
-    // Calculate vector from line start to line end
     const startToEndVector = { x: lineEnd.x - lineStart.x, y: lineEnd.y - lineStart.y };
 
-    // Calculate squared length of line segment
     const lineLengthSquared = startToEndVector.x * startToEndVector.x + startToEndVector.y * startToEndVector.y;
 
-    // Calculate dot product of startToCenterVector and startToEndVector
     const dotProduct = startToCenterVector.x * startToEndVector.x + startToCenterVector.y * startToEndVector.y;
 
     let closestPointOnLine;
 
-    // Check if the line segment is degenerate (length is zero)
     if (lineLengthSquared === 0) {
-        // If the line segment is a single point, use that point as the closest point
         closestPointOnLine = lineStart;
     } else {
-        // Calculate the parameter t for the closest point on the line
-        const t = Math.max(0, Math.min(1, dotProduct / lineLengthSquared));
 
-        // Calculate the coordinates of the closest point on the line segment
+        const t = Math.max(0, Math.min(1, dotProduct / lineLengthSquared));
         closestPointOnLine = {
             x: lineStart.x + t * startToEndVector.x,
             y: lineStart.y + t * startToEndVector.y
         };
     }
-
-    // Calculate the distance between the closest point and the circle center
     const distanceToClosestPointSquared = Math.pow(circleCenter.x - closestPointOnLine.x, 2) + Math.pow(circleCenter.y - closestPointOnLine.y, 2);
 
-    // Check if the distance is less than or equal to the square of the circle radius
     return distanceToClosestPointSquared <= circleRadius * circleRadius;
 }
 /**
@@ -1076,7 +1141,6 @@ function createGrammarFromDFA(automaton){
 }
 
 function createGrammarFromNFA(automaton){
-    console.log(automaton)
     var variables = [];
     var terminals;
     var productions = [];
@@ -1092,7 +1156,6 @@ function createGrammarFromNFA(automaton){
         starting = startStates[0].name;
 
         if(startStates[0].isEnd){
-            console.log("FFF")
             productions.push(new Production(startStates[0].name, "ε"));
         }
     }
@@ -1106,7 +1169,6 @@ function createGrammarFromNFA(automaton){
 
     for(let i=0; i<automaton.states.length; i++){
         for(let j=0; j<automaton.inputAlphabet.length; j++){
-            console.log("AAA")
             var successors = calculateStateSuccessorsVia(automaton.transitions, automaton.states[i], automaton.inputAlphabet[j], true);
             if(successors){
 
@@ -1523,14 +1585,12 @@ function createPowerSetOfStates(states){
  */
 function checkAutomatonDeterminism(automaton){
 
-    console.log("FSA")
     if(automaton.states.filter(state => state.isStart).length > 1){
         return false;
     }
     for(let i=0; i<automaton.states.length; i++){
         for(let j=0; j<automaton.inputAlphabet.length; j++){
             var successors = calculateStateSuccessorsVia(automaton.transitions, automaton.states[i], automaton.inputAlphabet[j], true);
-            console.log(successors);
             if(successors.length > 1 || successors.length == 0){
                 return false;
             }
@@ -1538,3 +1598,29 @@ function checkAutomatonDeterminism(automaton){
     }
     return true;
 }
+
+function inRange(value, start, end, tolerance) {
+    
+    value = (value + 360) % 360;
+    start = (start + 360) % 360;
+    end = (end + 360) % 360;
+    
+    if(start <= end){
+        return value >= (start - tolerance) && value <= (end + tolerance);
+    }
+    else{
+        return (value >= (start - tolerance) && value <= 360) || value >= 0 && value <= (end + tolerance);
+    }
+}
+
+/* function checkLineLineIntersections(x1,y1, x2, y2){
+    function calulatePointOrientation(p1,p2,p3){
+        var orientation = (p2.y -p1.y) * (p3.x - p2.x) - (p2.x -p1.x) * (p3.y -p2.y);
+        if (orientation === 0){
+            return 0;
+        }
+        return (orientation > 0) ? 1 : 2;
+    }
+
+    if(calulatePointOrientation())
+} */
