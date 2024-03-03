@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var markEndButton = document.getElementById("markEnd");
     var markStartButton = document.getElementById("markStart");
     var deleteButton = document.getElementById("delete");
+    var deleteEndButton = document.getElementById("deleteEnd");
     var makeScreenshotButton = document.getElementById("screenshot");
     var determinizeButton = document.getElementById("determinize");
     var copyButton = document.getElementById("copy");
@@ -34,6 +35,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var userSelectedStateTo;
     var stateCreationActive = false;
     var transitionCreationActive = false;
+    var endDeletionActive = false;
     var endMarkingActive = false;
     var startMarkingActive = false;
     var deleteActive = false;
@@ -55,6 +57,7 @@ document.addEventListener("DOMContentLoaded", function(){
         transitionCreationActive = false;
         deleteActive = false;
         endMarkingActive = !endMarkingActive;
+        endDeletionActive = false;
         startMarkingActive = false;
         moveActive = false;
         updateEditButtons();
@@ -68,6 +71,7 @@ document.addEventListener("DOMContentLoaded", function(){
         transitionCreationActive = false;
         deleteActive = false;
         endMarkingActive = false;
+        endDeletionActive = false;
         startMarkingActive = !startMarkingActive;
         moveActive = false;
         updateEditButtons();
@@ -82,6 +86,7 @@ document.addEventListener("DOMContentLoaded", function(){
         stateCreationActive = false;
         transitionCreationActive = false;
         endMarkingActive = false;
+        endDeletionActive = false;
         startMarkingActive = false;
         deleteActive = !deleteActive;
         moveActive = false;
@@ -95,6 +100,7 @@ document.addEventListener("DOMContentLoaded", function(){
         stateCreationActive = !stateCreationActive;
         transitionCreationActive = false;
         endMarkingActive = false;
+        endDeletionActive = false;
         startMarkingActive = false;
         deleteActive = false;
         moveActive = false;
@@ -104,14 +110,26 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
     makeScreenshotButton.addEventListener("click", function(){
-        
-    })
+    });
+
+    deleteEndButton.addEventListener("click", function(){
+        stateCreationActive = false;
+        transitionCreationActive = false;
+        endMarkingActive = false;
+        endDeletionActive = !endDeletionActive;
+        startMarkingActive = false;
+        deleteActive = false;
+        moveActive = false;
+        updateEditButtons();
+        endDeletionActive ? messageToConsole("To unmark a state as end state, click on that state", "black") : clearConsole();
+    });
     
     createTransitionButton.addEventListener("click", function(){
 
         stateCreationActive = false;
         transitionCreationActive = !transitionCreationActive;
         endMarkingActive = false;
+        endDeletionActive = false;
         startMarkingActive = false;
         deleteActive = false;
         moveActive = false;
@@ -131,6 +149,8 @@ document.addEventListener("DOMContentLoaded", function(){
     
     determinizeButton.addEventListener("click", function(){
         
+
+        console.log(createdAutomaton);
         nfaToDfa = NFAToDFA(createdAutomaton, two);
 
         createdAutomaton.states = nfaToDfa.states;
@@ -152,6 +172,7 @@ document.addEventListener("DOMContentLoaded", function(){
         stateCreationActive = false;
         transitionCreationActive = false;
         endMarkingActive = false;
+        endDeletionActive = false;
         startMarkingActive = false;
         deleteActive = false;
         moveActive = !moveActive;
@@ -293,13 +314,9 @@ document.addEventListener("DOMContentLoaded", function(){
         }
         console.log(startMarkingActive)
         if(startMarkingActive){
-            console.log("D")
-            createdAutomaton.markStart(state, two);
-            console.log("FFFFs")
             
+            if(createdAutomaton.states.filter(state => state.isStart == true).length > 0){
 
-            if(createdAutomaton.states.filter(state => state.isStart == true).length > 1){
-                console.log("D")
                 messageToConsole("More than one start state, auto grammar conversion is disabled!", "red");
                 if(autoConvertInput.checked){
                     autoConvertInput.checked = false;
@@ -307,12 +324,17 @@ document.addEventListener("DOMContentLoaded", function(){
                 }
             }
 
+            createdAutomaton.markStart(state, two);
         }
 
         if(deleteActive){
             
             createdAutomaton.removeState(state, two);
         
+        }
+
+        if(endDeletionActive){
+            createdAutomaton.unmarkEnd(state, two);
         }
 
         if(moveActive){
@@ -338,7 +360,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
             for(let i=0; i<userViaInput.length; i++){
                 if(!createdAutomaton.inputAlphabet.includes(userViaInput[i])){
-                    createdAutomaton.inputAlphabet.push(userViaInput[i]);
+                    createdAutomaton.addTerminal(userViaInput[i]);
                 }
             }
 
@@ -374,27 +396,42 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     });
 
-    leftArrowButton.addEventListener("click", function(){
-        try{
+    document.addEventListener('startArrowMouseDown', function(event){
+        
+        if(deleteActive){
+            var state = event.detail;
+            createdAutomaton.removeStart(state, two);
+        }
+    });
 
-            grammar = userInputToGrammar(variablesOutput.value, terminalsOutput.value, productionsOutput.value, startingOutput.value);
+    leftArrowButton.addEventListener("click", function(event){
+        
+        event.preventDefault();
+
+        grammar = userInputToGrammar(variablesOutput.value, terminalsOutput.value, productionsOutput.value, startingOutput.value);
+        grammar.calculateGrammarType();
+        console.log(createdAutomaton);
+
+        if(grammar.type === 3){
             nfaFromGrammar = createNFAFromGrammar(grammar, two);
             createdAutomaton.states = nfaFromGrammar.states;
             createdAutomaton.transitions = nfaFromGrammar.transitions;
             createdAutomaton.inputAlphabet = nfaFromGrammar.inputAlphabet;
             createdAutomaton.arrangeGraph(two);
+            console.log(createdAutomaton);
+
         }
 
-        catch(error){
-            console.error(error);
+        else {
+            grammar.updateOutput();
+            messageToConsole("Grammar type is not 3, an equivalent NFA can not be constructed!", 'red');
         }
-        
     });
 
     rightArrowButton.addEventListener("click", function(){
+
         grammar = createGrammarFromNFA(createdAutomaton);
         grammar.updateOutput();
-        
         
     });
 
@@ -423,6 +460,8 @@ document.addEventListener("DOMContentLoaded", function(){
         deleteButton.style.color = (deleteActive) ? "white" : "black";
         moveButton.style.backgroundColor = (moveActive) ? "green" : "transparent";     
         moveButton.style.color = (moveActive) ? "white" : "black";
+        deleteEndButton.style.backgroundColor = (endDeletionActive) ? "green" : "transparent";     
+        deleteEndButton.style.color = (endDeletionActive) ? "white" : "black";
         
     }
 
@@ -433,14 +472,5 @@ document.addEventListener("DOMContentLoaded", function(){
 
     function clearConsole(){
         InfoConsole.textContent = "";
-    }
-
-    
-
-
-
-
-
-
-    
+    } 
 });
