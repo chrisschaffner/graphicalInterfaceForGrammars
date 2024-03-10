@@ -62,16 +62,18 @@
                 <button id="screenshot">Make Screenshot</button>
                 <button id="determinize">Determinize Automaton</button>
                 <span id="isDFA">DFA </span>
-                <div id="editButtons">
-                    <button id="createState">Create State</button>
-                    <button id="createTransition">Create Transition</button>
-                    <button id="markEnd">Mark End</button>
-                    <button id="deleteEnd">Delete End</button>
-                    <button id="markStart">MarkStart</button>
-                    <button id="delete">Delete State/Transition</button>
-                    <button id="move">Move State</button>
-                </div>
+
+                <button id="createState">Create State</button>
+                <button id="createTransition">Create Transition</button>
+                <button id="markEnd">Mark End</button>
+                <button id="deleteEnd">Delete End</button>
+                <button id="markStart">MarkStart</button>
+                <button id="delete">Delete State/Transition</button>
+                <button id="move">Move State</button>
+
+                
             </div>
+
         </div>
 
         <div id="convertButtons">
@@ -82,7 +84,7 @@
         </div>
 
     
-        <form id="grammarInputForm">
+        <div id="grammarInputForm">
             <h2>Grammar</h2>
             <div>
                 <label for="variableInputs">Variables:</label>
@@ -94,18 +96,20 @@
             </div>
             <div>
                 <label for="productionsInput">Productions:</label>
-                <textarea rows="5" cols="60" id="productionsInput" name="productions" placeholder="e.g.&#10;A->aB|cD&#10;B->Bc"></textarea>
+                <textarea rows="8" cols="60" id="productionsInput" name="productions" placeholder="e.g.&#10;A->aB|cD&#10;B->Bc"></textarea>
             </div>
             <div>
                 <label for="startingInput">Starting symbol:</label>
                 <input type="text" id="startingInput" name="starting" placeholder="e.g. B"><br><br>
             </div>
             
-            <span id="type">Type: </span>
-            <button id="clear">Clear</button>
-            <button id="copy">Copy grammar to clipboard</button>
-            <button id="paste">Paste grammar from clipboard</button>
-        </form>
+            <span id="grammarButtons">
+                <span id="type">Type: </span>
+                <button id="clear">Clear</button>
+                <button id="copy">Copy grammar</button>
+                <button id="paste">Paste grammar</button>
+            </span>
+        </div>
 
         
     </div>

@@ -13,12 +13,13 @@ document.addEventListener("DOMContentLoaded", function(){
     var createTransitionButton = document.getElementById("createTransition");
     var markEndButton = document.getElementById("markEnd");
     var markStartButton = document.getElementById("markStart");
-    var editButtons = document.getElementById("editButtons");
+    var buttons = document.getElementById("buttons");
     var deleteButton = document.getElementById("delete");
     var deleteEndButton = document.getElementById("deleteEnd");
     var makeScreenshotButton = document.getElementById("screenshot");
     var determinizeButton = document.getElementById("determinize");
     var copyButton = document.getElementById("copy");
+    var dfaDisplay = document.getElementById("isDFA");
     var moveButton = document.getElementById("move");
     var pasteButton = document.getElementById("paste");
     var editButton = document.getElementById("editButton");
@@ -51,6 +52,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var deleteActive = false;
     var editActive = false;
     var moveActive = false;
+    var pieMoveActive = false;
     var movingState;
     var variablesOutput = document.getElementById("variablesInput");
     var terminalsOutput = document.getElementById("terminalsInput");
@@ -129,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
         editActive = !editActive;
 
-        editButtons.style.scale = editActive ? 1 : 0;
+        //editButtons.style.scale = editActive ? 1 : 0;
 
         if(!editActive){
             stateCreationActive = false;
@@ -139,7 +141,63 @@ document.addEventListener("DOMContentLoaded", function(){
             startMarkingActive = false;
             deleteActive = false;
             moveActive = false;
+
+            clearButton.style.scale = 1;
+            makeScreenshotButton.style.scale = 1;
+            determinizeButton.style.scale = 1;
+            clearButton.style.display = 'flex';
+            makeScreenshotButton.style.display = 'flex';
+            clearButton.style.display = 'flex';
+            dfaDisplay.style.display = 'flex';
+            determinizeButton.style.display = 'flex';
+            dfaDisplay.style.scale = 1;
+
+            createStateButton.style.display = 'none';
+            createStateButton.style.scale = 0;
+            createTransitionButton.style.display = 'none';
+            createTransitionButton.style.scale = 0;
+            markEndButton.style.display = 'none';
+            markEndButton.style.scale = 0;
+            markStartButton.style.display = 'none';
+            markStartButton.style.scale = 0;
+            deleteEndButton.style.display = 'none';
+            deleteEndButton.style.scale = 0;
+            moveButton.style.display = 'none';
+            moveButton.style.scale = 0;
+            deleteButton.style.display = 'none';
+            deleteButton.style.scale = 0;
         }
+        else{
+            clearButton.style.scale = 0;
+            makeScreenshotButton.style.scale = 0;
+            determinizeButton.style.scale = 0;
+            dfaDisplay.style.scale = 0;
+
+            clearButton.style.display = 'none';
+            makeScreenshotButton.style.display = 'none';
+            clearButton.style.display = 'none';
+            dfaDisplay.style.display = 'none'
+            determinizeButton.style.display = 'none';
+
+
+            createStateButton.style.display = 'flex';
+            createStateButton.style.scale = 1;
+            createTransitionButton.style.display = 'flex';
+            createTransitionButton.style.scale = 1;
+            markEndButton.style.display = 'flex';
+            markEndButton.style.scale = 1;
+            markStartButton.style.display = 'flex';
+            markStartButton.style.scale = 1;
+            deleteEndButton.style.display = 'flex';
+            deleteEndButton.style.scale = 1;
+            moveButton.style.display = 'flex';
+            moveButton.style.scale = 1;
+            deleteButton.style.display = 'flex';
+            deleteButton.style.scale = 1;
+            
+        }
+
+
 
         updateEditButtons();
     });
@@ -294,8 +352,9 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
     document.addEventListener('mouseup', () => {
-        if(moveActive){
+        if(pieMoveActive){
             movingState = undefined;
+            pieMoveActive = false;
             moveActive = false;
         }
     })
@@ -373,6 +432,7 @@ document.addEventListener("DOMContentLoaded", function(){
             movingState = state;
 
         }
+        
         else {
 
             pieMenu.enable(state, event.detail.mouseX + window.pageXOffset, event.detail.mouseY + window.pageYOffset, canvasRect);
@@ -514,21 +574,21 @@ document.addEventListener("DOMContentLoaded", function(){
 
     function updateEditButtons(){
 
-        createStateButton.style.backgroundColor = (stateCreationActive) ? "green" : "transparent";      
+        createStateButton.style.backgroundColor = (stateCreationActive) ? "green" : "white";      
         createStateButton.style.color = (stateCreationActive) ? "white" : "black";
-        createTransitionButton.style.backgroundColor = (transitionCreationActive) ? "green" : "transparent";     
+        createTransitionButton.style.backgroundColor = (transitionCreationActive) ? "green" : "white";     
         createTransitionButton.style.color = (transitionCreationActive) ? "white" : "black";
-        markEndButton.style.backgroundColor = (endMarkingActive) ? "green" : "transparent";     
+        markEndButton.style.backgroundColor = (endMarkingActive) ? "green" : "white";     
         markEndButton.style.color = (endMarkingActive) ? "white" : "black";
-        markStartButton.style.backgroundColor = (startMarkingActive) ? "green" : "transparent";     
+        markStartButton.style.backgroundColor = (startMarkingActive) ? "green" : "white";     
         markStartButton.style.color = (startMarkingActive) ? "white" : "black";
-        deleteButton.style.backgroundColor = (deleteActive) ? "green" : "transparent";      
+        deleteButton.style.backgroundColor = (deleteActive) ? "green" : "white";      
         deleteButton.style.color = (deleteActive) ? "white" : "black";
-        moveButton.style.backgroundColor = (moveActive) ? "green" : "transparent";     
+        moveButton.style.backgroundColor = (moveActive) ? "green" : "white";     
         moveButton.style.color = (moveActive) ? "white" : "black";
-        deleteEndButton.style.backgroundColor = (endDeletionActive) ? "green" : "transparent";     
+        deleteEndButton.style.backgroundColor = (endDeletionActive) ? "green" : "white";     
         deleteEndButton.style.color = (endDeletionActive) ? "white" : "black";
-        editButton.style.backgroundColor = (editActive) ? "green" : "transparent";
+        editButton.style.backgroundColor = (editActive) ? "green" : "white";
         editButton.style.color = (editActive) ? "white" : "black";
         
     }
@@ -554,25 +614,25 @@ document.addEventListener("DOMContentLoaded", function(){
 
 
         if(30 <= angle && angle <= 90){
-            pieMove.style.backgroundColor = 'red';
+            pieMove.style.backgroundColor = 'green';
         }
         else if(90 <= angle && angle <= 150){
-            pieMarkStart.style.backgroundColor = 'red';
+            pieMarkStart.style.backgroundColor = 'green';
         }
         else if(150 <= angle && angle <= 210){
-            pieMarkEnd.style.backgroundColor = 'red';
+            pieMarkEnd.style.backgroundColor = 'green';
 
         }
         else if(210 <= angle && angle <= 270){
-            pieRemoveEnd.style.backgroundColor = 'red';
+            pieRemoveEnd.style.backgroundColor = 'green';
 
         }
         else if(270 <= angle && angle <= 330){
-            pieStartTransition.style.backgroundColor = 'red';
+            pieStartTransition.style.backgroundColor = 'green';
 
         }
         else{
-            pieDelete.style.backgroundColor = 'red';
+            pieDelete.style.backgroundColor = 'green';
         }
 
 
@@ -580,16 +640,9 @@ document.addEventListener("DOMContentLoaded", function(){
 
     function handlePieMenuClick(angle, mouseX, mouseY){
         if(30 <= angle && angle <= 90){
-            /* console.log("move")
-            var drawingAreaScale = two.scene.scale;
-            var drawingAreaShiftX = two.scene.translation.x;
-            var drawingAreaShiftY = two.scene.translation.y;
-
-            var newPosition = {x:(mouseX - drawingAreaShiftX)/drawingAreaScale, y:(mouseY - drawingAreaShiftY)/drawingAreaScale};
-
-            createdAutomaton.moveState(pieMenu.currentState, newPosition, two); */
 
             movingState = pieMenu.currentState;
+            pieMoveActive = true;
             moveActive = true;
 
 

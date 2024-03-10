@@ -51,7 +51,6 @@ header nav ul li a:hover {
 #grammarInputForm div {
     display: flex;
     flex-direction: column;
-    width: 50%;
 }
 
 
@@ -104,6 +103,8 @@ header nav ul li a:hover {
     
 }
 
+
+
 #drawingArea {
     background-color: beige;
     border-style: solid;
@@ -118,7 +119,7 @@ header nav ul li a:hover {
 }
 
 .nav_bar {
-    margin-bottom: 50px;
+    margin-bottom: 25px;
     width: 100%;
     text-align: left;
     background-color: #ffffff;;
@@ -174,7 +175,7 @@ header nav ul li a:hover {
 
 #type {
     padding: 12px 20px;
-    margin-left: 20px;
+    margin-top: 10px;
     color: white;
     background-color:#005b0c;
     border: 2px solid grey;
@@ -184,6 +185,7 @@ header nav ul li a:hover {
 
 #isDFA {
     padding: 12px 20px;
+    margin-top: 10px;
     color: white;
     background-color:#005b0c;
     border: 2px solid grey;
@@ -225,7 +227,7 @@ header nav ul li a:hover {
 
 #clear {
     padding: 12px 20px;
-    margin-right: 10px;
+    margin-top: 10px;
     color: white;
     background-color:rgb(174, 17, 17);
     border: 2px solid grey;
@@ -239,11 +241,28 @@ header nav ul li a:hover {
     background-color: rgb(255, 188, 188);
 }
 
+#buttons {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    border: 2px solid grey;
+    border-radius: 10px;
+    padding-bottom: 10px;
+    background-color: rgb(237, 237, 237);
+}
+
 #editButtons {
     overflow: hidden;
     scale: 0;
     width: 100%;
     margin-top: 10px;
+    padding-bottom: 5px;
+    border: 2px solid transparent;
+    background-color: rgb(255, 255, 255);
+    border-radius: 5px;
+    flex-wrap: wrap;
+    display: flex;
     justify-content: space-evenly;
     transition: all 0.3s ease;
 
@@ -253,7 +272,6 @@ header nav ul li a:hover {
     background-color: white;
     padding: 12px 20px;
     margin-top: 10px;
-    margin-right: 10px;
     border: 2px solid grey;
     border-radius: 5px;
     font-size: 15px;
@@ -265,26 +283,48 @@ header nav ul li a:hover {
     background-color: rgba(0, 128, 0, 0.5);
 }
 
-#createState, #createTransition, #markEnd, #markStart, #deleteEnd, #delete, #move, #copy, #paste {
+#grammarButtons {
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(237, 237, 237);
+    border-radius: 10px;
+    border: 2px solid grey;
+    padding-bottom: 10px;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+#copy, #paste {
     background-color: white;
     margin-top: 10px;
-    margin-right: 10px;
-    padding: 10px 10px;
+    padding: 12px 20px;
     border: 2px solid grey;
     border-radius: 5px;
     font-size: 15px;
     transition: all 0.3s ease;
 }
 
+#createState, #createTransition, #markEnd, #markStart, #deleteEnd, #delete, #move {
+    background-color: white;
+    margin-top: 10px;
+    padding: 12px 20px;
+    border: 2px solid grey;
+    border-radius: 5px;
+    font-size: 15px;
+    scale: 1;
+    transition: all 0.3s ease;
+    display: none;
+}
+
 #screenshot, #determinize {
     background-color: white;
     padding: 12px 20px;
     margin-top: 10px;
-    margin-right: 10px;
     border: 2px solid grey;
     border-radius: 5px;
     font-size: 15px;
     transition: all 0.3s ease;
+
 }
 
 #createState:hover, #createTransition:hover, #markEnd:hover, #deleteEnd:hover,#markStart:hover,#delete:hover, #move:hover, #screenshot:hover, #determinize:hover, #copy:hover, #paste:hover {
@@ -344,16 +384,15 @@ header nav ul li a:hover {
 #multiview{
     display: flex;
     flex-direction: row;
-    margin-top: 50px;
+    margin-top: 20px;
 }
 
 
-#multiview #graphArea {
+#graphArea {
 
-    width: 50%;
+    width: 65%;
     margin-right: 0px;
     padding-right: 00px;
-    border-right: 3px solid transparent;
     box-sizing: border-box;
     
 
@@ -366,10 +405,11 @@ header nav ul li a:hover {
     color: black;
 }
 
-#multiview #convertButtons {
+#convertButtons {
 
     
     display: flex;
+    height: 800px;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -383,7 +423,7 @@ header nav ul li a:hover {
 
 }
 
-#multiview #leftarrow {
+#leftarrow {
     border: none;
     width: 70px;
     height: 40px;
@@ -393,11 +433,11 @@ header nav ul li a:hover {
     background-repeat: no-repeat;
 }
 
-#multiview #leftarrow:hover {
+#leftarrow:hover {
     background-image: url('arrow_left_selected.svg');
 }
 
-#multiview #rightarrow {
+#rightarrow {
     background-color: transparent;
     border: none;
     width: 70px;
@@ -407,7 +447,7 @@ header nav ul li a:hover {
     background-repeat: no-repeat;
 }
 
-#multiview #rightarrow:hover {
+#rightarrow:hover {
     background-image: url('arrow_right_selected.svg') !important;
 }
 
@@ -424,11 +464,12 @@ header nav ul li a:hover {
 
 
 
-#multiview #grammarInputForm {
+#grammarInputForm {
     
-    width: 50%;
+    width: 35%;
     margin-top: 0;
     height: 600px;
+    margin-right: 50px;
     
 
 }
