@@ -25,6 +25,14 @@ document.addEventListener("DOMContentLoaded", function(){
     var rightArrowButton = document.getElementById("rightarrow");
     rightArrowButton.style.backgroundImage = "url('arrow_right_selected.svg')";
     var InfoConsole = document.getElementById("console");
+    var pieDelete = document.getElementById("pieDelete");
+    var pieMove = document.getElementById("pieMove");
+    var pieMarkStart = document.getElementById("pieMarkStart");
+    var pieMarkEnd = document.getElementById("pieMarkEnd");
+    var pieRemoveEnd = document.getElementById("pieRemoveEnd");
+    var pieStartTransition = document.getElementById("pieStartTransition");
+
+
     var stateCount = 0;
     var transitionsCount = 0;
     var createdStates = [];
@@ -49,6 +57,8 @@ document.addEventListener("DOMContentLoaded", function(){
     var grammar = new Grammar([],[],[], null);
     var automatonObserver = new AutomatonObserver(createdAutomaton, grammar, 0);
     createdAutomaton.addObserver(automatonObserver);    
+
+    var pieMenu = new PieMenu(document.getElementById("pieMenu"), document.getElementById("test"), canvasRect);   
 
 
     markEndButton.addEventListener("click", function(){
@@ -228,7 +238,6 @@ document.addEventListener("DOMContentLoaded", function(){
             stateCount += 1;        
                 
         }
-
     });
 
     document.addEventListener("mousemove", function(event){
@@ -244,7 +253,6 @@ document.addEventListener("DOMContentLoaded", function(){
         var isMouseInsideCanvas = (mousePositionX >= 0 && mousePositionX <= canvas.clientWidth && mousePositionY >= 0 && mousePositionY <= canvas.clientHeight);
 
         if(event.buttons === 1 && isMouseInsideCanvas && !stateCreationActive && !moveActive && !transitionCreationActive && !endMarkingActive){
-            console.log("Drag")
             var xAmount = event.movementX / 1;
             var yAmount = event.movementY / 1;
 
@@ -255,10 +263,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
         if(movingState != undefined && moveActive){
 
-            /* movingState.setPosition((mousePositionX - drawingAreaShiftX)/drawingAreaScale, (mousePositionY - drawingAreaShiftY)/drawingAreaScale, two);
-            movingState.deleteVisuals(two);
-            movingState.createVisuals(two); */
-
             var newPosition = {x:(mousePositionX - drawingAreaShiftX)/drawingAreaScale, y:(mousePositionY - drawingAreaShiftY)/drawingAreaScale};
 
             createdAutomaton.moveState(movingState, newPosition, two);
@@ -266,6 +270,13 @@ document.addEventListener("DOMContentLoaded", function(){
 
         }
     });
+
+    document.addEventListener('mouseup', () => {
+        if(moveActive){
+            movingState = undefined;
+            moveActive = false;
+        }
+    })
 
     document.addEventListener("wheel", function(event){
         
@@ -301,19 +312,18 @@ document.addEventListener("DOMContentLoaded", function(){
 
     document.addEventListener('stateMouseDown', function(event){
         
-        var state = event.detail;
+        var state = event.detail.state;
         
         if(transitionCreationActive){
             console.log(state.name + ' from');
             userSelectedStateFrom = state;
         }
 
-        if(endMarkingActive){
+        else if(endMarkingActive){
             createdAutomaton.markEnd(state, two);
             
         }
-        console.log(startMarkingActive)
-        if(startMarkingActive){
+        else if(startMarkingActive){
             
             if(createdAutomaton.states.filter(state => state.isStart == true).length > 0){
 
@@ -327,21 +337,66 @@ document.addEventListener("DOMContentLoaded", function(){
             createdAutomaton.markStart(state, two);
         }
 
-        if(deleteActive){
+        else if(deleteActive){
             
             createdAutomaton.removeState(state, two);
         
         }
 
-        if(endDeletionActive){
+        else if(endDeletionActive){
             createdAutomaton.unmarkEnd(state, two);
         }
 
-        if(moveActive){
-            var state = event.detail;
+        else if(moveActive){
             movingState = state;
 
         }
+        else {
+
+            pieMenu.enable(state, event.detail.mouseX + window.pageXOffset, event.detail.mouseY + window.pageYOffset, canvasRect);
+        }
+    });
+
+    document.addEventListener('pieMenuMouseDown', function(event){
+
+        var mousePositionX = event.detail.mouseX - canvasRect.left + window.pageXOffset;
+        var mousePositionY = event.detail.mouseY - canvasRect.top + window.pageYOffset;
+
+        var pieMenuPosX = parseFloat(pieMenu.domElement.style.left) + 200;
+        var pieMenuPosY = parseFloat(pieMenu.domElement.style.top) + 200;
+
+        var angle = Math.atan2(mousePositionY - pieMenuPosY, mousePositionX - pieMenuPosX);
+
+        angle = angle * (180/ Math.PI);
+
+        if(angle < 0){
+            angle = angle + 360;
+        }
+
+        handlePieMenuClick(angle, mousePositionX, mousePositionY);
+
+
+    });
+
+    document.addEventListener('pieMenuMouseMove', function(event){
+
+        var mousePositionX = event.detail.mouseX - canvasRect.left + window.pageXOffset;
+        var mousePositionY = event.detail.mouseY - canvasRect.top + window.pageYOffset;
+
+        var pieMenuPosX = parseFloat(pieMenu.domElement.style.left) + 200;
+        var pieMenuPosY = parseFloat(pieMenu.domElement.style.top) + 200;
+
+        var angle = Math.atan2(mousePositionY - pieMenuPosY, mousePositionX - pieMenuPosX);
+
+        angle = angle * (180/ Math.PI);
+
+        if(angle < 0){
+            angle = angle + 360;
+        }
+
+        handlePieMenuSelection(angle);
+
+
     });
 
     document.addEventListener('stateMouseUp', function(event){
@@ -473,4 +528,84 @@ document.addEventListener("DOMContentLoaded", function(){
     function clearConsole(){
         InfoConsole.textContent = "";
     } 
+
+    function handlePieMenuSelection(angle){
+
+        pieMove.style.backgroundColor = 'white';
+        pieMarkEnd.style.backgroundColor = 'white';
+        pieMarkStart.style.backgroundColor = 'white';
+        pieRemoveEnd.style.backgroundColor = 'white';
+        pieDelete.style.backgroundColor = 'white';
+        pieStartTransition.style.backgroundColor = 'white';
+
+
+
+        if(30 <= angle && angle <= 90){
+            pieMove.style.backgroundColor = 'red';
+        }
+        else if(90 <= angle && angle <= 150){
+            pieMarkStart.style.backgroundColor = 'red';
+        }
+        else if(150 <= angle && angle <= 210){
+            pieMarkEnd.style.backgroundColor = 'red';
+
+        }
+        else if(210 <= angle && angle <= 270){
+            pieRemoveEnd.style.backgroundColor = 'red';
+
+        }
+        else if(270 <= angle && angle <= 330){
+            pieStartTransition.style.backgroundColor = 'red';
+
+        }
+        else{
+            pieDelete.style.backgroundColor = 'red';
+        }
+
+
+    }
+
+    function handlePieMenuClick(angle, mouseX, mouseY){
+        if(30 <= angle && angle <= 90){
+            /* console.log("move")
+            var drawingAreaScale = two.scene.scale;
+            var drawingAreaShiftX = two.scene.translation.x;
+            var drawingAreaShiftY = two.scene.translation.y;
+
+            var newPosition = {x:(mouseX - drawingAreaShiftX)/drawingAreaScale, y:(mouseY - drawingAreaShiftY)/drawingAreaScale};
+
+            createdAutomaton.moveState(pieMenu.currentState, newPosition, two); */
+
+            movingState = pieMenu.currentState;
+            moveActive = true;
+
+
+
+        }
+        else if(90 <= angle && angle <= 150){
+            console.log("markStart")
+            createdAutomaton.markStart(pieMenu.currentState, two);
+        }
+        else if(150 <= angle && angle <= 210){
+            console.log("MarkEnd")
+            createdAutomaton.markEnd(pieMenu.currentState, two);
+
+        }
+        else if(210 <= angle && angle <= 270){
+
+            console.log("RemoveEnd")
+            createdAutomaton.unmarkEnd(pieMenu.currentState, two)
+
+
+        }
+        else if(270 <= angle && angle <= 330){
+            console.log("StartTransition")
+        }
+        else{
+            console.log("Delete")
+            createdAutomaton.removeState(pieMenu.currentState, two);
+        }
+
+        pieMenu.disable();
+    }
 });

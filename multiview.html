@@ -15,6 +15,7 @@
    
 </head>
 <body>
+    
     <header>
         <h1>Graphical Interface For Grammars</h1>
         <nav>
@@ -24,6 +25,9 @@
             </ul>
         </nav>
     </header>
+
+    
+
     <div class="nav_bar">
         <ul>
             <li><a href="index.html">GRAMMAR TO GRAPH</a></li>
@@ -34,11 +38,26 @@
 
     </div>
 
+   
+      
+    
+
     <div id="multiview">
 
         <div id="graphArea">
             <h2>Graph</h2>
-            <div id="drawingArea"></div>
+            <div id="drawingArea">
+                <div id="test">
+                    <div id="pieMenu">
+                        <div class="pieButton" id="pieDelete"></div>
+                        <div class="pieButton" id="pieMove"></div>
+                        <div class="pieButton" id="pieMarkStart"></div>
+                        <div class="pieButton" id="pieMarkEnd"></div>
+                        <div class="pieButton" id="pieRemoveEnd"></div>
+                        <div class="pieButton" id="pieStartTransition"></div>
+                    </div>
+                </div>
+            </div>
             <p id="console">Start by selecting "Create State"</p>
             <div id="buttons">
                 <button id="createState">Create State</button>
@@ -88,10 +107,15 @@
             <button id="paste">Paste grammar from clipboard</button>
         </form>
 
+        
     </div>
+
+    
+
 
     <div id="htmlInfo" data-name="target" data-value="graphToGrammar"></div>
 
+   
     
 </body>
 </html>

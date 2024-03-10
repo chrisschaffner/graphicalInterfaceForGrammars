@@ -1,3 +1,4 @@
+
 function scriptLoaded(){
     console.log("The specific script has finished loading.");
 }
@@ -180,7 +181,17 @@ class FiniteAutomaton{
     }
 
     addTransition(transition, two){
-        this.transitions.push(transition);
+
+        var sameFromAndToTransition = this.transitions.find(t => t.from === transition.from && t.to === transition.to);
+
+        if(sameFromAndToTransition){
+            sameFromAndToTransition.via.push(transition.via)
+        }
+        else {
+            this.transitions.push(transition);
+
+        }
+
         this.notfiyObservers(two);
     }
 
@@ -237,8 +248,14 @@ class FiniteAutomaton{
         this.transitions.forEach(trans => {
             trans.from.addAngle(trans.startStateAngle);
             trans.to.addAngle(trans.endStateAngle);
-        })
-        this.transitions.forEach(transition => transition.createVisuals(two, this.states));
+        });
+
+        var oppositeTransitions = this.transitions.filter(transition => this.transitions.some(t => t.from === transition.to && t.to === transition.from));
+
+        oppositeTransitions.forEach(t => t.createVisuals(two, this.states, 50));
+
+        this.transitions.filter(t => !oppositeTransitions.includes(t)).forEach(trans => trans.createVisuals(two, this.states));
+        
         this.states.filter(s => s.isStart).forEach(state => state.createStartArrow(two));
     
         this.states.forEach(state => console.log(state.angles))
@@ -390,8 +407,12 @@ class State{
         two.update();
 
 
-        this.stateCircle._renderer.elem.addEventListener('mousedown', () => {
-            document.dispatchEvent(new CustomEvent('stateMouseDown', {detail: this}));
+        this.stateCircle._renderer.elem.addEventListener('mousedown', (event) => {
+            document.dispatchEvent(new CustomEvent('stateMouseDown', 
+            {detail: {  state: this,
+                        mouseX: event.clientX,
+                        mouseY: event.clientY
+            }}));
         });
 
         this.stateCircle._renderer.elem.addEventListener('mouseover', () => {
@@ -497,7 +518,7 @@ class FaTranisition{
         return "(" + this.from.name + ", " + this.to.name + ")";
     }
 
-    createVisuals(two, states){
+    createVisuals(two, states, curveFactor){
 
         two.remove(this.transitionLine);
         two.remove(this.boundingBox);
@@ -551,7 +572,20 @@ class FaTranisition{
             var amount = 0;
 
             var pointToInsert = calculateMedianVertex(this.startVector, this.endVector);
+
             var normalVecor = calculateNormalVector(this.startVector, this.endVector);    
+
+
+            if(curveFactor){
+                pointToInsert = movePointAlongVector(pointToInsert, normalVecor, curveFactor);
+
+                angle = Math.atan2(pointToInsert.y - this.from.posY, pointToInsert.x - this.from.posX);
+                endAngle = Math.atan2(this.to.posY - pointToInsert.y, this.to.posX - pointToInsert.x);
+                
+                this.startVector = {x: this.from.posX + Math.cos(angle)*100,y: this.from.posY + Math.sin(angle)*100};
+                this.endVector = {x: this.to.posX - Math.cos(endAngle)*100, y: this.to.posY - Math.sin(endAngle)*100};
+            }
+            
     
             for(let i=0; i<states.length; i++){
 
@@ -701,6 +735,72 @@ class AutomatonObserver{
             }
         }
     }
+}
+
+class PieMenu{
+    isActive = false;
+    domElement;
+    deleteButton;
+    currentState;
+    background;
+
+    pieMenuMouseDownHandler = (event) => {
+        document.dispatchEvent(new CustomEvent('pieMenuMouseDown', 
+        {detail: {  mouseX: event.clientX,
+                    mouseY: event.clientY
+        }}));
+    };
+    pieMenuMouseMoveHandler = (event) => {
+        document.dispatchEvent(new CustomEvent('pieMenuMouseMove', 
+        {detail: {  mouseX: event.clientX,
+                    mouseY: event.clientY
+        }}));
+    };
+
+    constructor(domElement, background){
+        this.domElement = domElement;
+        this.background = background;
+        this.background.style.backgroundColor = 'transparent';
+        this.background.style.display = 'none';
+
+        
+    }
+
+    enable(currentState, posX, posY, canvasRect){
+
+
+        this.background.style.top = canvasRect.top + 'px';
+        this.background.style.left = canvasRect.left + 'px';
+        this.background.style.width = canvasRect.width + 'px';
+        this.background.style.height = canvasRect.height + 'px';
+
+        this.background.style.display = 'flex';
+
+        this.currentState = currentState;
+
+        this.domElement.style.display = 'flex';
+        this.domElement.style.left = (posX - 200 - canvasRect.left) + 'px';
+        this.domElement.style.top = (posY - 200 - canvasRect.top) + "px";
+
+        this.isActive = true;
+
+        this.background.addEventListener('mousedown', this.pieMenuMouseDownHandler);
+            
+        this.background.addEventListener('mousemove', this.pieMenuMouseMoveHandler);
+        
+    }
+
+    disable(){
+        this.domElement.style.display = 'none';
+        this.background.style.display = 'none';
+        this.isLoaded = false;
+        this.isActive = false;    
+
+        this.background.removeEventListener('mousedown', this.pieMenuMouseDownHandler);
+            
+        this.background.removeEventListener('mousemove', this.pieMenuMouseMoveHandler);
+    }
+
 }
 
 

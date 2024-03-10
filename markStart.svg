@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="68.797287mm"
+   height="68.797287mm"
+   viewBox="0 0 68.797287 68.797287"
+   version="1.1"
+   id="svg24606"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview24608"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false" />
+  <defs
+     id="defs24603" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-34.085816,-11.404873)">
+    <circle
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="path24773"
+       cx="68.484459"
+       cy="45.803516"
+       r="32.398643"
+       inkscape:export-filename="star.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+  </g>
+  <g
+     id="g21015"
+     transform="matrix(1.4489845,0,0,1.4489845,-8.3109712,-144.8299)"
+     inkscape:export-filename="addStart.svg"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96"
+     style="display:inline">
+    <g
+       id="g10214"
+       inkscape:label="markStart"
+       style="display:inline;stroke:#6c6c6c;stroke-width:2.5;stroke-dasharray:none;stroke-opacity:1"
+       transform="translate(3.3896484,7.4249442)">
+      <circle
+         style="fill:none;fill-opacity:0.436567;stroke:#6c6c6c;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+         id="path10150"
+         cx="32.981525"
+         cy="120.16461"
+         r="9.3018417" />
+      <path
+         style="fill:none;fill-opacity:0.436567;stroke:#14df00;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+         d="M 21.076252,120.16461 H 8.9221751"
+         id="path10206" />
+      <path
+         style="display:inline;fill:none;fill-opacity:0.436567;stroke:#14df00;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+         d="m 23.083458,121.76544 -4.273619,-4.27361"
+         id="path10208"
+         transform="translate(-2.0072066,-1.6008345)" />
+      <path
+         style="display:inline;fill:none;fill-opacity:0.436567;stroke:#14df00;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+         d="m 18.80984,126.03906 4.273619,-4.27361"
+         id="path10210"
+         transform="translate(-2.0072066,-1.6008345)" />
+      <path
+         style="fill:none;fill-opacity:0.436567;stroke:#14df00;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+         d="m 19.826252,100.65303 v 8.67777"
+         id="path10494" />
+      <path
+         style="fill:none;fill-opacity:0.436567;stroke:#14df00;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+         d="m 15.487367,104.99191 h 8.67777"
+         id="path12818" />
+    </g>
+  </g>
+</svg>

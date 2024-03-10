@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="68.797287mm"
+   height="68.797287mm"
+   viewBox="0 0 68.797287 68.797287"
+   version="1.1"
+   id="svg24606"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview24608"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false" />
+  <defs
+     id="defs24603" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-34.085816,-11.404873)">
+    <circle
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="path24773"
+       cx="68.484459"
+       cy="45.803516"
+       r="32.398643"
+       inkscape:export-filename="markStart.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+  </g>
+  <g
+     id="g13377"
+     style="display:inline;stroke-width:2.1;stroke-dasharray:none"
+     inkscape:label="removeEnd"
+     transform="matrix(1.3237599,0,0,1.3237599,-11.378018,-45.223124)"
+     inkscape:export-filename="remove.svg"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96">
+    <circle
+       style="fill:none;fill-opacity:0.436567;stroke:#6c6c6c;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       id="circle13369"
+       cx="29.764801"
+       cy="62.21331"
+       r="12.686637" />
+    <circle
+       style="fill:none;fill-opacity:0.436567;stroke:#b72f2f;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       id="circle13371"
+       cx="29.764801"
+       cy="62.21331"
+       r="9.1331749" />
+    <path
+       style="display:inline;fill:none;fill-opacity:0.436567;stroke:#b72f2f;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers"
+       d="m 42.858586,48.315659 h 8.67777"
+       id="path13375" />
+  </g>
+</svg>
