@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var createTransitionButton = document.getElementById("createTransition");
     var markEndButton = document.getElementById("markEnd");
     var markStartButton = document.getElementById("markStart");
+    var editButtons = document.getElementById("editButtons");
     var deleteButton = document.getElementById("delete");
     var deleteEndButton = document.getElementById("deleteEnd");
     var makeScreenshotButton = document.getElementById("screenshot");
@@ -20,6 +21,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var copyButton = document.getElementById("copy");
     var moveButton = document.getElementById("move");
     var pasteButton = document.getElementById("paste");
+    var editButton = document.getElementById("editButton");
     var autoConvertInput = document.getElementById("auto");
     var leftArrowButton = document.getElementById("leftarrow");
     var rightArrowButton = document.getElementById("rightarrow");
@@ -47,6 +49,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var endMarkingActive = false;
     var startMarkingActive = false;
     var deleteActive = false;
+    var editActive = false;
     var moveActive = false;
     var movingState;
     var variablesOutput = document.getElementById("variablesInput");
@@ -120,6 +123,25 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
     makeScreenshotButton.addEventListener("click", function(){
+    });
+
+    editButton.addEventListener("click", () => {
+
+        editActive = !editActive;
+
+        editButtons.style.scale = editActive ? 1 : 0;
+
+        if(!editActive){
+            stateCreationActive = false;
+            transitionCreationActive = false;
+            endMarkingActive = false;
+            endDeletionActive = false;
+            startMarkingActive = false;
+            deleteActive = false;
+            moveActive = false;
+        }
+
+        updateEditButtons();
     });
 
     deleteEndButton.addEventListener("click", function(){
@@ -436,18 +458,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
         if(deleteActive){
             
-            transition.deleteVisuals(two);
             createdAutomaton.removeTranstion(transition, two);
-
-            for(let i=0; i<transition.via.length; i++){
-
-                var via = transition.via[i];
-
-                if(createdAutomaton.transitions.some(element => element.via.includes(via)) == false){
-                    var indexToDelete = createdAutomaton.inputAlphabet.indexOf(via);
-                    createdAutomaton.inputAlphabet.splice(indexToDelete, 1);
-                }
-            }
         }
     });
 
@@ -517,6 +528,8 @@ document.addEventListener("DOMContentLoaded", function(){
         moveButton.style.color = (moveActive) ? "white" : "black";
         deleteEndButton.style.backgroundColor = (endDeletionActive) ? "green" : "transparent";     
         deleteEndButton.style.color = (endDeletionActive) ? "white" : "black";
+        editButton.style.backgroundColor = (editActive) ? "green" : "transparent";
+        editButton.style.color = (editActive) ? "white" : "black";
         
     }
 

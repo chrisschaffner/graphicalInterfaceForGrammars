@@ -117,23 +117,6 @@ header nav ul li a:hover {
     -webkit-user-select: none;
 }
 
-
-/* #drawingArea button {
-    
-    margin-left: 5px;
-    padding: 12px 20px;
-    color: white;
-    background-color: #005b0c;
-    border-radius: 5px;
-    border: 2px solid gray;
-    transition: all 0.3s ease;
-}
-
-#drawingArea button:hover {
-    color: black;
-    background-color: white;
-} */
-
 .nav_bar {
     margin-bottom: 50px;
     width: 100%;
@@ -242,7 +225,7 @@ header nav ul li a:hover {
 
 #clear {
     padding: 12px 20px;
-    margin-left: 20px;
+    margin-right: 10px;
     color: white;
     background-color:rgb(174, 17, 17);
     border: 2px solid grey;
@@ -256,7 +239,44 @@ header nav ul li a:hover {
     background-color: rgb(255, 188, 188);
 }
 
-#createState, #createTransition, #markEnd, #markStart, #deleteEnd, #delete, #move, #screenshot, #determinize, #copy, #paste {
+#editButtons {
+    overflow: hidden;
+    scale: 0;
+    width: 100%;
+    margin-top: 10px;
+    justify-content: space-evenly;
+    transition: all 0.3s ease;
+
+}
+
+#editButton {
+    background-color: white;
+    padding: 12px 20px;
+    margin-top: 10px;
+    margin-right: 10px;
+    border: 2px solid grey;
+    border-radius: 5px;
+    font-size: 15px;
+    transition: all 0.3s ease;  
+}
+
+#editButton:hover {
+    color: white;
+    background-color: rgba(0, 128, 0, 0.5);
+}
+
+#createState, #createTransition, #markEnd, #markStart, #deleteEnd, #delete, #move, #copy, #paste {
+    background-color: white;
+    margin-top: 10px;
+    margin-right: 10px;
+    padding: 10px 10px;
+    border: 2px solid grey;
+    border-radius: 5px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+#screenshot, #determinize {
     background-color: white;
     padding: 12px 20px;
     margin-top: 10px;
@@ -412,49 +432,6 @@ header nav ul li a:hover {
     
 
 }
-
-/* #pieMenu {
-    overflow: hidden;
-    position: absolute;
-    margin: 1em auto;
-    padding: 0;
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    z-index: 200;
-    background-image: url('circular_menu.svg');
-    background-size: contain; 
-    background-repeat: no-repeat;
-  }
-  
-  .slice {
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 50%;
-    height: 50%;
-    transform-origin: 0% 100%;
-    background-color: transparent;
-    
-
-  }
-  
-  .slice:nth-child(1) {transform: rotate(30deg) skewY(-30deg);}
-  .slice:nth-child(2) {transform: rotate(90deg) skewY(-30deg);} 
-  .slice:nth-child(3) {transform: rotate(150deg) skewY(-30deg);}
-  .slice:nth-child(4) {transform: rotate(210deg) skewY(-30deg);}
-  .slice:nth-child(5) {transform: rotate(270deg) skewY(-30deg);}
-  .slice:nth-child(6) {transform: rotate(330deg) skewY(-30deg);}
-  
-  
-  .slice:hover {
-    background: rgb(0,36,14);
-    background: linear-gradient(49deg, rgba(0,36,14,0) 0%, rgba(36,161,22,0) 26%, rgba(36, 161, 22, 0.301) 26.0%, rgba(36,161,22,1) 100%);
-    
-  } */
-
-
 
 #pieMenu {
     position: absolute;

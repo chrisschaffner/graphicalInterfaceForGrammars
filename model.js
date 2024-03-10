@@ -132,7 +132,10 @@ class FiniteAutomaton{
                                                     .filter(onlyUnique);
                               
                 if(viaArray.length > 0){
-                    this.transitions.push(new FaTranisition(states[i], states[j], viaArray));
+
+                    var transitionIndex = Math.max(this.transitions.map(t => t.index));
+
+                    this.transitions.push(new FaTranisition(states[i], states[j], viaArray, transitionIndex+1));
                 }
             }
         }
@@ -218,8 +221,16 @@ class FiniteAutomaton{
     }
 
     removeTranstion(transition, two){
+
         transition.deleteVisuals(two);
+
         this.transitions = this.transitions.filter(t => t.index !== transition.index);
+
+        this.inputAlphabet = this.inputAlphabet.filter(element => {
+            return this.transitions.some(t => t.via.includes(element));
+        });
+
+
         this.notfiyObservers(two);
     }
 
@@ -1204,7 +1215,8 @@ function createNFAFromGrammar(grammar, two){
                     let stateLeft = states.find(state => state.name === productions[k].left[0])
                     let stateRight = states.find(element => element.name === variables[i]);
 
-                    transitions.push(new FaTranisition(stateLeft, stateRight, 'ε'));
+                    transitions.push(new FaTranisition(stateLeft, stateRight, 'ε', transitionIndex));
+                    transitionIndex++;
                 }
             }
     
