@@ -39,8 +39,10 @@ document.addEventListener("DOMContentLoaded", function(){
 
         try{
             grammar = userInputToGrammar(variablesInput.value, terminalsInput.value, productionsInput.value, startingInput.value)
+
+            grammar.calculateGrammarType();
         
-            typeDisplay.textContent = "Type: " + calculateGrammarType(grammar);
+            typeDisplay.textContent = "Type: " + grammar.type;
 
             console.log(decideWordProblem(grammar, word));
 
@@ -64,6 +66,20 @@ document.addEventListener("DOMContentLoaded", function(){
             console.error(error);
         }        
         
+    });
+
+    clearButton.addEventListener("click", () => {
+        variablesInput.value = '';
+        terminalsInput.value = '';
+        productionsInput.value = '';
+        startingInput.value = '';
+        wordInput.value = '';
+        typeDisplay.textContent = "Type: ";
+        wordContainmentDisplay.textContent = "";
+        derivationDisplay.textContent = "";
+        generateExampleWordsButton.style.display = "none";
+        exampleWordsDisplay.textContent = "";
+
     });
 
     generateExampleWordsButton.addEventListener("click", function(){

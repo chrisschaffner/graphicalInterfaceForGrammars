@@ -34,46 +34,55 @@
 
     </div>
 
-    <button id="exampleButton">Insert Example Grammar</button>
+    <div id="wcLayout">
 
-    
-    <form id="grammarInputForm">
-        <div>
-            <label for="variableInputs">Variables:</label>
-            <input type="text" id="variablesInput" name="variables" placeholder="e.g. A, B"><br><br>
-        </div>
-        <div>
-            <label for="terminalsInput">Terminal symbols:</label>
-            <input type="text" id="terminalsInput" name="terminals" placeholder="e.g. a, b, c"><br><br>
-        </div>
-        <div>
-            <label for="productionsInput">Productions:</label>
-            <textarea rows="5" cols="60" id="productionsInput" name="productions" placeholder="e.g.&#10;A->aB|cD&#10;B->Bc"></textarea>
-        </div>
-        <div>
-            <label for="startingInput">Starting symbol:</label>
-            <input type="text" id="startingInput" name="starting" placeholder="e.g. B"><br><br>
+        <div id="grammarArea">
+            <div id="wcGrammarInputForm">
+                <div>
+                    <label for="variableInputs">Variables:</label>
+                    <input type="text" id="variablesInput" name="variables" placeholder="e.g. A, B"><br><br>
+                </div>
+                <div>
+                    <label for="terminalsInput">Terminal symbols:</label>
+                    <input type="text" id="terminalsInput" name="terminals" placeholder="e.g. a, b, c"><br><br>
+                </div>
+                <div>
+                    <label for="productionsInput">Productions:</label>
+                    <textarea rows="5" cols="60" id="productionsInput" name="productions" placeholder="e.g.&#10;A->aB|cD&#10;B->Bc"></textarea>
+                </div>
+                <div>
+                    <label for="startingInput">Starting symbol:</label>
+                    <input type="text" id="startingInput" name="starting" placeholder="e.g. B"><br><br>
+                </div>
+
+                <div>
+                    <label for="wordInput">Word to check:</label>
+                    <input type="text" id="wordInput" name="word" placeholder="e.g. abba"><br><br>
+                </div>
+
+            </div>
+
+            <div id="wcButtons">
+                <button id="check">Check</button>
+                <span id="type">Type: </span>
+                <button id="clear">Clear</button>
+                <button id="copy">Copy grammar</button>
+                <button id="paste">Paste grammar</button>
+                <button id="exampleButton">Example Grammar</button>
+            </div>
         </div>
 
-        <div>
-            <label for="wordInput">Word to check:</label>
-            <input type="text" id="wordInput" name="word" placeholder="e.g. abba"><br><br>
-        </div>
-        
-        <button id="check">Check</button>
-        <span id="type">Type: </span>
-        <button id="clear">Clear</button>
-        <button id="copy">Copy grammar to clipboard</button>
-        <button id="paste">Paste grammar from clipboard</button>
-    </form>
+        <div id="wcOutputArea">
+            <div id="WCoutput">
+                <span id="wordContainmentOutput"></span>
+                <span id="derivationOutput"></span>
+            </div>
 
-    <div id="WCoutput">
-        <span id="wordContainmentOutput"></span>
-        <span id="derivationOutput"></span>
+            <button id="generateWordsButton">Generate example words</button>
+            <span id="exampleWords"></span>
+        </div>
+
     </div>
-
-    <button id="generateWordsButton">Generate example words</button>
-    <span id="exampleWords"></span>
 
     <div id="htmlInfo" data-name="target" data-value="wordContainment"></div>
 

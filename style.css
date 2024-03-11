@@ -44,17 +44,17 @@ header nav ul li a:hover {
     margin-bottom: 30px;
 }
 
-#grammarInputForm label {
+#grammarInputForm label, #wcGrammarInputForm label {
     margin-bottom: 5px;
 }
 
-#grammarInputForm div {
+#grammarInputForm div, #wcGrammarInputForm div {
     display: flex;
     flex-direction: column;
 }
 
 
-#grammarInputForm input {
+#grammarInputForm input, #wcGrammarInputForm input {
     
     padding: 12px 20px;
     box-sizing: border-box;
@@ -66,7 +66,7 @@ header nav ul li a:hover {
     
 }
 
-#grammarInputForm textarea {
+#grammarInputForm textarea, #wcGrammarInputForm textarea {
     box-sizing: border-box;
     font-size: 18px;
     border-radius: 7px;
@@ -81,11 +81,9 @@ header nav ul li a:hover {
 
 
 #submit, #check{
-    background-color: #005b0c;
-    color: white;
-    padding: 12px 20px;
+    background-color: white;
     margin-top: 10px;
-    margin-left: 20px;
+    padding: 12px 20px;
     border: 2px solid grey;
     border-radius: 5px;
     font-size: 15px;
@@ -194,10 +192,9 @@ header nav ul li a:hover {
 }
 
 #exampleButton {
+    background-color: white;
+    margin-top: 10px;
     padding: 12px 20px;
-    margin-bottom: 40px;
-    color: white;
-    background-color:#005b0c;
     border: 2px solid grey;
     border-radius: 5px;
     font-size: 15px;
@@ -474,6 +471,8 @@ header nav ul li a:hover {
 
 }
 
+
+
 #pieMenu {
     position: absolute;
     width: 400px;
@@ -507,7 +506,43 @@ header nav ul li a:hover {
   .pieButton:nth-child(5) { transform: rotate(240deg) translate(150px) rotate(-240deg); background-image: url('removeEnd.svg'); background-size: contain; background-repeat: no-repeat;}
   .pieButton:nth-child(6) { transform: rotate(300deg) translate(150px) rotate(-300deg); background-image: url('cancel.svg'); background-size: contain; background-repeat: no-repeat;}
 
+#wcLayout {
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+    margin-left: 30px;
+    margin-right: 30px;
+}
 
+#grammarArea {
+    width: 50%;
+    margin-right: 2%;
+}
+
+#wcGrammarInputForm {
+    
+    width: 100%;
+    margin-top: 0;
+    
+
+}
+
+#wcButtons {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    border: 2px solid grey;
+    border-radius: 10px;
+    padding-bottom: 10px;
+    background-color: rgb(237, 237, 237);
+
+}
+
+#wcOutputArea {
+    width: 50%;
+    margin-left: 2%;
+}
   
   
 

@@ -15,6 +15,7 @@
    
 </head>
 <body>
+    
     <header>
         <h1>Graphical Interface For Grammars</h1>
         <nav>
@@ -24,6 +25,9 @@
             </ul>
         </nav>
     </header>
+
+    
+
     <div class="nav_bar">
         <ul>
             <li><a href="index.html">GRAMMAR TO GRAPH</a></li>
@@ -34,29 +38,85 @@
 
     </div>
 
-    <button id="exampleGraphButton">Insert Example Graph</button>
+   
+    <div id="multiview">
 
-    <div id="drawingArea"></div>
-    <button id="createState">Create State</button>
-    <button id="createTransition">Create Transition</button>
-    <button id="markEnd">Mark End</button>
-    <button id="delete">Delete State/Transition</button>
-    <button id="move">Move State</button>
+        <div id="graphArea">
+            <h2>Graph</h2>
+            <div id="drawingArea">
+                <div id="test">
+                    <div id="pieMenu">
+                        <div class="pieButton" id="pieDelete"></div>
+                        <div class="pieButton" id="pieMove"></div>
+                        <div class="pieButton" id="pieMarkStart"></div>
+                        <div class="pieButton" id="pieMarkEnd"></div>
+                        <div class="pieButton" id="pieRemoveEnd"></div>
+                        <div class="pieButton" id="pieStartTransition"></div>
+                    </div>
+                </div>
+            </div>
+            <p id="console">Start by selecting "Create State"</p>
+            <div id="buttons">
+                <button id="editButton">Edit</button>
+                <button id="clear">Clear</button>
+                <button id="screenshot">Make Screenshot</button>
+                <button id="determinize">Determinize Automaton</button>
+                <span id="isDFA">DFA </span>
 
-    <button id="clear">Clear</button>
-    <button id="screenshot">Make Screenshot</button>
-    <button id="copy">Copy grammar to clipboard</button>
+                <button id="createState">Create State</button>
+                <button id="createTransition">Create Transition</button>
+                <button id="markEnd">Mark End</button>
+                <button id="deleteEnd">Delete End</button>
+                <button id="markStart">MarkStart</button>
+                <button id="delete">Delete State/Transition</button>
+                <button id="move">Move State</button>
 
-    <div id="convertedGrammar">
-        <span>Grammar:</span>
-        <span>Variables: <span id="variablesOutput"></span></span>
-        <span>Terminals: <span id="terminalsOutput"></span> </span>
-        <span id="productionsLabel">Productions: <span id="productionsOutput"></span></span>
-        <span>Starting Symbol: <span id="startingOutput"></span></span>
+                
+            </div>
+
+        </div>
+
+        <div id="convertButtons">
+            <button id="rightarrow"></button>
+            <input type="checkbox" id="auto" name="auto" checked>
+            <label for="auto">Auto</label> 
+        </div>
+
+    
+        <div id="grammarInputForm">
+            <h2>Grammar</h2>
+            <div>
+                <label for="variableInputs">Variables:</label>
+                <input type="text" id="variablesInput" name="variables" placeholder="e.g. A, B"><br><br>
+            </div>
+            <div>
+                <label for="terminalsInput">Terminal symbols:</label>
+                <input type="text" id="terminalsInput" name="terminals" placeholder="e.g. a, b, c"><br><br>
+            </div>
+            <div>
+                <label for="productionsInput">Productions:</label>
+                <textarea rows="8" cols="60" id="productionsInput" name="productions" placeholder="e.g.&#10;A->aB|cD&#10;B->Bc"></textarea>
+            </div>
+            <div>
+                <label for="startingInput">Starting symbol:</label>
+                <input type="text" id="startingInput" name="starting" placeholder="e.g. B"><br><br>
+            </div>
+            
+            <span id="grammarButtons">
+                <span id="type">Type: </span>
+                <button id="copy">Copy grammar</button>
+            </span>
+        </div>
+
+        
     </div>
+
+    
+
 
     <div id="htmlInfo" data-name="target" data-value="graphToGrammar"></div>
 
+   
     
 </body>
 </html>

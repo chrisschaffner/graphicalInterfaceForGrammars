@@ -97,6 +97,13 @@ class Grammar {
         this.type = 0;
         return
     }
+
+    clear(){
+        this.variables = [];
+        this.terminals = [];
+        this.productions = [];
+        this.starting = '';
+    }
     
 }
 
@@ -247,7 +254,10 @@ class FiniteAutomaton{
     }
 
     updateDFADisplay(bool){
-        this.dfaDisplay.textContent = bool? 'DFA' : 'NFA';
+        if(this.dfaDisplay){
+            this.dfaDisplay.textContent = bool? 'DFA' : 'NFA';
+
+        }
     }
 
     createAutomatonVisuals(two){
