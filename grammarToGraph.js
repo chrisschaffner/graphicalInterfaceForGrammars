@@ -2,11 +2,8 @@
 
 document.addEventListener("DOMContentLoaded", function(){
 
+    document.body.style.height = window.innerHeight + "px";
     var canvas = document.getElementById("drawingArea");
-    document.getElementById("graphArea").style.marginRight = "50px";
-    document.getElementById("grammarInputForm").style.marginLeft = "20px";
-    document.getElementById("grammarInputForm").style.marginRight = "20px";
-
     var canvasRect = canvas.getBoundingClientRect();
     var drawingAreaWidth = canvas.clientWidth;
     var drawingAreaHeight = canvas.clientHeight;
@@ -17,7 +14,6 @@ document.addEventListener("DOMContentLoaded", function(){
     var pasteButton = document.getElementById("paste");
     var rightArrowButton = document.getElementById("rightarrow");
     var InfoConsole = document.getElementById("console");
-
     var variablesOutput = document.getElementById("variablesInput");
     var terminalsOutput = document.getElementById("terminalsInput");
     var productionsOutput = document.getElementById("productionsInput");
@@ -38,12 +34,16 @@ document.addEventListener("DOMContentLoaded", function(){
                     
 
     });
+
+    document.addEventListener("fullscreenchange", () => {
+        console.log(window.innerHeight);
+    })
     
 
     copyButton.addEventListener("click", function(event){
         event.preventDefault();
         grammarformToSessionStorage(grammar.variables, grammar.terminals, formatProductions(grammar.productions).join("\n"), grammar.starting);
-        console.log(variablesOutput.textContent)
+
     });
 
 
@@ -95,13 +95,19 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
     window.addEventListener("resize", function(){
+
+
+        document.body.style.height = window.innerHeight + "px";
+
     
         var drawingAreaWidth = document.getElementById("drawingArea").clientWidth;
         var drawingAreaHeight = document.getElementById("drawingArea").clientHeight;
 
         two.width = drawingAreaWidth;
         two.height = drawingAreaHeight;
+
         two.update();
+
 
     });
 

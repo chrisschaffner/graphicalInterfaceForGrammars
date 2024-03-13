@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", function(){
+
+    document.body.style.height = window.innerHeight + "px";
+
     var variablesInput = document.getElementById("variablesInput");
     var terminalsInput = document.getElementById("terminalsInput");
     var productionsInput = document.getElementById("productionsInput");
@@ -15,8 +18,6 @@ document.addEventListener("DOMContentLoaded", function(){
     var generateExampleWordsButton = document.getElementById("generateWordsButton");
     var exampleWordsDisplay = document.getElementById("exampleWords");
     var grammar;
-
-
 
     exampleButton.addEventListener("click", function(event){
 
@@ -84,11 +85,11 @@ document.addEventListener("DOMContentLoaded", function(){
 
     generateExampleWordsButton.addEventListener("click", function(){
 
-        console.log("LOG")
+        var terminalsForms = generateTerminalsForms(grammar, 100);
 
-        exampleWordsDisplay.textContent = generateTerminalsForms(grammar, 100);
-
-    })
+        exampleWordsDisplay.textContent = terminalsForms ? generateTerminalsForms(grammar, 100) : "Grammar doesn't create any words";
+        
+    });
 
     copyButton.addEventListener("click", function(event){
         event.preventDefault();
@@ -104,6 +105,12 @@ document.addEventListener("DOMContentLoaded", function(){
         productionsInput.value  = sessionStorage.getItem("productions");
         startingInput.value = sessionStorage.getItem("starting");
         console.log("Pasted Input from session storage");
+
+    });
+
+    window.addEventListener("resize", function(){
+
+        document.body.style.height = window.innerHeight + "px";
 
     });
 

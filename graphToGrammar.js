@@ -1,7 +1,6 @@
-
-
-
 document.addEventListener("DOMContentLoaded", function(){
+
+    document.body.style.height = window.innerHeight + "px";
 
     var canvas = document.getElementById("drawingArea");
     var canvasRect = canvas.getBoundingClientRect();
@@ -14,7 +13,6 @@ document.addEventListener("DOMContentLoaded", function(){
     var createTransitionButton = document.getElementById("createTransition");
     var markEndButton = document.getElementById("markEnd");
     var markStartButton = document.getElementById("markStart");
-    var buttons = document.getElementById("buttons");
     var deleteButton = document.getElementById("delete");
     var deleteEndButton = document.getElementById("deleteEnd");
     var makeScreenshotButton = document.getElementById("screenshot");
@@ -124,13 +122,12 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
     makeScreenshotButton.addEventListener("click", function(){
+        createSVGScreenshot(two.renderer.domElement);
     });
 
     editButton.addEventListener("click", () => {
 
         editActive = !editActive;
-
-        //editButtons.style.scale = editActive ? 1 : 0;
 
         if(!editActive){
             stateCreationActive = false;
@@ -382,6 +379,8 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
     window.addEventListener("resize", function(){
+
+        document.body.style.height = window.innerHeight + "px";
     
         var drawingAreaWidth = document.getElementById("drawingArea").clientWidth;
         var drawingAreaHeight = document.getElementById("drawingArea").clientHeight;

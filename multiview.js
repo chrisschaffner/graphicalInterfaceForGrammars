@@ -2,6 +2,8 @@
 
 document.addEventListener("DOMContentLoaded", function(){
 
+    document.body.style.height = window.innerHeight + "px";
+
     var canvas = document.getElementById("drawingArea");
     var canvasRect = canvas.getBoundingClientRect();
     var drawingAreaWidth = canvas.clientWidth;
@@ -124,8 +126,13 @@ document.addEventListener("DOMContentLoaded", function(){
 
     });
 
-    makeScreenshotButton.addEventListener("click", function(){
+    
+    
+    makeScreenshotButton.addEventListener("click", async function(){
+        console.log(two.renderer.domElement)
+        createSVGScreenshot(two.renderer.domElement)
     });
+    
 
     editButton.addEventListener("click", () => {
 
@@ -381,6 +388,8 @@ document.addEventListener("DOMContentLoaded", function(){
     });
 
     window.addEventListener("resize", function(){
+
+        document.body.style.height = window.innerHeight + "px";
     
         var drawingAreaWidth = document.getElementById("drawingArea").clientWidth;
         var drawingAreaHeight = document.getElementById("drawingArea").clientHeight;
@@ -536,10 +545,11 @@ document.addEventListener("DOMContentLoaded", function(){
 
         grammar = userInputToGrammar(variablesOutput.value, terminalsOutput.value, productionsOutput.value, startingOutput.value);
         grammar.calculateGrammarType();
-        console.log(createdAutomaton);
+        console.log(createNFAFromGrammar(grammar, two));
 
         if(grammar.type === 3){
             nfaFromGrammar = createNFAFromGrammar(grammar, two);
+            console.log(nfaFromGrammar)
             createdAutomaton.states = nfaFromGrammar.states;
             createdAutomaton.transitions = nfaFromGrammar.transitions;
             createdAutomaton.inputAlphabet = nfaFromGrammar.inputAlphabet;

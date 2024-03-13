@@ -34,9 +34,12 @@
 
     </div>
 
-    <div id="wcLayout">
+    <div id="multiview">
 
-        <div id="grammarArea">
+        <div id="grammarArea" style="width: 50%">
+
+            <h2>Grammar</h2>
+
             <div id="wcGrammarInputForm">
                 <div>
                     <label for="variableInputs">Variables:</label>
@@ -55,31 +58,44 @@
                     <input type="text" id="startingInput" name="starting" placeholder="e.g. B"><br><br>
                 </div>
 
-                <div>
-                    <label for="wordInput">Word to check:</label>
-                    <input type="text" id="wordInput" name="word" placeholder="e.g. abba"><br><br>
-                </div>
+                <span id="buttons">
+                    <span id="type">Type: </span>
+                    <button id="clear">Clear</button>
+                    <button id="copy">Copy grammar</button>
+                    <button id="paste">Paste grammar</button>
+                    <button id="exampleButton">Example Grammar</button>
+                </span>
 
             </div>
 
-            <div id="wcButtons">
-                <button id="check">Check</button>
-                <span id="type">Type: </span>
-                <button id="clear">Clear</button>
-                <button id="copy">Copy grammar</button>
-                <button id="paste">Paste grammar</button>
-                <button id="exampleButton">Example Grammar</button>
-            </div>
+            
+
+            <div></div>
         </div>
 
         <div id="wcOutputArea">
-            <div id="WCoutput">
-                <span id="wordContainmentOutput"></span>
-                <span id="derivationOutput"></span>
+            <h2>Output</h2>
+            <div id="wcGrammarInputForm">
+                <div id="wordInputArea">
+                    <label for="wordInput">Word to check:</label>
+                    <input type="text" id="wordInput" name="word" placeholder="e.g. abba"><br><br>
+                    <button id="check">Check</button>
+                    <div id="WCoutput">
+                        <span id="wordContainmentOutput"></span>
+                        <span id="derivationOutput"></span>
+                        <button id="generateWordsButton">Generate example words</button>
+                        <span id="exampleWords"></span>
+                    </div>
+                </div>
+                
             </div>
 
-            <button id="generateWordsButton">Generate example words</button>
-            <span id="exampleWords"></span>
+            <div></div>
+            
+            
+
+            
+            
         </div>
 
     </div>

@@ -82,33 +82,36 @@
             <label for="auto">Auto</label> 
         </div>
 
-    
-        <div id="grammarInputForm">
+        <div id="grammarArea">
             <h2>Grammar</h2>
-            <div>
-                <label for="variableInputs">Variables:</label>
-                <input type="text" id="variablesInput" name="variables" placeholder="e.g. A, B"><br><br>
-            </div>
-            <div>
-                <label for="terminalsInput">Terminal symbols:</label>
-                <input type="text" id="terminalsInput" name="terminals" placeholder="e.g. a, b, c"><br><br>
-            </div>
-            <div>
-                <label for="productionsInput">Productions:</label>
-                <textarea rows="8" cols="60" id="productionsInput" name="productions" placeholder="e.g.&#10;A->aB|cD&#10;B->Bc"></textarea>
-            </div>
-            <div>
-                <label for="startingInput">Starting symbol:</label>
-                <input type="text" id="startingInput" name="starting" placeholder="e.g. B"><br><br>
-            </div>
-            
-            <span id="grammarButtons">
-                <span id="type">Type: </span>
-                <button id="copy">Copy grammar</button>
-            </span>
-        </div>
 
-        
+            <div id="grammarInputForm">
+                <div>
+                    <label for="variableInputs">Variables:</label>
+                    <input type="text" id="variablesInput" name="variables" placeholder="e.g. A, B"><br><br>
+                </div>
+                <div>
+                    <label for="terminalsInput">Terminal symbols:</label>
+                    <input type="text" id="terminalsInput" name="terminals" placeholder="e.g. a, b, c"><br><br>
+                </div>
+                <div>
+                    <label for="productionsInput">Productions:</label>
+                    <textarea rows="7" cols="60" id="productionsInput" name="productions" placeholder="e.g.&#10;A->aB|cD&#10;B->Bc"></textarea>
+                </div>
+                <div>
+                    <label for="startingInput">Starting symbol:</label>
+                    <input type="text" id="startingInput" name="starting" placeholder="e.g. B"><br><br>
+                </div>
+
+                <span id="buttons">
+                    <span id="type">Type: </span>
+                    <button id="copy">Copy grammar</button>
+                </span>
+
+            </div>
+
+            <div></div>
+        </div>
     </div>
 
     

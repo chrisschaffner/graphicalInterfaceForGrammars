@@ -65,7 +65,6 @@ class Grammar {
 
     calculateGrammarType(){
         var productions = this.productions;
-        console.log(productions)
         var variables = this.variables;
         var terminals = this.terminals.slice();
         terminals.push("ε");
@@ -75,7 +74,6 @@ class Grammar {
         var isType3 = true;
     
         for(let i=0; i<productions.length; i++){
-            console.log((terminals.includes(productions[i].right[0]) && (terminals.includes(productions[i].right.slice(-1).join("")) ||variables.includes(productions[i].right.slice(-1).join("")))))
             isType1 &= (productions[i].left.length <= productions[i].right.length);
             isType2 &= (isType1 && variables.includes(productions[i].left.join("")));
             isType3 &= (isType2 && ((productions[i].right.length === 1 && (terminals.includes(productions[i].right[0]) || variables.includes(productions[i].right[0]))) || (productions[i].right.length === 2 && terminals.includes(productions[i].right[0]) && variables.includes(productions[i].right[1]))));
@@ -132,19 +130,18 @@ class FiniteAutomaton{
         this.states = states
         this.inputAlphabet = inputAlphabet;
 
-        for(let i=0; i<states.length;i++){
-            for(let j=0; j<states.length; j++){
-                var viaArray = transitions .filter(element => element.from === states[i] && element.to === states[j])
-                                                    .map(element => element.via)
-                                                    .filter(onlyUnique);
-                              
-                if(viaArray.length > 0){
+        for(let i=0; i<transitions.length; i++){
+            var sameFromAndToTransition = this.transitions.find(t => t.from === transitions[i].from && t.to === transitions[i].to);
 
-                    var transitionIndex = Math.max(this.transitions.map(t => t.index));
-
-                    this.transitions.push(new FaTranisition(states[i], states[j], viaArray, transitionIndex+1));
-                }
+            if(!sameFromAndToTransition){
+                this.transitions.push(transitions[i]);
             }
+            else {
+                sameFromAndToTransition.via = sameFromAndToTransition.via.concat(transitions[i].via);
+                sameFromAndToTransition.via = sameFromAndToTransition.via.filter(onlyUnique);
+
+            }
+
         }
 
         this.dfaDisplay = document.getElementById("isDFA");
@@ -195,7 +192,8 @@ class FiniteAutomaton{
         var sameFromAndToTransition = this.transitions.find(t => t.from === transition.from && t.to === transition.to);
 
         if(sameFromAndToTransition){
-            sameFromAndToTransition.via.push(transition.via)
+            sameFromAndToTransition.via = sameFromAndToTransition.via.concat(transition.via);
+            sameFromAndToTransition.via = sameFromAndToTransition.via.filter(onlyUnique);
         }
         else {
             this.transitions.push(transition);
@@ -229,6 +227,7 @@ class FiniteAutomaton{
 
     removeTranstion(transition, two){
 
+        
         transition.deleteVisuals(two);
 
         this.transitions = this.transitions.filter(t => t.index !== transition.index);
@@ -279,7 +278,6 @@ class FiniteAutomaton{
         
         this.states.filter(s => s.isStart).forEach(state => state.createStartArrow(two));
     
-        this.states.forEach(state => console.log(state.angles))
         
     }
     createStatesGenerations(){
@@ -348,7 +346,6 @@ class FiniteAutomaton{
             }
         }
     
-        console.log(this.generationsArray);
     
     }
 
@@ -474,7 +471,6 @@ class State{
 
         var startArrowAngle = 180;
         var counter = 0;
-        console.log(this.angles);
 
         while(counter < 50 && this.angles.some(angle => inRange(angle, startArrowAngle -20, startArrowAngle + 20, 0))){
 
@@ -554,7 +550,6 @@ class FaTranisition{
 
             var counter = 0;
             while(counter <= 100 && this.from.angles.filter(angle => (angle !== selfStartAngle && angle !== selfEndAngle)).some(a => inRange(a, selfStartAngle, selfEndAngle, 10))){
-                console.log("AÆ");
                 selfEndAngle = (selfEndAngle + 30) % 360;
                 selfStartAngle = (selfStartAngle + 30) % 360;
                 counter++;
@@ -746,14 +741,11 @@ class AutomatonObserver{
         this.dfa.updateDFADisplay(isDFA);
         this.grammar.calculateGrammarType();
 
-        if(this.grammar.type === 3){
-            console.log("Update grammar? " + this.updateGrammar)
-            if(this.updateGrammar){
-                Object.assign(this.grammar, createGrammarFromNFA(this.dfa));
-                
-                this.grammar.updateOutput();
-                
-            }
+        if(this.updateGrammar){
+            Object.assign(this.grammar, createGrammarFromNFA(this.dfa));
+            
+            this.grammar.updateOutput();
+            
         }
     }
 }
@@ -866,16 +858,10 @@ function checkCorrectGrammarForm(variablesInputValue, terminalsInputValue, start
     var starting = startingInputValue.replace(/\s/g, '');
 
     if(terminals.length == 0){
-        console.log("Invalid terminals")
         return false
     }
 
-    console.log("Passed terminals check");
-
-    console.log("Passed productions check");
-
     if (!variables.includes(starting)){
-        console.log("FFF");
         return false
     }
 
@@ -895,11 +881,8 @@ function checkProduction(production, variables, terminals){
     var leftSide = production.left;
     var rightSide = production.right;
 
-    console.log("Left" + leftSide + " Right: " + rightSide)
 
     for(let i=0; i<leftSide.length;i++){
-
-        console.log(variables[0].name === leftSide[0].name)
 
         if (!variables.some(element => element.name === leftSide[i].name) && !terminals.some(element => element.name === leftSide[i])){
             
@@ -908,7 +891,6 @@ function checkProduction(production, variables, terminals){
         }
     }
 
-    console.log("N")
 
     for(let i=0; i<rightSide.length;i++){
 
@@ -939,7 +921,6 @@ function userInputToGrammar(variablesInputValue, terminalsInputValue, production
     productionsInputValue = productionsInputValue.replace(/[ \t]/g, "");
     var splittedProductionsInput = productionsInputValue.split("\n");
 
-    console.log(variables)
 
 
     if(terminals.length == 0){
@@ -967,7 +948,6 @@ function userInputToGrammar(variablesInputValue, terminalsInputValue, production
             for(let j=0; j<leftSide.length; j++){
                 
                 var slice = leftSide.slice(i-j, i+1);
-                console.log(slice)
                 if(variables.some(element => element === slice)){
                     processedLeftSide = [slice].concat(processedLeftSide);
 
@@ -1019,7 +999,6 @@ function userInputToGrammar(variablesInputValue, terminalsInputValue, production
 
         }
     }
-    console.log(productions)
     return new Grammar(variables, terminals, productions, starting)
 }
 /**
@@ -1090,7 +1069,6 @@ function calculateGenerationsArray(automaton){
         }
     }
 
-    console.log(automaton.generationsArray);
 
 }
 /**
@@ -1128,8 +1106,7 @@ function checkTransitionStatesIntersection(two, transition, states) {
         var circleCenterCoords = {x: states[i].posX, y: states[i].posY};
         var circleRadius = 100;
         if(checkLineAndCircleIntersection(arrowStartCoords, arrowEndCoords, circleCenterCoords, circleRadius)){
-            console.log("Intersecting: ");
-            console.log(transition.toString());
+
             return true;
         }
         else{
@@ -1191,15 +1168,12 @@ function createNFAFromGrammar(grammar, two){
     var transitionIndex = 0;
 
     var zeStateCount = variables.filter(variable => variable.startsWith("Ze")).length;
-    console.log(zeStateCount)
     states.push(new State("Ze" + numberToSubscript(zeStateCount), false, true));
 
 
     for(let i=0; i<variables.length; i++){
         states.push(new State(variables[i], false, false, i));
     }
-
-    console.log(starting)
 
     var startingState = states.find(element => element.name === starting);
     if (startingState) {
@@ -1214,18 +1188,17 @@ function createNFAFromGrammar(grammar, two){
                 if(productions[k].right.length === 2 &&
                    productions[k].left.join("") === variables[i] &&
                    productions[k].right[0] === inputAlphabet[j]){
-                    console.log("AAA")
                     let b = productions[k].right[1];
                     let stateB = states.find(element => element.name === b);
                     let stateI = states.find(element => element.name === variables[i]);
-                    transitions.push(new FaTranisition(stateI, stateB, inputAlphabet[j], transitionIndex));
+                    transitions.push(new FaTranisition(stateI, stateB, [inputAlphabet[j]], transitionIndex));
                     transitionIndex++;
                 }
                 else if(productions[k].left.length === 1 && productions[k].right[0] === variables[i]){
                     let stateLeft = states.find(state => state.name === productions[k].left[0])
                     let stateRight = states.find(element => element.name === variables[i]);
 
-                    transitions.push(new FaTranisition(stateLeft, stateRight, 'ε', transitionIndex));
+                    transitions.push(new FaTranisition(stateLeft, stateRight, ['ε'], transitionIndex));
                     transitionIndex++;
                 }
             }
@@ -1235,11 +1208,10 @@ function createNFAFromGrammar(grammar, two){
                 
                 let stateI = states.find(element => element.name === variables[i]);
                 let zeState = states.find(element => element.name === ("Ze" + numberToSubscript(zeStateCount)));
-                transitions.push(new FaTranisition(stateI, zeState, inputAlphabet[j], transitionIndex));
+                transitions.push(new FaTranisition(stateI, zeState, [inputAlphabet[j]], transitionIndex));
                 transitionIndex++;
             }
         }
-        console.log(transitions)
     }
     
 
@@ -1249,11 +1221,8 @@ function createNFAFromGrammar(grammar, two){
     
     }
 
-    //console.log(calculateStatePredecessor(transitions, zeState));
-
     var automaton = new FiniteAutomaton(states, inputAlphabet, transitions, two);
     
-
     return automaton;
 }
 
@@ -1263,7 +1232,6 @@ function createNFAFromGrammar(grammar, two){
  * @returns a Grammar
  */
 function createGrammarFromDFA(automaton){
-    console.log(automaton)
     var variables = [];
     var terminals;
     var productions = [];
@@ -1279,9 +1247,7 @@ function createGrammarFromDFA(automaton){
         starting = startState.name;
 
         if(startState.isEnd){
-            console.log("FFF")
             productions.push(new Production(startState.name, "ε"));
-            console.log(startState.isEnd)
         }
     }
 
@@ -1293,7 +1259,6 @@ function createGrammarFromDFA(automaton){
 
     for(let i=0; i<automaton.states.length; i++){
         for(let j=0; j<automaton.inputAlphabet.length; j++){
-            console.log("AAA")
             var successor = calculateStateSuccessorVia(automaton.transitions, automaton.states[i], automaton.inputAlphabet[j]);
             if(successor != undefined){
 
@@ -1354,7 +1319,6 @@ function createGrammarFromNFA(automaton){
 
         var epsilonSuccessors = calculateStateSuccessorsVia(automaton.transitions, automaton.states[i], 'ε', true);
         if(epsilonSuccessors){
-            console.log(epsilonSuccessors)
             epsilonSuccessors.forEach(succ => productions.push(new Production([automaton.states[i].name], [succ.name])));
             
         }
@@ -1418,7 +1382,6 @@ function formatProductions(productions) {
     for (var left in groupedProductions) {
         formattedProductions.push(left + " -> " + groupedProductions[left].join(" | "));
     }
-    console.log(formattedProductions)
 
     return formattedProductions;
 }
@@ -1609,7 +1572,6 @@ function generateTerminalsForms(grammar, maxCount){
 
     var n = 7;
     var l = [new SentenceForm(grammar.starting, null)];
-    console.log(l.length)
     var lOld;
     var i=0;
 
@@ -1682,10 +1644,8 @@ function NFAToDFA(automaton, two){
 
     for(let i=0; i<dfaStates.length; i++){
         var state = dfaStates[i];
-        console.log(alphabet.length)
         for(let j=0; j<alphabet.length; j++){
             var successorStates = new Set();
-            console.log(state.subsetStates)
             for(let k=0; k<state.subsetStates.length; k++){
 
                 var subsetSuccessors = calculateStateSuccessorsVia(automaton.transitions, state.subsetStates[k], alphabet[j], false);
@@ -1694,7 +1654,6 @@ function NFAToDFA(automaton, two){
             }
 
             var matchingSubsetState = dfaStates.find(s => checkArrayEuquality(s.subsetStates.map(e => e.name), Array.from(successorStates).map(t => t.name)));
-            console.log(matchingSubsetState)
             if(matchingSubsetState != undefined){
                 dfaTransitions.push(new FaTranisition(state, matchingSubsetState, alphabet[j], transitionIndex));
                 transitionIndex++;
@@ -1807,4 +1766,42 @@ function nTimesZ(n){
     }
     return string;
 
+}
+
+async function createSVGScreenshot(svg){
+
+    var serializedSVG = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent((new XMLSerializer()).serializeToString(svg));
+    var image = await loadSVGToImage(serializedSVG);
+    var screenshotCanvas = document.createElement('canvas');
+
+    screenshotCanvas.width = svg.clientWidth;
+    screenshotCanvas.height = svg.clientHeight;
+
+    var context = screenshotCanvas.getContext('2d');
+    context.fillStyle = 'white';
+    context.fillRect(0, 0, screenshotCanvas.width, screenshotCanvas.height);
+
+    context.drawImage(image, 0, 0, svg.clientWidth, svg.clientHeight);
+
+    var dataUrl = screenshotCanvas.toDataURL("image/png", 1.0);
+
+    downloadImage(dataUrl, "screenshot.png");
+}
+
+function downloadImage(dataUrl, filename) {
+    var helperElement = document.createElement('a');
+    helperElement.href = dataUrl;
+    helperElement.download = filename;
+    document.body.appendChild(helperElement);
+    helperElement.click();
+    document.body.removeChild(helperElement);
+}
+
+async function loadSVGToImage(svg){
+    return new Promise((resolve, reject) => {
+        var img = document.createElement('img');
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = svg;
+    });
 }
