@@ -88,6 +88,7 @@ document.addEventListener("DOMContentLoaded", function(){
         var terminalsForms = generateTerminalsForms(grammar, 100);
 
         exampleWordsDisplay.textContent = terminalsForms ? generateTerminalsForms(grammar, 100) : "Grammar doesn't create any words";
+        exampleWordsDisplay.style.color = terminalsForms ? 'black' : 'red';
         
     });
 

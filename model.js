@@ -1,4 +1,5 @@
 
+
 function scriptLoaded(){
     console.log("The specific script has finished loading.");
 }
@@ -139,7 +140,6 @@ class FiniteAutomaton{
             else {
                 sameFromAndToTransition.via = sameFromAndToTransition.via.concat(transitions[i].via);
                 sameFromAndToTransition.via = sameFromAndToTransition.via.filter(onlyUnique);
-
             }
 
         }
@@ -150,7 +150,10 @@ class FiniteAutomaton{
     }
 
     arrangeGraph(two){
+        console.log(this.states)
         this.createStatesGenerations();
+        
+
         this.states = this.states.filter(state => state.generation != undefined);
         this.calculateGenerationsArray();
         this.calculateStatePositions(); 
@@ -294,14 +297,14 @@ class FiniteAutomaton{
             while(statesToVisit.length != 0){
                 var currentState = statesToVisit.shift();
                 var successors = calculateStateSuccessors(this.transitions, currentState);
-                for(const successor of successors){
-                    if(!visited.has(successor)){
-                        successor.generation = currentState.generation + 1;
-                        statesToVisit.push(successor);
-                        visited.add(successor);
+                for(let i=0; i<successors.length; i++){
+                    if(!visited.has(successors[i])){
+                        successors[i].generation = currentState.generation + 1;
+                        statesToVisit.push(successors[i]);
+                        visited.add(successors[i]);
                     }
                     else {
-                        break;
+                        continue;
                         
                     }
                 }
@@ -352,7 +355,51 @@ class FiniteAutomaton{
     addTerminal(terminal){
         this.inputAlphabet.push(terminal);
     }
-}
+
+    resolveEpsilonTransitions(two){
+        var startState = this.states.find(s => s.isStart);
+        startState.isStart = false;
+        var startEpsilonClosure = calculateEpsilonClosure(startState, this.transitions);
+        startEpsilonClosure.forEach(s => s.isStart = true);
+        var newTransitions = [];
+
+        this.transitions.forEach(trans => {
+            trans.via.forEach(v => {
+                if(!v.includes('ε')){
+                    var epsilonClosure = calculateEpsilonClosure(trans.to, this.transitions);
+                    epsilonClosure.forEach(s => newTransitions.push(new FaTranisition(trans.from, s, v, trans.index)));
+                }
+            });
+        });
+
+        this.transitions = newTransitions;
+
+        this.arrangeGraph(two);
+
+    }
+
+    /**
+    * Checks if the given automaton is DFA or NFA
+    * @param {FiniteAutomaton} automaton 
+    * @returns whether the automaton is DFA or NFA
+    */
+    checkAutomatonDeterminism(){
+
+        if(this.states.filter(state => state.isStart).length > 1){
+            return false;
+        }
+        for(let i=0; i<this.states.length; i++){
+            for(let j=0; j<this.inputAlphabet.length; j++){
+                var successors = calculateStateSuccessorsVia(this.transitions, this.states[i], automaton.inputAlphabet[j], true);
+                if(successors.length > 1 || successors.length == 0){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    }
 
 class State{
     name;
@@ -737,7 +784,7 @@ class AutomatonObserver{
     update(two){
 
         this.dfa.createAutomatonVisuals(two);
-        var isDFA = checkAutomatonDeterminism(this.dfa);
+        var isDFA = this.dfa.checkAutomatonDeterminism();
         this.dfa.updateDFADisplay(isDFA);
         this.grammar.calculateGrammarType();
 
@@ -817,6 +864,22 @@ class PieMenu{
 }
 
 
+
+function calculateEpsilonClosure(state, transitions){
+    var closure = [state];
+    var oldClosure = [];
+    var maxIterations = 0;
+    while (maxIterations < 50 && !checkArrayEuquality(oldClosure, closure)){
+        oldClosure = closure;
+        for(let i=0; i<closure.length; i++){
+            var successors = calculateStateSuccessorsVia(transitions, closure[i], 'ε', false);
+            successors.forEach(s => closure.push(s));
+            closure = closure.filter(onlyUnique);
+        }
+        maxIterations++;
+    }
+    return closure;
+}
 
 /**
  * Callback function to filter out only unique items in an array
@@ -1039,38 +1102,7 @@ function calculateStatePredecessors(faTransitions, state){
     return Array.from(new Set((faTransitions.filter(trans => trans.to === state && trans.from !== state).map(t => t.from))));
 }
 
-/**
- * Creates an 2D-Array that stores the count of states in each generation for layout generation
- * @param {FiniteAutomaton} automaton 
- */
-function calculateGenerationsArray(automaton){
-    var states = automaton.states;
 
-    let maxGeneration = 0;
-
-    states.forEach(state => {
-        if (state.generation != undefined && state.generation > maxGeneration) {
-            maxGeneration = state.generation;
-        }
-    });
-    
-    automaton.generationsArray = [];
-
-    for(let i=0; i<=maxGeneration; i++){
-        automaton.generationsArray[i] = [];
-    }
-
-
-    for(let i=0; i<states.length; i++){
-        var stateGeneration = states[i].generation;
-        if(stateGeneration != undefined){
-            automaton.generationsArray[stateGeneration].push(states[i]);
-
-        }
-    }
-
-
-}
 /**
  * Checks if the path of transition intersects with the circle of any state
  * @param {Two} two 
@@ -1358,7 +1390,6 @@ function calculateStateSuccessorsVia(transitions, state, via, withSelf){
     }
     else{
         return transitions.filter(element => element.from === state && element.to !== state && element.via.includes(via)).map(e => e.to);
-
     }
 
 
@@ -1627,10 +1658,9 @@ function numberToSubscript(number){
  * @param {Two} two 
  * @returns a deterministic automaton
  */
-function NFAToDFA(automaton, two){
+function NFAToDFA(automaton, two, total){
 
-    var alphabet = automaton.inputAlphabet.slice().concat('ε');
-
+    var alphabet = automaton.inputAlphabet.slice();
 
     var dfaStates = createPowerSetOfStates(automaton.states);
     
@@ -1642,20 +1672,33 @@ function NFAToDFA(automaton, two){
 
     var transitionIndex = 0;
 
+    if(total){
+        var emptyState = new State('Ø', false, false, -1);
+        dfaStates.push(emptyState);
+    }
+
     for(let i=0; i<dfaStates.length; i++){
         var state = dfaStates[i];
         for(let j=0; j<alphabet.length; j++){
             var successorStates = new Set();
             for(let k=0; k<state.subsetStates.length; k++){
 
-                var subsetSuccessors = calculateStateSuccessorsVia(automaton.transitions, state.subsetStates[k], alphabet[j], false);
+
+                var subsetSuccessors = calculateStateSuccessorsVia(automaton.transitions, state.subsetStates[k], alphabet[j], true);
                 
                 subsetSuccessors.forEach(successor => successorStates.add(successor));
             }
 
+            console.log("State: " + state.name + " " + successorStates.size)
+
+            if(total && successorStates.size == 0){
+                dfaTransitions.push(new FaTranisition(state, emptyState, [alphabet[j]], transitionIndex));
+                transitionIndex++;
+            }
+
             var matchingSubsetState = dfaStates.find(s => checkArrayEuquality(s.subsetStates.map(e => e.name), Array.from(successorStates).map(t => t.name)));
             if(matchingSubsetState != undefined){
-                dfaTransitions.push(new FaTranisition(state, matchingSubsetState, alphabet[j], transitionIndex));
+                dfaTransitions.push(new FaTranisition(state, matchingSubsetState, [alphabet[j]], transitionIndex));
                 transitionIndex++;
             }
         }
@@ -1694,7 +1737,7 @@ function movePointAlongVector(point, vector, distance){
  * @param {Array} states 
  * @returns the power set of states
  */
-function createPowerSetOfStates(states){
+function createPowerSetOfStates(states, includeEmptySet){
     var subsets = [];
     var currentSubset = [];
     var outputStates = [];
@@ -1721,28 +1764,15 @@ function createPowerSetOfStates(states){
         state.subsetStates = subsetStates;
         outputStates.push(state);
     }
+
+    if(includeEmptySet){
+        outputStates.push(new State(String.fromCharCode(157), false, false, -1));
+    }
+
+
     return outputStates
 }
-/**
- * Checks if the given automaton is DFA or NFA
- * @param {FiniteAutomaton} automaton 
- * @returns whether the automaton is DFA or NFA
- */
-function checkAutomatonDeterminism(automaton){
 
-    if(automaton.states.filter(state => state.isStart).length > 1){
-        return false;
-    }
-    for(let i=0; i<automaton.states.length; i++){
-        for(let j=0; j<automaton.inputAlphabet.length; j++){
-            var successors = calculateStateSuccessorsVia(automaton.transitions, automaton.states[i], automaton.inputAlphabet[j], true);
-            if(successors.length > 1 || successors.length == 0){
-                return false;
-            }
-        }
-    }
-    return true;
-}
 
 function inRange(value, start, end, tolerance) {
     
@@ -1774,14 +1804,14 @@ async function createSVGScreenshot(svg){
     var image = await loadSVGToImage(serializedSVG);
     var screenshotCanvas = document.createElement('canvas');
 
-    screenshotCanvas.width = svg.clientWidth;
-    screenshotCanvas.height = svg.clientHeight;
+    screenshotCanvas.width = 2 * svg.clientWidth;
+    screenshotCanvas.height = 2 *svg.clientHeight;
 
     var context = screenshotCanvas.getContext('2d');
     context.fillStyle = 'white';
     context.fillRect(0, 0, screenshotCanvas.width, screenshotCanvas.height);
 
-    context.drawImage(image, 0, 0, svg.clientWidth, svg.clientHeight);
+    context.drawImage(image, 0, 0, 2 * svg.clientWidth, 2 * svg.clientHeight);
 
     var dataUrl = screenshotCanvas.toDataURL("image/png", 1.0);
 

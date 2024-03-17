@@ -43,7 +43,8 @@ document.addEventListener("DOMContentLoaded", function(){
     copyButton.addEventListener("click", function(event){
         event.preventDefault();
         grammarformToSessionStorage(grammar.variables, grammar.terminals, formatProductions(grammar.productions).join("\n"), grammar.starting);
-
+        var startState = createdAutomaton.states.find(s => s.isStart === true);
+        console.log(calculateEpsilonClosure(startState, createdAutomaton.transitions));
     });
 
 

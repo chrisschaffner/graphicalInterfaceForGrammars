@@ -20,6 +20,8 @@ document.addEventListener("DOMContentLoaded", function(){
     var deleteEndButton = document.getElementById("deleteEnd");
     var makeScreenshotButton = document.getElementById("screenshot");
     var determinizeButton = document.getElementById("determinize");
+    var determinizePartButton = document.getElementById("determinizePartial");
+    var removeEpsilonButton = document.getElementById("removeEpsilon");
     var copyButton = document.getElementById("copy");
     var dfaDisplay = document.getElementById("isDFA");
     var moveButton = document.getElementById("move");
@@ -96,7 +98,18 @@ document.addEventListener("DOMContentLoaded", function(){
         startMarkingActive ? messageToConsole("Click a state to mark it as start state", "black") : clearConsole();
 
         
-    })
+    });
+
+    removeEpsilonButton.addEventListener("click", () => {
+
+        messageToConsole("Removing ε-transitions, auto grammar conversion is disabled!", "red");
+            if(autoConvertInput.checked){
+                autoConvertInput.checked = false;
+                autoConvertInput.dispatchEvent(new Event('change'));
+            }
+
+        createdAutomaton.resolveEpsilonTransitions(two);
+    });
 
     deleteButton.addEventListener("click", function(){
 
@@ -126,11 +139,9 @@ document.addEventListener("DOMContentLoaded", function(){
 
     });
 
-    
-    
     makeScreenshotButton.addEventListener("click", async function(){
-        console.log(two.renderer.domElement)
-        createSVGScreenshot(two.renderer.domElement)
+        createSVGScreenshot(two.renderer.domElement);
+        messageToConsole("Screenshot created", 'green');
     });
     
 
@@ -152,11 +163,15 @@ document.addEventListener("DOMContentLoaded", function(){
             clearButton.style.scale = 1;
             makeScreenshotButton.style.scale = 1;
             determinizeButton.style.scale = 1;
+            determinizePartButton.style.scale = 1;
+            removeEpsilonButton.style.scale = 1;
             clearButton.style.display = 'flex';
             makeScreenshotButton.style.display = 'flex';
             clearButton.style.display = 'flex';
             dfaDisplay.style.display = 'flex';
             determinizeButton.style.display = 'flex';
+            determinizePartButton.style.display = 'flex';
+            removeEpsilonButton.style.display = 'flex';
             dfaDisplay.style.scale = 1;
 
             createStateButton.style.display = 'none';
@@ -178,6 +193,8 @@ document.addEventListener("DOMContentLoaded", function(){
             clearButton.style.scale = 0;
             makeScreenshotButton.style.scale = 0;
             determinizeButton.style.scale = 0;
+            determinizePartButton.style.scale = 0;
+            removeEpsilonButton.style.scale = 0;
             dfaDisplay.style.scale = 0;
 
             clearButton.style.display = 'none';
@@ -185,6 +202,8 @@ document.addEventListener("DOMContentLoaded", function(){
             clearButton.style.display = 'none';
             dfaDisplay.style.display = 'none'
             determinizeButton.style.display = 'none';
+            determinizePartButton.style.display = 'none';
+            removeEpsilonButton.style.display = 'none';
 
 
             createStateButton.style.display = 'flex';
@@ -245,23 +264,56 @@ document.addEventListener("DOMContentLoaded", function(){
     });
     
     determinizeButton.addEventListener("click", function(){
+
+        var hasEpsilonTransitions = createdAutomaton.transitions.some(t => t.via.includes('ε'));
+
+        if(!hasEpsilonTransitions){
+            console.log(createdAutomaton);
+            nfaToDfa = NFAToDFA(createdAutomaton, two, true);
+    
+            createdAutomaton.states = nfaToDfa.states;
+            createdAutomaton.transitions = nfaToDfa.transitions;
+            createdAutomaton.inputAlphabet = nfaToDfa.inputAlphabet;
+    
+            createdAutomaton.arrangeGraph(two);
+        }
+
+        else{
+            messageToConsole("Please remove ε-transitions first!", 'red');
+            console.warn("Detected ε-transition");
+        }
+
+       
+
+    });
+    determinizePartButton.addEventListener("click", function(){
         
+        var hasEpsilonTransitions = createdAutomaton.transitions.some(t => t.via.includes('ε'));
 
-        console.log(createdAutomaton);
-        nfaToDfa = NFAToDFA(createdAutomaton, two);
+        if(!hasEpsilonTransitions){
+            console.log(createdAutomaton);
+            nfaToDfa = NFAToDFA(createdAutomaton, two, false);
+    
+            createdAutomaton.states = nfaToDfa.states;
+            createdAutomaton.transitions = nfaToDfa.transitions;
+            createdAutomaton.inputAlphabet = nfaToDfa.inputAlphabet;
+    
+            createdAutomaton.arrangeGraph(two);
+        }
+        else{
+            messageToConsole("Please remove ε-transitions first!", 'red');
+            console.warn("Detected ε-transition");
+        }
 
-        createdAutomaton.states = nfaToDfa.states;
-        createdAutomaton.transitions = nfaToDfa.transitions;
-        createdAutomaton.inputAlphabet = nfaToDfa.inputAlphabet;
 
-        createdAutomaton.arrangeGraph(two);
 
-    })    
+    });
 
     copyButton.addEventListener("click", function(event){
         event.preventDefault();
         grammarformToSessionStorage(grammar.variables, grammar.terminals, formatProductions(grammar.productions).join("\n"), grammar.starting);
-        console.log(variablesOutput.textContent)
+        messageToConsole("Grammar copied to clipboard", 'green');
+
     });
 
     moveButton.addEventListener("click", function(){
@@ -285,6 +337,7 @@ document.addEventListener("DOMContentLoaded", function(){
         automatonObserver.updateGrammar = this.checked;
         if(this.checked){
             rightArrowButton.style.backgroundImage = "url('arrow_right_selected.svg')";
+            rightArrowButton.click();
         }
         else{
             rightArrowButton.style.backgroundImage = "url('arrow_right.svg')";
@@ -505,7 +558,7 @@ document.addEventListener("DOMContentLoaded", function(){
             }
 
             for(let i=0; i<userViaInput.length; i++){
-                if(!createdAutomaton.inputAlphabet.includes(userViaInput[i])){
+                if(!createdAutomaton.inputAlphabet.includes(userViaInput[i]) && userViaInput[i] !== 'ε'){
                     createdAutomaton.addTerminal(userViaInput[i]);
                 }
             }
