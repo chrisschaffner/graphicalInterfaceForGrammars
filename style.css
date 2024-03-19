@@ -1,381 +1,531 @@
 /* Header Layout */
 
 * {
-    font-family: 'Quicksand', sans-serif;    
+  font-family: "Quicksand", sans-serif;
 }
 
 body {
-    margin: 0;
-    display: flex;
-    flex-direction: column;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
 }
-
-
 
 header {
-    background-color: #d9e1d5;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: .6em 1em; 
+  background-color: #d9e1d5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6em 1em;
 }
 
-header a, p, h1 {
-    color: black
+header a,
+p,
+h1 {
+  color: black;
 }
 
 header h1 {
-    margin: 0; 
+  margin: 0;
 }
 
 header nav ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
 }
 
 header nav ul li {
-   display: inline-block;
+  display: inline-block;
 }
 
 header nav ul li a {
-    display: block;
-    text-align: center;
-    padding: 1em 2em; 
-    text-decoration: none;
+  display: block;
+  text-align: center;
+  padding: 1em 2em;
+  text-decoration: none;
+  background-color:#729877;
+  color:white;
+  border-radius: 3em;
+  margin-left: 2em;
 }
 
 header nav ul li a:hover {
-    background-color: #ffffff22;
+  background-color: #ffffff22;
 }
 
-.nav_bar {
-    width: 100%;
-    text-align: left;
-    background-color: white;
-    padding: 0;
-    
-    
+.navBar {
+  width: 100%;
+  text-align: left;
+  background-color: white;
+  padding: 0;
 }
 
-.nav_bar ul {
-    list-style: none;
-    padding: 0;
-    display: inline-flex;
-    justify-content: flex-start;
-    
+.navBar ul {
+  list-style: none;
+  padding: 0;
+  display: inline-flex;
+  justify-content: flex-start;
 }
 
-.nav_bar ul li a {
-    text-decoration: none;
-    color: black;
-    transition: color 0.3s ease;
-    transition: background-color 0.3s ease;
-    background-color: #d9e1d5;
-    padding: 1em 1em 1em 1em;
-
+.navBar ul li a {
+  text-decoration: none;
+  color: black;
+  transition: color 0.3s ease;
+  transition: background-color 0.3s ease;
+  background-color: #d9e1d5;
+  padding: 1em 1em 1em 1em;
 }
 
-.nav_bar ul li a:hover {
-    color: black;
-    background-color: white;
-    
+.navBar ul li a:hover {
+  color: black;
+  background-color: white;
 }
 
-.nav_bar ul li a.active {
-    color:black;
-    background-color: #d9e1d5;
-    border-bottom: .2em solid orange;
+.navBar ul li a.active {
+  color: black;
+  background-color: #d9e1d5;
+  border-bottom: 0.2em solid orange;
 }
 
 /* Body Layout */
 
-#grammarInputForm label, #wcGrammarInputForm label {
-    margin-bottom: .2em;
+#aboutPageText li {
+  list-style: inside;
 }
 
-#grammarInputForm div, #wcGrammarInputForm div {
-    display: flex;
-    flex-direction: column;
+#categoryButtons {
+  display: flex;
+  justify-items: center;
+  width: 85%;
 }
 
-#grammarInputForm input, #wcGrammarInputForm input {
-    
-    padding: .6em 1em;
-    box-sizing: border-box;
-    font-size: large;
-    border-radius: .6em;
-    border: .1em solid black;
-    transition: all 0.3s ease;
-    line-height: 2em;
-    
+.categoryButton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 1.5%;
+  margin-right: 1.5%;
+  box-sizing:content-box;
+}
+
+.categoryButton:hover{
+  color: rgb(255, 165, 0);
+}
+
+.categoryButton a {
+  box-sizing:content-box;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  width: 100%;
+  border: .2em black solid;
+  margin-top: 1em;
+  border-radius: 1em;
+  aspect-ratio: 1;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: white;
+  transition: border 0.1s ease-in;
+}
+
+.categoryButton a:hover {
+  border: .2em orange solid;
+}
+
+#grammarToGraphButton {
+  background-image: url("assets/grammarToGraphIcon.svg");
+}
+
+#grammarToGraphButton:hover {
+  background-image: url("assets/grammarToGraphIcon_selected.svg");
+}
+
+#graphToGrammarButton {
+  background-image: url("assets/graphToGrammarIcon.svg");
+}
+
+#graphToGrammarButton:hover {
+  background-image: url("assets/graphToGrammarIcon_selected.svg");
+}
+
+#wordContainmentButton {
+  background-image: url("assets/wordContainmentIcon.svg");
+}
+
+#wordContainmentButton:hover {
+  background-image: url("assets/wordContainmentIcon_selected.svg");
+}
+
+#multiviewButton {
+  background-image: url("assets/multiviewIcon.svg");
+}
+
+#multiviewButton:hover {
+  background-image: url("assets/multiviewIcon_selected.svg");
+}
+
+.categoryButton span {
+  text-align: center;
+  margin-top: 1em;
+  font-size:x-large;
+}
+
+#top {
+  width: 100%;
+  background-color: #d9e1d5;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-bottom: .1em black solid;
 }
 
 
+#bottom {
+  width: 100%;
+  background-color: #d9e1d5;
+}
 
-#grammarInputForm textarea, #wcGrammarInputForm textarea {
-    box-sizing: border-box;
-    font-size: large;
-    border-radius: .6em;
-    border: .1em solid black;
-    transition: all 0.3s ease;
-    margin-bottom: 1em;
-    max-height: 10em;
-    line-height: 1.5em;
-    resize: none;
+#grammarInputForm label,
+#wcGrammarInputForm label {
+  margin-bottom: 0.2em;
+}
 
+#grammarInputForm div,
+#wcGrammarInputForm div {
+  display: flex;
+  flex-direction: column;
+}
 
+#grammarInputForm input,
+#wcGrammarInputForm input {
+  padding: 0.6em 1em;
+  box-sizing: border-box;
+  font-size: large;
+  border-radius: 0.6em;
+  border: 0.1em solid black;
+  transition: all 0.3s ease;
+  line-height: 2em;
+}
+
+#grammarInputForm textarea,
+#wcGrammarInputForm textarea {
+  box-sizing: border-box;
+  font-size: large;
+  border-radius: 0.6em;
+  border: 0.1em solid black;
+  transition: all 0.3s ease;
+  margin-bottom: 1em;
+  max-height: 10em;
+  line-height: 1.5em;
+  resize: none;
 }
 
 #drawingArea {
-    background-color: rgb(255, 255, 255);
-    border: .1em rgb(189, 189, 189) solid;
-    border-radius: .8em;
-    cursor:crosshair;
-    height: 80%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-end;
-    user-select: none;
-    -moz-user-select: none;
-    -webkit-user-select: none;
+  background-color: rgb(255, 255, 255);
+  border: 0.1em rgb(189, 189, 189) solid;
+  border-radius: 0.8em;
+  cursor: crosshair;
+  height: 80%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
 }
 
 #drawingArea ::selection {
-    color: transparent;
-    background-color: transparent;
+  color: transparent;
+  background-color: transparent;
 }
 
 #buttons {
-    display: flex;
-    width: 100%;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    border: .1em solid grey;
-    border-radius: 1em;
-    padding-bottom: .5em;
-    padding-top: .5em;
-    margin-bottom: 1em;
-    background-color: rgb(237, 237, 237);
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  border: 0.1em solid grey;
+  border-radius: 1em;
+  padding-bottom: 0.5em;
+  padding-top: 0.5em;
+  margin-bottom: 1em;
+  background-color: rgb(237, 237, 237);
 }
 
-#productionsOutput, #productionsLabel {
-    display: flex;
-    justify-content:start;
+#productionsOutput,
+#productionsLabel {
+  display: flex;
+  justify-content: start;
 }
 
 #WCoutput {
-    display:flex;
-    flex-direction: column;
-    justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 #WCoutput span {
-    margin-top: 1em;
-    font-size: 1em;
+  margin-top: 1em;
+  font-size: 1em;
 }
 
-
-
-#multiview{
-    display: flex;
-    flex: 1;
-    flex-direction: row;
-    box-sizing: border-box;
-    margin-left: 5%;
-    margin-right: 5%;
-    margin-top: 2%;
-    margin-bottom: 2%;
-    padding-left: 1%;
-    padding-right: 1%;
-    background-color: rgb(248, 248, 248);
-    border: .1em solid rgb(203, 203, 203);
-    border-radius: 1em;
-    overflow: auto;
-
-    
-    
+#multiview {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  box-sizing: border-box;
+  margin-left: 5%;
+  margin-right: 5%;
+  margin-top: 2%;
+  margin-bottom: 2%;
+  padding-left: 1%;
+  padding-right: 1%;
+  background-color: rgb(248, 248, 248);
+  border: 0.1em solid rgb(203, 203, 203);
+  border-radius: 1em;
+  overflow: auto;
 }
 
 #graphArea {
-
-    width: 65%;    
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-
+  width: 65%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 #console {
-    
-    font-size: large;
-    color: black;
+  font-size: large;
+  color: black;
 }
 
 #convertButtons {
-
-    display: flex;
-    width: 5%;
-    height: auto;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    
+  display: flex;
+  width: 5%;
+  height: auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 #grammarArea {
-    width: 30%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; 
-
-
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 #wcGrammarInputForm {
-    
-    width: 100%;
-    margin-top: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    
-
+  width: 100%;
+  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
 
 #wcOutputArea {
-    width: 50%;
-    margin-left: 2%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-
+  width: 50%;
+  margin-left: 2%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
-
 
 /* Buttons */
 
-
-#clear {
-    color: white;
-    background-color: #eb4848;
-    padding: .8em 1em;
-    border: .2em solid grey;
-    border-radius: .5em;
-    font-size: medium;
-    scale: 1;
-    transition: all 0.3s ease;
+#clearButton{
+  color: white;
+  background-color: #eb4848;
+  padding: 0.8em 1em;
+  border: 0.2em solid grey;
+  border-radius: 0.5em;
+  font-size: medium;
+  scale: 1;
+  transition: all 0.3s ease;
 }
 
-#createState, #generateWordsButton, #type, #submit, #check, #copy, #exampleButton, #isDFA, #editButton, #screenshot, #determinize, #determinizePartial, #removeEpsilon, #paste, #createTransition, #markEnd, #markStart, #deleteEnd, #delete, #move {
-    background-color: white;
-    color: black;
-    padding: .8em 1em;
-    border: .2em solid #77896f;
-    border-radius: .5em;
-    font-size: medium;    
-    transition: all 0.3s ease;
+#createStateButton,
+#generateWordsButton,
+#typeDisplay,
+#submitButton,
+#checkButton,
+#copyButton,
+#exampleButton,
+#isDFADisplay,
+#editButton,
+#screenshotButton,
+#determinizeButton,
+#determinizePartialButton,
+#removeEpsilonButton,
+#pasteButton,
+#createTransitionButton,
+#markEndButton,
+#markStartButton,
+#deleteEndButton,
+#deleteButton,
+#moveButton {
+  background-color: white;
+  color: black;
+  padding: 0.8em 1em;
+  border: 0.2em solid #77896f;
+  border-radius: 0.5em;
+  font-size: medium;
+  transition: all 0.3s ease;
 }
 
-#createState:hover, #check:hover, #submit:hover, #exampleButton:hover, #editButton:hover, #generateWordsButton:hover, #createTransition:hover, #determinizePartial:hover, #removeEpsilon:hover, #markEnd:hover, #deleteEnd:hover,#markStart:hover,#delete:hover, #move:hover, #screenshot:hover, #determinize:hover, #copy:hover, #paste:hover {
-    color: white;
-    background-color: rgba(0, 128, 0, 0.5);
+#createStateButton:hover,
+#checkButton:hover,
+#submitButton:hover,
+#exampleButton:hover,
+#editButton:hover,
+#generateWordsButton:hover,
+#createTransitionButton:hover,
+#determinizePartialButton:hover,
+#removeEpsilonButton:hover,
+#markEndButton:hover,
+#deleteEndButton:hover,
+#markStartButton:hover,
+#deleteButton:hover,
+#moveButton:hover,
+#screenshotButton:hover,
+#determinizeButton:hover,
+#copyButton:hover,
+#pasteButton:hover {
+  color: white;
+  background-color: rgba(0, 128, 0, 0.5);
 }
 
-#createState, #generateWordsButton, #createTransition, #markEnd, #markStart, #deleteEnd, #delete, #move {
-    display: none;
+#createStateButton,
+#generateWordsButton,
+#createTransitionButton,
+#markEndButton,
+#markStartButton,
+#deleteEndButton,
+#deleteButton,
+#moveButton {
+  display: none;
 }
 
 #generateWordsButton {
-    margin-top: 2em;
-    margin-bottom: 2em;
+  margin-top: 2em;
+  margin-bottom: 2em;
 }
 
-#clear:hover {
-    color:black;
-    background-color: rgb(255, 188, 188);
+#clearButton:hover {
+  color: black;
+  background-color: rgb(255, 188, 188);
 }
 
-#grammarInputForm input:focus, #grammarInputForm textarea:focus{
-    box-shadow: 0 0 3pt 2pt #005b0c;;
-    outline: none;
-    
+#grammarInputForm input:focus,
+#grammarInputForm textarea:focus {
+  box-shadow: 0 0 3pt 2pt #005b0c;
+  outline: none;
 }
 
-#leftarrow {
-    background-color: transparent;
-    border: none;
-    width: 75%;
-    aspect-ratio: 2/1;
-    margin-left: 15%;
-    margin-right: 15%;
-    background-image: url('arrow_left.svg');
-    background-size: contain;
-    background-position: center; 
-    background-repeat: no-repeat;
+#leftArrowButton {
+  background-color: transparent;
+  border: none;
+  width: 75%;
+  aspect-ratio: 2/1;
+  margin-left: 15%;
+  margin-right: 15%;
+  background-image: url("assets/arrow_left.svg");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-#leftarrow:hover {
-    background-image: url('arrow_left_selected.svg');
+#leftArrowButton:hover {
+  background-image: url("assets/arrow_left_selected.svg");
 }
 
-#rightarrow {
-    background-color: transparent;
-    border: none;
-    width: 75%;
-    aspect-ratio: 2/1;
-    margin-left: 15%;
-    margin-right: 15%;
-    background-image: url('arrow_right.svg');
-    background-size: contain;
-    background-position: center; 
-    background-repeat: no-repeat;
+#rightArrowButton {
+  background-color: transparent;
+  border: none;
+  width: 75%;
+  aspect-ratio: 2/1;
+  margin-left: 15%;
+  margin-right: 15%;
+  background-image: url("assets/arrow_right.svg");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-#rightarrow:hover {
-    background-image: url('arrow_right_selected.svg') !important;
+#rightArrowButton:hover {
+  background-image: url("assets/arrow_right_selected.svg") !important;
 }
 
 #grammarInputForm {
-    
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-   
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* Pie Menu */
 
 #pieMenu {
-    position: absolute;
-    width: 400px;
-    height: 400px;
-    background-color: transparent;
-    z-index: 200;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    pointer-events: visiblePainted;
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background-color: transparent;
+  z-index: 200;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  pointer-events: visiblePainted;
 }
 
-#test {
-    position: absolute;
+#canvas {
+  position: absolute;
 }
 
 .pieButton {
-    overflow: hidden;
-    position: absolute;
-    width: 25%;
-    height: 25%;
-    background-color: white;
-    border-radius: 50%;
-  }
+  overflow: hidden;
+  position: absolute;
+  width: 25%;
+  height: 25%;
+  background-color: white;
+  border-radius: 50%;
+}
 
-.pieButton:nth-child(1) { transform: rotate(0deg) translate(150px) rotate(0deg); background-image: url('delete.svg'); background-size: contain; background-repeat: no-repeat;}
-.pieButton:nth-child(2) { transform: rotate(60deg) translate(150px) rotate(-60deg); background-image: url('move.svg'); background-size: contain; background-repeat: no-repeat;}
-.pieButton:nth-child(3) { transform: rotate(120deg) translate(150px) rotate(-120deg); background-image: url('markStart.svg'); background-size: contain; background-repeat: no-repeat;}
-.pieButton:nth-child(4) { transform: rotate(180deg) translate(150px) rotate(-180deg); background-image: url('markEnd.svg'); background-size: contain; background-repeat: no-repeat;}
-.pieButton:nth-child(5) { transform: rotate(240deg) translate(150px) rotate(-240deg); background-image: url('removeEnd.svg'); background-size: contain; background-repeat: no-repeat;}
-.pieButton:nth-child(6) { transform: rotate(300deg) translate(150px) rotate(-300deg); background-image: url('cancel.svg'); background-size: contain; background-repeat: no-repeat;}
+.pieButton:nth-child(1) {
+  transform: rotate(0deg) translate(150px) rotate(0deg);
+  background-image: url("assets/delete.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.pieButton:nth-child(2) {
+  transform: rotate(60deg) translate(150px) rotate(-60deg);
+  background-image: url("assets/move.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.pieButton:nth-child(3) {
+  transform: rotate(120deg) translate(150px) rotate(-120deg);
+  background-image: url("assets/markStart.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.pieButton:nth-child(4) {
+  transform: rotate(180deg) translate(150px) rotate(-180deg);
+  background-image: url("assets/markEnd.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.pieButton:nth-child(5) {
+  transform: rotate(240deg) translate(150px) rotate(-240deg);
+  background-image: url("assets/removeEnd.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.pieButton:nth-child(6) {
+  transform: rotate(300deg) translate(150px) rotate(-300deg);
+  background-image: url("assets/cancel.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+}

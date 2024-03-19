@@ -1,104 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Graphical Interface For Grammars</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap"
+      rel="stylesheet"
+    />
     <script src="node_modules/two.js/build/two.js"></script>
     <script src="model.js"></script>
     <script src="wordContainment.js"></script>
-   
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <h1>Graphical Interface for Grammars and Automata</h1>
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><p>Version 1.0</p></li>
-            </ul>
-        </nav>
-    </header>
-    <div class="nav_bar">
+      <h1>Graphical Interface for Grammars and Automata</h1>
+      <nav>
         <ul>
-            <li><a href="index.html">GRAMMAR TO GRAPH</a></li>
-            <li><a href="graphToGrammar.html">GRAPH TO GRAMMAR</a></li>
-            <li><a href="wordContainment.html" class="active">WORD CONTAINMENT</a></li>
-            <li><a href="multiview.html">COMBINED VIEW</a></li>
+          <li><a href="landingPage.html">Home</a></li>
+          <li><a href="about.html">Help</a></li>
         </ul>
-
+      </nav>
+    </header>
+    <div class="navBar">
+      <ul>
+        <li><a href="index.html">GRAMMAR TO GRAPH</a></li>
+        <li><a href="graphToGrammar.html">GRAPH TO GRAMMAR</a></li>
+        <li>
+          <a href="wordContainment.html" class="active">WORD CONTAINMENT</a>
+        </li>
+        <li><a href="multiview.html">COMBINED VIEW</a></li>
+      </ul>
     </div>
 
     <div id="multiview">
+      <div id="grammarArea" style="width: 50%">
+        <h2>Grammar</h2>
 
-        <div id="grammarArea" style="width: 50%">
+        <div id="wcGrammarInputForm">
+          <div>
+            <label for="variableIOs">Variables:</label>
+            <input
+              type="text"
+              id="variablesIO"
+              name="variables"
+              placeholder="e.g. A, B"
+            /><br /><br />
+          </div>
+          <div>
+            <label for="terminalsIO">Terminal symbols:</label>
+            <input
+              type="text"
+              id="terminalsIO"
+              name="terminals"
+              placeholder="e.g. a, b, c"
+            /><br /><br />
+          </div>
+          <div>
+            <label for="productionsIO">Productions:</label>
+            <textarea
+              rows="5"
+              cols="60"
+              id="productionsIO"
+              name="productions"
+              placeholder="e.g.&#10;A->aB|cD&#10;B->Bc"
+            ></textarea>
+          </div>
+          <div>
+            <label for="startingIO">Starting symbol:</label>
+            <input
+              type="text"
+              id="startingIO"
+              name="starting"
+              placeholder="e.g. B"
+            /><br /><br />
+          </div>
 
-            <h2>Grammar</h2>
-
-            <div id="wcGrammarInputForm">
-                <div>
-                    <label for="variableInputs">Variables:</label>
-                    <input type="text" id="variablesInput" name="variables" placeholder="e.g. A, B"><br><br>
-                </div>
-                <div>
-                    <label for="terminalsInput">Terminal symbols:</label>
-                    <input type="text" id="terminalsInput" name="terminals" placeholder="e.g. a, b, c"><br><br>
-                </div>
-                <div>
-                    <label for="productionsInput">Productions:</label>
-                    <textarea rows="5" cols="60" id="productionsInput" name="productions" placeholder="e.g.&#10;A->aB|cD&#10;B->Bc"></textarea>
-                </div>
-                <div>
-                    <label for="startingInput">Starting symbol:</label>
-                    <input type="text" id="startingInput" name="starting" placeholder="e.g. B"><br><br>
-                </div>
-
-                <span id="buttons">
-                    <span id="type">Type: </span>
-                    <button id="clear">Clear</button>
-                    <button id="copy">Copy grammar</button>
-                    <button id="paste">Paste grammar</button>
-                    <button id="exampleButton">Example Grammar</button>
-                </span>
-
-            </div>
-
-            
-
-            <div></div>
+          <span id="buttons">
+            <span id="typeDisplay">Type: </span>
+            <button id="clearButton">Clear</button>
+            <button id="copyButton">Copy grammar</button>
+            <button id="pasteButton">Paste grammar</button>
+            <button id="exampleButton">Example Grammar</button>
+          </span>
         </div>
 
-        <div id="wcOutputArea">
-            <h2>Output</h2>
-            <div id="wcGrammarInputForm">
-                <div id="wordInputArea">
-                    <label for="wordInput">Word to check:</label>
-                    <input type="text" id="wordInput" name="word" placeholder="e.g. abba"><br><br>
-                    <button id="check">Check</button>
-                    <div id="WCoutput">
-                        <span id="wordContainmentOutput"></span>
-                        <span id="derivationOutput"></span>
-                        <button id="generateWordsButton">Generate example words</button>
-                        <span id="exampleWords"></span>
-                    </div>
-                </div>
-                
+        <div></div>
+      </div>
+
+      <div id="wcOutputArea">
+        <h2>Output</h2>
+        <div id="wcGrammarInputForm">
+          <div id="wordInputArea">
+            <label for="wordInput">Word to check:</label>
+            <input
+              type="text"
+              id="wordInput"
+              name="word"
+              placeholder="e.g. abba"
+            /><br /><br />
+            <button id="checkButton">Check</button>
+            <div id="WCoutput">
+              <span id="wordContainmentOutput"></span>
+              <span id="derivationOutput"></span>
+              <button id="generateWordsButton">Generate example words</button>
+              <span id="exampleWords"></span>
             </div>
-
-            <div></div>
-            
-            
-
-            
-            
+          </div>
         </div>
 
+        <div></div>
+      </div>
     </div>
-    
-</body>
+  </body>
 </html>
