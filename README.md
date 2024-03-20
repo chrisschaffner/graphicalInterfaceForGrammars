@@ -1,0 +1,135 @@
+<h1>Table of contents</h1>
+      <ol style="font-size:larger">
+        <li><a href="#aboutBasicUsage">Basic Usage</a></li>
+        <ol>
+          <li><a href="#aboutGrammarToGraph">Grammar to Graph</a></li>
+          <li><a href="#aboutGraphToGrammar">Graph to Grammar</a></li>
+          <li><a href="#aboutWordContainment">Word Containment</a></li>
+          <li><a href="#aboutCombinedView">Combined View</a></li>
+        </ol>
+        <li><a href="#aboutEditButtons">Edit Buttons</a></li>
+        <li><a href="#aboutQuickMenu">Quick Menu</a></li>
+        <li><a href="#aboutDrawingArea">Drawing Area</a></li>
+        <li><a href="#aboutGrammarButtons">Grammar Buttons</a></li>
+        <li><a href="#aboutAutomatonButtons">Automaton Buttons</a></li>
+      </ol>
+      
+<h1 id="aboutBasicUsage">Basic Usage</h1>
+<p>This Website has three main functionalities:</p>
+<ol>
+<li>Converting a type 3 grammar into an equivalent DFA</li>
+<li>Converting a DFA/NFA into an equivalent type 3 grammar</li>
+<li>Checking if an arbitrary word is contained in the language induced by a type 1 grammar</li>
+</ol>
+
+<h2 id="aboutGrammarToGraph">Grammar to Graph</h2>
+<h3 id="aboutCreatingGrammar">Creating a grammar</h3>
+<p>Grammars consist of sets of variables, terminals, productions and starting symbol from the variables. Usage:</p>
+<ol>
+<li>Variable and terminal names can not contain comma "," or dash "|" symbols, as they are used for recognizing the grammar structure</li>
+<li>Apart from that, variables and terminals can be of any type like characters, numbers or symbols</li>
+<li>When putting in multiple variables/terminals, seperate them by a comma ",". Whitespaces are ignored</li>
+<li>Productions must be filled in the form left side -> right side 1 | right side 2 | ...</li>
+<li>For example A->aB or B->cC|aaB</li>
+<li>Each production must be put in a new line</li>
+<li>The starting symbol must be included in the set of variables</li>
+</ol>
+
+<h3>Converting into an equivalent finite automaton</h3>
+<p>When you filled in a valid grammar, press the arrow to convert it into an equivalent automaton. If the grammar you provided is type 3, the conversion will succeed, otherwise not.</p>
+<p>The equivalent automaton will be displayed in the <a href="#aboutDrawingArea">drawing area</a>.</p>
+
+<h2 id="aboutGraphToGrammar">Graph to Grammar</h2>
+<h3>Creating a graph</h3>
+<p>Graphs are created using states and transitions between states using the <a href="#aboutEditButtons">edit buttons</a>; to enter edit mode, press the edit button.</p>
+
+<h3>Converting into a type 3 grammar</h3>
+<ol>
+<li>By default, auto convert is activated, which means that the equivalent grammar is updated as you draw the automaton</li>
+<li>To toggle auto convert, use the check box underneath the conversion arrow in the middle of the screen</li>
+<li>When auto convert is not active, you can convert your current graph into an equivalent grammar by clicking the conversion arrow</li>
+</ol>
+
+<h2 id="aboutWordContainment">Word Containment</h2>
+<p>After <a href="#aboutCreatingGrammar">creating a grammar</a>, you can enter an arbitrary word and check if it is contained in the language induced by the grammar by clicking "Check".</p>
+<p>If the language contains the word you put in, a derivation will be displayed showing how the word can be constructed using the producions.</p>
+<p>If the grammar you put in is valid and type 1, you can click "Generate example words" to generate up to 100 words that are also contained in the language.</p>
+
+
+<h2 id="aboutCombinedView">Combined View</h2>
+<p>The combined view - as the name suggests - allows you to convert a grammar into an equivalent automaton and vice versa.</p>
+<p>So you can <a href="">create an automaton</a> first and convert it into the equivalent grammar (and manipulate that and regenerate the automaton) or <a href="">create a grammar</a> and convert it into an automaton (and manipulate that).</p>
+<p>To convert the automaton into the equivalent grammar, either click on the arrow pointing to the right or enable auto convert. To convert a grammar into an equivalent automaton, you have to click the arrow pointing to the left.</p>
+
+<h1 id="aboutEditButtons">Edit Buttons</h1>
+<ol>
+<li>Create State<p>To create a state, click on the position where you would like to place it inside the drawing area. The first state created will always be the start state. The start property can however be removed later. The states will be named like "Z1", "Z2" etc.</p></li>
+<li>Create Transition<p>To create a transition, click on the state where you want the transition to begin and drag-and-drop to the state where you want the transition to end. You are then prompted to enter a terminal for this transition. Transitions with the same start and end state can also be created like this</p></li>
+<li id="aboutMarkEnd">Mark End<p>To mark a state as end state, click on that state when 'Mark End' is enabled. End states are marked with a second smaller circle inside the state circle</p></li>
+<li id="aboutDeleteEnd">Delete End<p>To unmark a state as end state, click on that state when 'Delete End' is enabled.</p></li>
+<li id="aboutMarkStart">Mark start<p>To mark a state as start state, click on that state when 'Mark Start' is enabled. Start states are marked with an arrow that points to this state</p></li>
+<li id="aboutDelete">Delete State/Transition<p>To delete a state or transition, click on a state or transition. When highlighted, they will become green</p></li>
+<li id="aboutMoveState">Move State<p>To move a state to a new position, simply drag-and-drop the state to its desired location</p></li>
+</ol>
+
+<h1 id="aboutQuickMenu">Quick Menu</h1>
+<p>The quick menu can be activated by clicking on a state while neither of the edit buttons are active.</p>
+<p>The quick menu's buttons are assigned to (clockwise):</p>
+<ol>
+<li>Cancel (closes the quick menu)</li>
+<li><a href="#aboutDelete">Delete state</a></li>
+<li><a href="#aboutMoveState">Move state</a></li>
+<li><a href="#aboutMarkStart">Mark start</a></li>
+<li><a href="#aboutMarkEnd">Mark end</a></li>
+<li><a href="#aboutDeleteEnd">Delete end</a></li>
+</ol>
+
+<h1 id="aboutDrawingArea">Drawing Area</h1>
+
+<ol>
+<li>Panning the view</li>
+<p>To pan the view, make sure you that neither of the edit buttons are active or that edit mode is not active. To pan, drag-and-drop the mouse to adjust the view</p>
+<li>Zooming</li>
+<p>To zoom in/out use scroll wheel</p>
+<li>Quick Menu</li>
+<p>For editing the states, you can also use the quick menu</p>
+</ol>
+
+
+
+<h1 id="aboutGrammarButtons">Grammar Buttons</h1>
+<ol>
+<li>Type</li>
+<p>This field displays the type of the grammar you put in (if it's a valid grammar)</p>
+<li>Clear</li>
+<p>This allows you to clear the form containing the grammar you put in</p>
+<li>Copy grammar</li>
+<p>This allows you to copy the grammar values for you to paste it into any of the other converters</p>
+<li>Paste grammar</li>
+<p>This allows you to paste the grammar values you copied</p>
+<li>Example grammar</li>
+<p>This allows you to insert an examplatory grammar for testing purposes</p>
+</ol>
+
+<h1 id="aboutAutomatonButtons">Automaton Buttons</h1>
+<ol>
+<li>Edit</li>
+<p>This allows you to show (and hide) the <a href="">edit buttons</a></p>
+<li>Clear</li>
+<p>This allows you to clear the automaton you have created, after which you can start over</p>
+<li>Make Screenshot</li>
+<p>This allows you to take a screenshot of the drawing area. When first using this, you are prompted to allow downloads for this page</p>
+<li>Determinize</li>
+<p>This applies to algorithm for converting a NFA (non definite finite automaton) into a DFA (definite finite automaton) while maintaining the language induced by the automaton</p>
+<li>Determinize Partially</li>
+<p>This applies an adapted algorithm that turns an arbitrary NFA into one that</p>
+<ol>
+<li>Has one start state</li>
+<li>For each state at most one successor using a terminal</li>
+</ol>
+<li>Remove ε-transitions</li>
+<p>This applies the algorithm that removes the ε-transitions in the automaton</p>
+<li>DFA/NFA</li>
+<p>This fields indicates whether your created automaton is a DFA or NFA</p>
+</ol>
+
