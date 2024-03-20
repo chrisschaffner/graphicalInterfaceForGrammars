@@ -17,9 +17,9 @@
 <h1 id="aboutBasicUsage">Basic Usage</h1>
 <p>This Website has three main functionalities:</p>
 <ol>
-<li><a href="index.html">Converting a type 3 grammar into an equivalent DFA</a></li>
-<li><a href="graphToGrammar.html">Converting a DFA/NFA into an equivalent type 3 grammar</a></li>
-<li><a href="wordContainment.html">Checking if an arbitrary word is contained in the language induced by a type 1 grammar</a></li>
+<li>Converting a type 3 grammar into an equivalent DFA</li>
+<li>Converting a DFA/NFA into an equivalent type 3 grammar</li>
+<li>Checking if an arbitrary word is contained in the language induced by a type 1 grammar</li>
 </ol>
 
 <h2 id="aboutGrammarToGraph">Grammar to Graph</h2>
