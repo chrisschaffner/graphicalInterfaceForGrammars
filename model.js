@@ -1,7 +1,10 @@
 function scriptLoaded() {
   console.log("The specific script has finished loading.");
 }
-
+/**
+ * Class that represents a grammar.
+ * Includes methods that modify grammars
+ */
 class Grammar {
   variables;
   terminals;
@@ -14,6 +17,13 @@ class Grammar {
   typeDisplay;
   type;
 
+  /**
+   * Creates a new grammar object using the user inputs
+   * @param {String} variables
+   * @param {String} terminals
+   * @param {String} productions
+   * @param {String} starting
+   */
   constructor(variables, terminals, productions, starting) {
     this.variables = variables;
     this.terminals = terminals;
@@ -26,25 +36,44 @@ class Grammar {
     this.typeDisplay = document.getElementById("typeDisplay");
   }
 
+  /**
+   * Turns the grammar object into a string for testing purposes
+   * @returns a string representing the grammar object
+   */
   toString() {
     return `Variables: ${this.variables} \n Terminals: ${this.terminals} \n Starting: ${this.starting} \n Productions: ${this.productions}`;
   }
 
+  /**
+   * Getter for the variables
+   */
   get variables() {
     return this.variables;
   }
 
+  /**
+   * Getter for the terminals
+   */
   get terminals() {
     return this.terminals;
   }
 
+  /**
+   * Getter for the productions
+   */
   get productions() {
     return this.productions;
   }
+  /**
+   * Getter for the starting variable
+   */
   get starting() {
     return this.starting;
   }
 
+  /**
+   * Reformats the grammar IO by removing whitespaces and printing the grammar type to the display element
+   */
   updateOutput() {
     this.variablesIO.value = "";
     this.terminalsIO.value = "";
@@ -58,9 +87,14 @@ class Grammar {
 
     this.calculateGrammarType();
 
-    this.typeDisplay.textContent = "Type: " + (this.type != undefined ? this.type : "");
+    this.typeDisplay.textContent =
+      "Type: " + (this.type != undefined ? this.type : "");
   }
 
+  /**
+   * Calculates the grammar type
+   * @returns the grammar type
+   */
   calculateGrammarType() {
     var productions = this.productions;
     var variables = this.variables;
@@ -101,6 +135,9 @@ class Grammar {
     return;
   }
 
+  /**
+   * Clears the grammar class variables
+   */
   clear() {
     this.variables = [];
     this.terminals = [];
@@ -108,20 +145,34 @@ class Grammar {
     this.starting = "";
   }
 }
-
+/**
+ * Class that represents a grammar production
+ */
 class Production {
   left;
   right;
+  /**
+   * Creates a new production object
+   * @param {String} left
+   * @param {String} right
+   */
   constructor(left, right) {
     this.left = left;
     this.right = right;
   }
-
+  /**
+   * Turns a production object into a readable string
+   * @returns a string representing the production
+   */
   toString() {
     return `${this.left} -> ${this.right}`;
   }
 }
 
+/**
+ * Class that represents a finite automaton.
+ * Contains methods that modify finite automatons
+ */
 class FiniteAutomaton {
   states;
   inputAlphabet;
@@ -130,6 +181,13 @@ class FiniteAutomaton {
   observers = [];
   dfaDisplay;
 
+  /**
+   * Creates a new finite automaton object
+   * @param {State[]} states
+   * @param {String} inputAlphabet
+   * @param {FaTranisition[]} transitions
+   * @param {Two} two
+   */
   constructor(states, inputAlphabet, transitions, two) {
     this.states = states;
     this.inputAlphabet = inputAlphabet;
@@ -155,6 +213,10 @@ class FiniteAutomaton {
     this.notfiyObservers(two);
   }
 
+  /**
+   * Creates the layout a finite automaton
+   * @param {Two} two
+   */
   arrangeGraph(two) {
     console.log(this.states);
     this.createStatesGenerations();
@@ -169,6 +231,10 @@ class FiniteAutomaton {
     this.notfiyObservers(two);
   }
 
+  /**
+   * Clears the class variables and removes the automaton visuals
+   * @param {Two} two
+   */
   clear(two) {
     this.states.forEach((s) => s.deleteVisuals(two));
     this.transitions.forEach((t) => t.deleteVisuals(two));
@@ -178,23 +244,42 @@ class FiniteAutomaton {
     this.generationsArray = [];
     this.notfiyObservers(two);
   }
-
+  /**
+   * Adds a state to the automaton
+   * @param {State} state
+   * @param {Two} two
+   */
   addState(state, two) {
     this.states.push(state);
     this.notfiyObservers(two);
   }
-
+  /**
+   * Removes a state from the automaton
+   * @param {State} state
+   * @param {Two} two
+   */
   removeState(state, two) {
     state.deleteVisuals(two);
     this.states = this.states.filter((s) => s.name !== state.name);
     this.notfiyObservers(two);
   }
 
+  /**
+   * Places a state to a new position
+   * @param {State} state
+   * @param {Vector} position
+   * @param {Two} two
+   */
   moveState(state, position, two) {
     state.setPosition(position.x, position.y);
     this.notfiyObservers(two);
   }
 
+  /**
+   * Adds a transition to the automaton, combining transitions with the same start and end state
+   * @param {FaTranisition} transition
+   * @param {Two} two
+   */
   addTransition(transition, two) {
     var sameFromAndToTransition = this.transitions.find(
       (t) => t.from === transition.from && t.to === transition.to
@@ -212,27 +297,48 @@ class FiniteAutomaton {
 
     this.notfiyObservers(two);
   }
-
+  /**
+   * Makes a state a start state
+   * @param {State} state
+   * @param {Two} two
+   */
   markStart(state, two) {
     state.isStart = true;
     this.notfiyObservers(two);
   }
-
+  /**
+   * Removes the start property of a state
+   * @param {State} state
+   * @param {Two} two
+   */
   removeStart(state, two) {
     state.isStart = false;
     this.notfiyObservers(two);
   }
-
+  /**
+   * Makes a state an end state
+   * @param {State} state
+   * @param {Two} two
+   */
   markEnd(state, two) {
     state.isEnd = true;
     this.notfiyObservers(two);
   }
-
+  /**
+   * Removes the end state property from a state
+   * @param {State} state
+   * @param {Two} two
+   */
   unmarkEnd(state, two) {
     state.isEnd = false;
     this.notfiyObservers(two);
   }
 
+  /**
+   * Removes a transition from the automaton
+   * @param {FaTranisition} transition
+   * @param {Two} two
+   */
   removeTranstion(transition, two) {
     transition.deleteVisuals(two);
 
@@ -247,26 +353,45 @@ class FiniteAutomaton {
     this.notfiyObservers(two);
   }
 
+  /**
+   * Adds an observer that keeps track of changes made to the automaton
+   * @param {AutomatonObserver} observer
+   */
   addObserver(observer) {
     this.observers.push(observer);
   }
 
+  /**
+   * Removes an observer
+   * @param {AutomatonObserver} observer
+   */
   removeObserver(observer) {
     this.observers = this.observers.filter(
       (obs) => obs.index !== observer.index
     );
   }
 
+  /**
+   * Informs the observers when changes are made to the automaton
+   * @param {Two} two
+   */
   notfiyObservers(two) {
     this.observers.forEach((obs) => obs.update(two));
   }
-
+  /**
+   * Updates the display that shows whether the automaton is a NFA or DFA
+   * @param {Bool} bool
+   */
   updateDFADisplay(bool) {
     if (this.dfaDisplay) {
       this.dfaDisplay.textContent = bool ? "DFA" : "NFA";
     }
   }
 
+  /**
+   * Creates the visuals for the graph, like the states and transitions
+   * @param {Two} two
+   */
   createAutomatonVisuals(two) {
     two.clear();
     this.states.forEach((state) => state.createVisuals(two));
@@ -294,6 +419,9 @@ class FiniteAutomaton {
       .filter((s) => s.isStart)
       .forEach((state) => state.createStartArrow(two));
   }
+  /**
+   * Calculates the generation of each state, which is the mininum number of steps required to reach that state from a start state
+   */
   createStatesGenerations() {
     var visited = new Set();
     var statesToVisit = [];
@@ -322,6 +450,9 @@ class FiniteAutomaton {
       }
     }
   }
+  /**
+   * Calculates the arrangement of the states based on their generation value
+   */
   calculateStatePositions() {
     for (let i = 0; i < this.generationsArray.length; i++) {
       for (let j = 0; j < this.generationsArray[i].length; j++) {
@@ -330,7 +461,9 @@ class FiniteAutomaton {
       }
     }
   }
-
+  /**
+   * Calculates how many states there are of each generation
+   */
   calculateGenerationsArray() {
     var states = this.states;
 
@@ -355,17 +488,28 @@ class FiniteAutomaton {
       }
     }
   }
-
+  /**
+   * Adds a terminal to the automaton
+   * @param {String} terminal
+   */
   addTerminal(terminal) {
     this.inputAlphabet.push(terminal);
   }
 
-  removeTerminal(terminal){
+  /**
+   * Removes a terminal from the automaton
+   * @param {String} terminal
+   */
+  removeTerminal(terminal) {
     var set = new Set(this.terminals);
     set.delete(terminal);
     this.terminals = Array.from(set);
   }
 
+  /**
+   * Applies the algorithm for removing epsilon transitions
+   * @param {Two} two
+   */
   resolveEpsilonTransitions(two) {
     var originalTransitions = this.transitions;
     this.transitions = [];
@@ -386,25 +530,31 @@ class FiniteAutomaton {
             originalTransitions
           );
           epsilonClosure.forEach((s) =>
-
-            this.addTransition(new FaTranisition(trans.from, s, [v], trans.index), two)
-            
+            this.addTransition(
+              new FaTranisition(trans.from, s, [v], trans.index),
+              two
+            )
           );
         }
       });
     });
 
-    //this.transitions = newTransitions;
-
     this.arrangeGraph(two);
   }
 
-  removeRedundantTerminals(){
-    if(this.terminals){
-      this.terminals.forEach(terminal => {
-        if(!this.transitions.some(transition => transition.via.includes(terminal))){
+  /**
+   * Removes unused terminals from the automaton, e.g. after deleting transitions
+   */
+  removeRedundantTerminals() {
+    if (this.terminals) {
+      this.terminals.forEach((terminal) => {
+        if (
+          !this.transitions.some((transition) =>
+            transition.via.includes(terminal)
+          )
+        ) {
           this.removeTerminal(terminal);
-        };
+        }
       });
     }
   }
@@ -433,7 +583,9 @@ class FiniteAutomaton {
     return true;
   }
 }
-
+/**
+ * Class that represents an automaton state
+ */
 class State {
   name;
   posX;
@@ -450,6 +602,13 @@ class State {
   subsetStates = [];
   angles = [];
 
+  /**
+   * Creates a new state object
+   * @param {String} name
+   * @param {Bool} isStart
+   * @param {Bool} isEnd
+   * @param {Int} index
+   */
   constructor(name, isStart, isEnd, index) {
     this.name = name;
     this.isStart = isStart;
@@ -457,23 +616,43 @@ class State {
     this.index = index;
   }
 
+  /**
+   * Sets the position of a state
+   * @param {Int} posX
+   * @param {Int} posY
+   */
   setPosition(posX, posY) {
     this.posX = posX;
     this.posY = posY;
   }
-
+  /**
+   * Adds an angle to the state in which a transition arrow starts or ends
+   * @param {Float} angle
+   */
   addAngle(angle) {
     this.angles.push(angle);
   }
 
+  /**
+   * Removes an angle from the list of angles
+   * @param {Float} angle
+   */
   removeAngle(angle) {
     this.angles = this.angles.filter((a) => a !== angle);
   }
 
+  /**
+   * Sets the state generation
+   * @param {Int} generation
+   */
   setGeneration(generation) {
     this.generation = generation;
   }
 
+  /**
+   * Creates the visuals for the state, e.g. the state circle, the name and the second end circle
+   * @param {Two} two
+   */
   createVisuals(two) {
     two.remove(this.stateCircle);
     two.remove(this.endCircle);
@@ -531,6 +710,10 @@ class State {
     two.update();
   }
 
+  /**
+   * Deletes the state visuals
+   * @param {Two} two
+   */
   deleteVisuals(two) {
     two.remove(this.stateCircle);
     two.remove(this.endCircle);
@@ -539,6 +722,10 @@ class State {
     two.update();
   }
 
+  /**
+   * Creates the start arrow pointing to the state
+   * @param {Two} two
+   */
   createStartArrow(two) {
     two.remove(this.startArrow);
     two.remove(this.startArrowBoundingBox);
@@ -611,6 +798,9 @@ class State {
   }
 }
 
+/**
+ * Class that represents a transition in a finite automaton
+ */
 class FaTranisition {
   from;
   to;
@@ -625,6 +815,13 @@ class FaTranisition {
   startStateAngle;
   endStateAngle;
 
+  /**
+   * Creates a new transition object
+   * @param {State} from
+   * @param {State} to
+   * @param {String} via
+   * @param {Int} index
+   */
   constructor(from, to, via, index) {
     this.from = from;
     this.to = to;
@@ -632,10 +829,20 @@ class FaTranisition {
     this.index = index;
   }
 
+  /**
+   * Turns the transition object into a readable string
+   * @returns a string representing the transition
+   */
   toString() {
     return "(" + this.from.name + ", " + this.to.name + ")";
   }
 
+  /**
+   * Creates the transition arrow, tries to avoid intersecting with states
+   * @param {Two} two
+   * @param {State[]} states
+   * @param {Float} curveFactor Determins to initial curvature of the transition arrow
+   */
   createVisuals(two, states, curveFactor) {
     two.remove(this.transitionLine);
     two.remove(this.boundingBox);
@@ -884,6 +1091,10 @@ class FaTranisition {
     });
   }
 
+  /**
+   * Calculates the angles in which the transition arrow comes out of the first state and ends in the second state
+   * @returns return also used to stop computation
+   */
   calculateAngles() {
     if (this.from == this.to) {
       return;
@@ -921,6 +1132,10 @@ class FaTranisition {
     );
   }
 
+  /**
+   * Deletes the transition visuals
+   * @param {Two} two
+   */
   deleteVisuals(two) {
     two.remove(this.transitionLine);
     two.remove(this.boundingBox);
@@ -930,36 +1145,61 @@ class FaTranisition {
   }
 }
 
+/**
+ * Class that represents a sentence form (can consist of terminals and variables)
+ */
 class SentenceForm {
   form;
   previousForm;
 
+  /**
+   * Creates a new sentence form object
+   * @param {SentenceForm} form
+   * @param {SentenceForm} previousForm the sentece form that lead to the current form
+   */
   constructor(form, previousForm) {
     this.form = form;
     this.previousForm = previousForm;
   }
 
+  /**
+   * Turns a sentence form into a readable string
+   * @returns a string representing the sentence form
+   */
   toString() {
     return this.form;
   }
 }
 
+/**
+ * Class for an observer that keeps track of changes made to an automaton
+ */
 class AutomatonObserver {
   index;
   updateGrammar = true;
 
+  /**
+   * Creates a new automaton observer
+   * @param {FiniteAutomaton} dfa the observer automaton
+   * @param {Grammar} grammar the equivalent grammar
+   * @param {Int} index
+   */
   constructor(dfa, grammar, index) {
     this.dfa = dfa;
     this.grammar = grammar || {};
     this.index = index;
   }
 
+  /**
+   * Is called when changes are made to the automaton
+   * @param {Two} two
+   */
   update(two) {
     this.dfa.removeRedundantTerminals();
     this.dfa.createAutomatonVisuals(two);
     var isDFA = this.dfa.checkAutomatonDeterminism();
     this.dfa.updateDFADisplay(isDFA);
-    console.log("Is DFA? " + isDFA)
+    console.log("Is DFA? " + isDFA);
     this.grammar.calculateGrammarType();
 
     if (this.updateGrammar) {
@@ -970,6 +1210,9 @@ class AutomatonObserver {
   }
 }
 
+/**
+ * Class that represents the pie menu
+ */
 class PieMenu {
   isActive = false;
   domElement;
@@ -992,6 +1235,11 @@ class PieMenu {
     );
   };
 
+  /**
+   * Creates a new pie menu object
+   * @param {domElement} domElement
+   * @param {domElement} background
+   */
   constructor(domElement, background) {
     this.domElement = domElement;
     this.background = background;
@@ -999,6 +1247,13 @@ class PieMenu {
     this.background.style.display = "none";
   }
 
+  /**
+   * Makes the pie menu visible
+   * @param {State} currentState the state the user selected
+   * @param {Int} posX
+   * @param {Int} posY
+   * @param {Rectangle} canvasRect
+   */
   enable(currentState, posX, posY, canvasRect) {
     this.background.style.top = canvasRect.top + "px";
     this.background.style.left = canvasRect.left + "px";
@@ -1020,6 +1275,9 @@ class PieMenu {
     this.background.addEventListener("mousemove", this.pieMenuMouseMoveHandler);
   }
 
+  /**
+   * Hides the pie menu
+   */
   disable() {
     this.domElement.style.display = "none";
     this.background.style.display = "none";
@@ -1037,7 +1295,12 @@ class PieMenu {
     );
   }
 }
-
+/**
+ * Calculates the epsilon closure for a state
+ * @param {State} state
+ * @param {FaTranisition[]} transitions
+ * @returns the epsilon closure
+ */
 function calculateEpsilonClosure(state, transitions) {
   var closure = [state];
   var oldClosure = [];
@@ -1365,7 +1628,7 @@ function checkLineCircleIntersection(
  * Converts a grammar into a NFA
  * @param {Grammar} grammar
  * @param {Two} two
- * @returns a NFA
+ * @returns {FiniteAutomaton} the NFA
  */
 function createNFAFromGrammar(grammar, two) {
   var variables = grammar.variables;
@@ -1520,7 +1783,11 @@ function createGrammarFromDFA(automaton) {
 
   return new Grammar(variables, terminals, productions, starting);
 }
-
+/**
+ * Converts a NFA into a type 3 grammar
+ * @param {FiniteAutomaton} automaton
+ * @returns the equivalent type 3 grammar
+ */
 function createGrammarFromNFA(automaton) {
   var variables = [];
   var terminals;
@@ -1671,15 +1938,12 @@ function formatProductions(productions) {
 
   return formattedProductions;
 }
-/**
- * Makes a screenshot of the graph and saves it locally
- */
-function makeDrawingAreaScreenshot() {}
+
 /**
  * Checks if the given word contains only the given terminals
  * @param {Array} terminals
  * @param {String} word
- * @returns
+ * @returns whether the word contains only the given terminals
  */
 function checkWordAlphabet(terminals, word) {
   var wordIsOverAlphabet = true;
@@ -1694,7 +1958,7 @@ function checkWordAlphabet(terminals, word) {
  * Checks if the grammar can create the given word
  * @param {Grammar} grammar
  * @param {String} word
- * @returns
+ * @returns whether the grammar can create the given word
  */
 function decideWordProblem(grammar, word) {
   if (!checkWordAlphabet(grammar.terminals, word)) {
@@ -1724,7 +1988,7 @@ function decideWordProblem(grammar, word) {
  * @param {SentenceForm} l the set of sentence forms
  * @param {SentenceForm} n the max lenght of sentence forms allowed
  * @param {Array} productions
- * @returns
+ * @returns the derviations of all current sentence forms
  */
 function next(l, n, productions) {
   var successorDerivations = l.slice();
@@ -1811,7 +2075,7 @@ function checkArrayEuquality(array1, array2) {
  * Checks if two arrays share at least one element
  * @param {Array} array1
  * @param {Array} array2
- * @returns
+ * @returns whether two arrays intersect
  */
 function checkArrayIntersection(array1, array2) {
   var size = Math.min(array1.length, array2.length);
@@ -2068,7 +2332,14 @@ function createPowerSetOfStates(states, includeEmptySet) {
 
   return outputStates;
 }
-
+/**
+ * Checks if a value is in the range of start and end values, with an optional tolerance
+ * @param {Int} value
+ * @param {Int} start
+ * @param {Int} end
+ * @param {Int} tolerance
+ * @returns whether the value lies in the range
+ */
 function inRange(value, start, end, tolerance) {
   value = (value + 360) % 360;
   start = (start + 360) % 360;
@@ -2083,7 +2354,11 @@ function inRange(value, start, end, tolerance) {
     );
   }
 }
-
+/**
+ * Creates a string that consists of n times "Z"
+ * @param {*} n
+ * @returns a string containing n times "Z"
+ */
 function nTimesZ(n) {
   var string = "";
 
@@ -2092,7 +2367,10 @@ function nTimesZ(n) {
   }
   return string;
 }
-
+/**
+ * Makes a screenshot of the drawing area by rendering the svg elements to a helper canvas html element
+ * @param {svg} svg
+ */
 async function createSVGScreenshot(svg) {
   var serializedSVG =
     "data:image/svg+xml;charset=utf-8," +
@@ -2113,7 +2391,11 @@ async function createSVGScreenshot(svg) {
 
   downloadImage(dataUrl, "screenshot.png");
 }
-
+/**
+ * Saves a dataUrl locally to the computer
+ * @param {String} dataUrl
+ * @param {String} filename
+ */
 function downloadImage(dataUrl, filename) {
   var helperElement = document.createElement("a");
   helperElement.href = dataUrl;
@@ -2122,7 +2404,11 @@ function downloadImage(dataUrl, filename) {
   helperElement.click();
   document.body.removeChild(helperElement);
 }
-
+/**
+ * Loads an svg into an img html element
+ * @param {svg} svg
+ * @returns true when the loading is finished
+ */
 async function loadSVGToImage(svg) {
   return new Promise((resolve, reject) => {
     var img = document.createElement("img");
