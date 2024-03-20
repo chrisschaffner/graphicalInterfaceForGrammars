@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
   var autoConvertInput = document.getElementById("autoConvert");
   var leftArrowButton = document.getElementById("leftArrowButton");
   var rightArrowButton = document.getElementById("rightArrowButton");
-  rightArrowButton.style.backgroundImage = "url('arrow_right_selected.svg')";
+  rightArrowButton.style.backgroundImage = "url('assets/arrow_right_selected.svg')";
   var infoConsole = document.getElementById("console");
   var pieDelete = document.getElementById("pieDelete");
   var pieMove = document.getElementById("pieMove");
@@ -346,10 +346,10 @@ document.addEventListener("DOMContentLoaded", function () {
     automatonObserver.updateGrammar = this.checked;
     if (this.checked) {
       rightArrowButton.style.backgroundImage =
-        "url('arrow_right_selected.svg')";
+        "url('assets/arrow_right_selected.svg')";
       rightArrowButton.click();
     } else {
-      rightArrowButton.style.backgroundImage = "url('arrow_right.svg')";
+      rightArrowButton.style.backgroundImage = "url('assets/arrow_right.svg')";
     }
     updateEditButtons();
   });
