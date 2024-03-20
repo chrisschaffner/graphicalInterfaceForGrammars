@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
     terminalsIO.value = "";
     productionsIO.value = "";
     startingIO.value = "";
+    messageToConsole("Grammar cleared!", 'black');
   });
 
   document.addEventListener("fullscreenchange", () => {
@@ -45,6 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
       formatProductions(grammar.productions).join("\n"),
       grammar.starting
     );
+    messageToConsole("Grammar copied to clipboard!", 'black');
   });
 
   canvas.addEventListener("wheel", function (event) {
@@ -120,6 +122,7 @@ document.addEventListener("DOMContentLoaded", function () {
       startingIO.value
     );
     grammar.calculateGrammarType();
+    grammar.updateOutput();
 
     if (grammar.type === 3) {
       var automaton = createNFAFromGrammar(grammar, two);
@@ -127,8 +130,9 @@ document.addEventListener("DOMContentLoaded", function () {
       automaton.arrangeGraph(two);
       automaton.createAutomatonVisuals(two);
       console.log(automaton);
+      messageToConsole("Equivalent automaton created!", 'green');
     } else {
-      grammar.updateOutput();
+      console.log(grammar.type)
       messageToConsole(
         "Grammar type is not 3, an equivalent NFA can not be constructed!",
         "red"
@@ -143,14 +147,16 @@ document.addEventListener("DOMContentLoaded", function () {
     productionsIO.value = sessionStorage.getItem("productions");
     startingIO.value = sessionStorage.getItem("starting");
     console.log("Pasted Input from session storage");
+    messageToConsole("Pasted grammar from clipboard!", 'black');
   });
-
+  
+  /**
+   * Prints a message to the info console in a specified color
+   * @param {String} message the message text
+   * @param {String} color the color, e.g. 'white'
+   */
   function messageToConsole(message, color) {
     infoConsole.textContent = message;
     infoConsole.style.color = color;
-  }
-
-  function clearConsole() {
-    infoConsole.textContent = "";
   }
 });

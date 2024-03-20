@@ -287,6 +287,7 @@ document.addEventListener("DOMContentLoaded", function () {
       automaton.inputAlphabet = nfaToDfa.inputAlphabet;
 
       automaton.arrangeGraph(two);
+      messageToConsole("Determinized Automaton!", "black");
     } else {
       messageToConsole("Please remove ε-transitions first!", "red");
       console.warn("Detected ε-transition");
@@ -306,6 +307,8 @@ document.addEventListener("DOMContentLoaded", function () {
       automaton.inputAlphabet = nfaToDfa.inputAlphabet;
 
       automaton.arrangeGraph(two);
+      messageToConsole("Determinized Automaton partially!", "black");
+
     } else {
       messageToConsole("Please remove ε-transitions first!", "red");
       console.warn("Detected ε-transition");
@@ -641,6 +644,8 @@ document.addEventListener("DOMContentLoaded", function () {
       automaton.inputAlphabet = nfaFromGrammar.inputAlphabet;
       automaton.arrangeGraph(two);
       console.log(automaton);
+      messageToConsole("Equivalent automaton created!", 'green');
+
     } else {
       grammar.updateOutput();
       messageToConsole(
@@ -653,6 +658,8 @@ document.addEventListener("DOMContentLoaded", function () {
   rightArrowButton.addEventListener("click", function () {
     grammar = createGrammarFromNFA(automaton);
     grammar.updateOutput();
+    messageToConsole("Equivalent grammar created!", 'green');
+
   });
 
   pasteButton.addEventListener("click", function (event) {

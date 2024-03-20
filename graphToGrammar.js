@@ -296,6 +296,8 @@ document.addEventListener("DOMContentLoaded", function () {
       automaton.inputAlphabet = nfaToDfa.inputAlphabet;
 
       automaton.arrangeGraph(two);
+      messageToConsole("Determinized Automaton!", "black");
+
     } else {
       messageToConsole("Please remove ε-transitions first!", "red");
       console.warn("Detected ε-transition");
@@ -316,6 +318,8 @@ document.addEventListener("DOMContentLoaded", function () {
       automaton.inputAlphabet = nfaToDfa.inputAlphabet;
 
       automaton.arrangeGraph(two);
+      messageToConsole("Determinized Automaton partially!", "black");
+
     } else {
       messageToConsole("Please remove ε-transitions first!", "red");
       console.warn("Detected ε-transition");
@@ -626,6 +630,9 @@ document.addEventListener("DOMContentLoaded", function () {
     grammar.updateOutput();
   });
 
+  /**
+   * Updates the visuals of the edit buttons (active or not active)
+   */
   function updateEditButtons() {
     createStateButton.style.backgroundColor = stateCreationActive
       ? "green"
@@ -655,15 +662,27 @@ document.addEventListener("DOMContentLoaded", function () {
     editButton.style.color = editActive ? "white" : "black";
   }
 
+  /**
+   * Prints a message to the info console in a specified color
+   * @param {String} message the message text
+   * @param {String} color the color, e.g. 'white'
+   */
   function messageToConsole(message, color) {
     infoConsole.textContent = message;
     infoConsole.style.color = color;
   }
 
+  /**
+   * Clears the info console
+   */
   function clearConsole() {
     infoConsole.textContent = "";
   }
 
+  /**
+   * Selects the pie menu buttons based on the mouse position
+   * @param {Float} angle 
+   */
   function handlePieMenuSelection(angle) {
     pieMove.style.backgroundColor = "white";
     pieMarkEnd.style.backgroundColor = "white";
@@ -686,7 +705,13 @@ document.addEventListener("DOMContentLoaded", function () {
       pieDelete.style.backgroundColor = "green";
     }
   }
-
+  
+  /**
+   * Clicks the selected pie menu button based on the mouse position
+   * @param {Float} angle 
+   * @param {Float} mouseX 
+   * @param {Float} mouseY 
+   */
   function handlePieMenuClick(angle, mouseX, mouseY) {
     if (30 <= angle && angle <= 90) {
       movingState = pieMenu.currentState;

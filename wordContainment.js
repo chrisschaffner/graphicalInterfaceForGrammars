@@ -63,6 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         wordContainmentDisplay.textContent = "Word is not in the language";
         wordContainmentDisplay.style.color = "red";
+        derivationDisplay.textContent = "";
       }
 
       generateExampleWordsButton.style.display = "block";

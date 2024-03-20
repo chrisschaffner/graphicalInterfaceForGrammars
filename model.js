@@ -58,7 +58,7 @@ class Grammar {
 
     this.calculateGrammarType();
 
-    this.typeDisplay.textContent = "Type: " + (this.type ? this.type : "");
+    this.typeDisplay.textContent = "Type: " + (this.type != undefined ? this.type : "");
   }
 
   calculateGrammarType() {
@@ -150,7 +150,7 @@ class FiniteAutomaton {
       }
     }
 
-    this.dfaDisplay = document.getElementById("isDFA");
+    this.dfaDisplay = document.getElementById("isDFADisplay");
 
     this.notfiyObservers(two);
   }
@@ -360,35 +360,53 @@ class FiniteAutomaton {
     this.inputAlphabet.push(terminal);
   }
 
+  removeTerminal(terminal){
+    var set = new Set(this.terminals);
+    set.delete(terminal);
+    this.terminals = Array.from(set);
+  }
+
   resolveEpsilonTransitions(two) {
+    var originalTransitions = this.transitions;
+    this.transitions = [];
     var startState = this.states.find((s) => s.isStart);
     startState.isStart = false;
     var startEpsilonClosure = calculateEpsilonClosure(
       startState,
-      this.transitions
+      originalTransitions
     );
     startEpsilonClosure.forEach((s) => (s.isStart = true));
-    var newTransitions = [];
+    //var newTransitions = [];
 
-    this.transitions.forEach((trans) => {
+    originalTransitions.forEach((trans) => {
       trans.via.forEach((v) => {
         if (!v.includes("ε")) {
           var epsilonClosure = calculateEpsilonClosure(
             trans.to,
-            this.transitions
+            originalTransitions
           );
           epsilonClosure.forEach((s) =>
-            newTransitions.push(
-              new FaTranisition(trans.from, s, v, trans.index)
-            )
+
+            this.addTransition(new FaTranisition(trans.from, s, [v], trans.index), two)
+            
           );
         }
       });
     });
 
-    this.transitions = newTransitions;
+    //this.transitions = newTransitions;
 
     this.arrangeGraph(two);
+  }
+
+  removeRedundantTerminals(){
+    if(this.terminals){
+      this.terminals.forEach(terminal => {
+        if(!this.transitions.some(transition => transition.via.includes(terminal))){
+          this.removeTerminal(terminal);
+        };
+      });
+    }
   }
 
   /**
@@ -937,9 +955,11 @@ class AutomatonObserver {
   }
 
   update(two) {
+    this.dfa.removeRedundantTerminals();
     this.dfa.createAutomatonVisuals(two);
     var isDFA = this.dfa.checkAutomatonDeterminism();
     this.dfa.updateDFADisplay(isDFA);
+    console.log("Is DFA? " + isDFA)
     this.grammar.calculateGrammarType();
 
     if (this.updateGrammar) {
