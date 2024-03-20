@@ -13,14 +13,18 @@ document.addEventListener("DOMContentLoaded", function () {
   two.appendTo(canvas);
   var clearButton = document.getElementById("clearButton");
   var createStateButton = document.getElementById("createStateButton");
-  var createTransitionButton = document.getElementById("createTransitionButton");
+  var createTransitionButton = document.getElementById(
+    "createTransitionButton"
+  );
   var markEndButton = document.getElementById("markEndButton");
   var markStartButton = document.getElementById("markStartButton");
   var deleteButton = document.getElementById("deleteButton");
   var deleteEndButton = document.getElementById("deleteEndButton");
   var makeScreenshotButton = document.getElementById("screenshotButton");
   var determinizeButton = document.getElementById("determinizeButton");
-  var determinizePartButton = document.getElementById("determinizePartialButton");
+  var determinizePartButton = document.getElementById(
+    "determinizePartialButton"
+  );
   var removeEpsilonButton = document.getElementById("removeEpsilonButton");
   var copyButton = document.getElementById("copyButton");
   var dfaDisplay = document.getElementById("isDFADisplay");
@@ -30,7 +34,8 @@ document.addEventListener("DOMContentLoaded", function () {
   var autoConvertInput = document.getElementById("autoConvert");
   var leftArrowButton = document.getElementById("leftArrowButton");
   var rightArrowButton = document.getElementById("rightArrowButton");
-  rightArrowButton.style.backgroundImage = "url('assets/arrow_right_selected.svg')";
+  rightArrowButton.style.backgroundImage =
+    "url('assets/arrow_right_selected.svg')";
   var infoConsole = document.getElementById("console");
   var pieDelete = document.getElementById("pieDelete");
   var pieMove = document.getElementById("pieMove");
@@ -308,7 +313,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       automaton.arrangeGraph(two);
       messageToConsole("Determinized Automaton partially!", "black");
-
     } else {
       messageToConsole("Please remove ε-transitions first!", "red");
       console.warn("Detected ε-transition");
@@ -496,8 +500,7 @@ document.addEventListener("DOMContentLoaded", function () {
       automaton.markEnd(state, two);
     } else if (startMarkingActive) {
       if (
-        automaton.states.filter((state) => state.isStart == true)
-          .length > 0
+        automaton.states.filter((state) => state.isStart == true).length > 0
       ) {
         messageToConsole(
           "More than one start state, auto grammar conversion is disabled!",
@@ -596,7 +599,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
 
-      var createdTransition = new FaTranisition(
+      var createdTransition = new FaTransition(
         userSelectedStateFrom,
         userSelectedStateTo,
         userViaInput
@@ -613,7 +616,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var transition = event.detail;
 
     if (deleteActive) {
-      automaton.removeTranstion(transition, two);
+      automaton.removeTransition(transition, two);
     }
   });
 
@@ -644,8 +647,7 @@ document.addEventListener("DOMContentLoaded", function () {
       automaton.inputAlphabet = nfaFromGrammar.inputAlphabet;
       automaton.arrangeGraph(two);
       console.log(automaton);
-      messageToConsole("Equivalent automaton created!", 'green');
-
+      messageToConsole("Equivalent automaton created!", "green");
     } else {
       grammar.updateOutput();
       messageToConsole(
@@ -658,8 +660,7 @@ document.addEventListener("DOMContentLoaded", function () {
   rightArrowButton.addEventListener("click", function () {
     grammar = createGrammarFromNFA(automaton);
     grammar.updateOutput();
-    messageToConsole("Equivalent grammar created!", 'green');
-
+    messageToConsole("Equivalent grammar created!", "green");
   });
 
   pasteButton.addEventListener("click", function (event) {
@@ -671,6 +672,9 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Pasted Input from session storage");
   });
 
+  /**
+   * Updates the visuals of the edit buttons (active or not active)
+   */
   function updateEditButtons() {
     createStateButton.style.backgroundColor = stateCreationActive
       ? "green"
@@ -700,15 +704,27 @@ document.addEventListener("DOMContentLoaded", function () {
     editButton.style.color = editActive ? "white" : "black";
   }
 
+  /**
+   * Prints a message to the info console in a specified color
+   * @param {String} message the message text
+   * @param {String} color the color, e.g. 'white'
+   */
   function messageToConsole(message, color) {
     infoConsole.textContent = message;
     infoConsole.style.color = color;
   }
 
+  /**
+   * Clears the info console
+   */
   function clearConsole() {
     infoConsole.textContent = "";
   }
 
+  /**
+   * Selects the pie menu buttons based on the mouse position
+   * @param {Float} angle
+   */
   function handlePieMenuSelection(angle) {
     pieMove.style.backgroundColor = "white";
     pieMarkEnd.style.backgroundColor = "white";
@@ -732,6 +748,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  /**
+   * Clicks the selected pie menu button based on the mouse position
+   * @param {Float} angle
+   * @param {Float} mouseX
+   * @param {Float} mouseY
+   */
   function handlePieMenuClick(angle, mouseX, mouseY) {
     if (30 <= angle && angle <= 90) {
       movingState = pieMenu.currentState;

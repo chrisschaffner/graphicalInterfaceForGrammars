@@ -185,7 +185,7 @@ class FiniteAutomaton {
    * Creates a new finite automaton object
    * @param {State[]} states
    * @param {String} inputAlphabet
-   * @param {FaTranisition[]} transitions
+   * @param {FaTransition[]} transitions
    * @param {Two} two
    */
   constructor(states, inputAlphabet, transitions, two) {
@@ -210,7 +210,7 @@ class FiniteAutomaton {
 
     this.dfaDisplay = document.getElementById("isDFADisplay");
 
-    this.notfiyObservers(two);
+    this.notifyObservers(two);
   }
 
   /**
@@ -228,7 +228,7 @@ class FiniteAutomaton {
       (t) => this.states.includes(t.from) && this.states.includes(t.to)
     );
 
-    this.notfiyObservers(two);
+    this.notifyObservers(two);
   }
 
   /**
@@ -242,7 +242,7 @@ class FiniteAutomaton {
     this.inputAlphabet = [];
     this.transitions = [];
     this.generationsArray = [];
-    this.notfiyObservers(two);
+    this.notifyObservers(two);
   }
   /**
    * Adds a state to the automaton
@@ -251,7 +251,7 @@ class FiniteAutomaton {
    */
   addState(state, two) {
     this.states.push(state);
-    this.notfiyObservers(two);
+    this.notifyObservers(two);
   }
   /**
    * Removes a state from the automaton
@@ -261,7 +261,7 @@ class FiniteAutomaton {
   removeState(state, two) {
     state.deleteVisuals(two);
     this.states = this.states.filter((s) => s.name !== state.name);
-    this.notfiyObservers(two);
+    this.notifyObservers(two);
   }
 
   /**
@@ -272,12 +272,12 @@ class FiniteAutomaton {
    */
   moveState(state, position, two) {
     state.setPosition(position.x, position.y);
-    this.notfiyObservers(two);
+    this.notifyObservers(two);
   }
 
   /**
    * Adds a transition to the automaton, combining transitions with the same start and end state
-   * @param {FaTranisition} transition
+   * @param {FaTransition} transition
    * @param {Two} two
    */
   addTransition(transition, two) {
@@ -295,7 +295,7 @@ class FiniteAutomaton {
       this.transitions.push(transition);
     }
 
-    this.notfiyObservers(two);
+    this.notifyObservers(two);
   }
   /**
    * Makes a state a start state
@@ -304,7 +304,7 @@ class FiniteAutomaton {
    */
   markStart(state, two) {
     state.isStart = true;
-    this.notfiyObservers(two);
+    this.notifyObservers(two);
   }
   /**
    * Removes the start property of a state
@@ -313,7 +313,7 @@ class FiniteAutomaton {
    */
   removeStart(state, two) {
     state.isStart = false;
-    this.notfiyObservers(two);
+    this.notifyObservers(two);
   }
   /**
    * Makes a state an end state
@@ -322,7 +322,7 @@ class FiniteAutomaton {
    */
   markEnd(state, two) {
     state.isEnd = true;
-    this.notfiyObservers(two);
+    this.notifyObservers(two);
   }
   /**
    * Removes the end state property from a state
@@ -331,15 +331,15 @@ class FiniteAutomaton {
    */
   unmarkEnd(state, two) {
     state.isEnd = false;
-    this.notfiyObservers(two);
+    this.notifyObservers(two);
   }
 
   /**
    * Removes a transition from the automaton
-   * @param {FaTranisition} transition
+   * @param {FaTransition} transition
    * @param {Two} two
    */
-  removeTranstion(transition, two) {
+  removeTransition(transition, two) {
     transition.deleteVisuals(two);
 
     this.transitions = this.transitions.filter(
@@ -350,7 +350,7 @@ class FiniteAutomaton {
       return this.transitions.some((t) => t.via.includes(element));
     });
 
-    this.notfiyObservers(two);
+    this.notifyObservers(two);
   }
 
   /**
@@ -375,7 +375,7 @@ class FiniteAutomaton {
    * Informs the observers when changes are made to the automaton
    * @param {Two} two
    */
-  notfiyObservers(two) {
+  notifyObservers(two) {
     this.observers.forEach((obs) => obs.update(two));
   }
   /**
@@ -420,7 +420,7 @@ class FiniteAutomaton {
       .forEach((state) => state.createStartArrow(two));
   }
   /**
-   * Calculates the generation of each state, which is the mininum number of steps required to reach that state from a start state
+   * Calculates the generation of each state, which is the minimum number of steps required to reach that state from a start state
    */
   createStatesGenerations() {
     var visited = new Set();
@@ -531,7 +531,7 @@ class FiniteAutomaton {
           );
           epsilonClosure.forEach((s) =>
             this.addTransition(
-              new FaTranisition(trans.from, s, [v], trans.index),
+              new FaTransition(trans.from, s, [v], trans.index),
               two
             )
           );
@@ -801,7 +801,7 @@ class State {
 /**
  * Class that represents a transition in a finite automaton
  */
-class FaTranisition {
+class FaTransition {
   from;
   to;
   via = [];
@@ -841,7 +841,7 @@ class FaTranisition {
    * Creates the transition arrow, tries to avoid intersecting with states
    * @param {Two} two
    * @param {State[]} states
-   * @param {Float} curveFactor Determins to initial curvature of the transition arrow
+   * @param {Float} curveFactor Determines to initial curvature of the transition arrow
    */
   createVisuals(two, states, curveFactor) {
     two.remove(this.transitionLine);
@@ -880,8 +880,11 @@ class FaTranisition {
         this.startVector,
         this.endVector
       );
-      var normalVecor = calculateNormalVector(this.endVector, this.startVector);
-      pointToInsert = movePointAlongVector(pointToInsert, normalVecor, 75);
+      var normalVector = calculateNormalVector(
+        this.endVector,
+        this.startVector
+      );
+      pointToInsert = movePointAlongVector(pointToInsert, normalVector, 75);
 
       angle = Math.atan2(
         pointToInsert.y - this.startVector.y,
@@ -930,12 +933,15 @@ class FaTranisition {
         this.endVector
       );
 
-      var normalVecor = calculateNormalVector(this.startVector, this.endVector);
+      var normalVector = calculateNormalVector(
+        this.startVector,
+        this.endVector
+      );
 
       if (curveFactor) {
         pointToInsert = movePointAlongVector(
           pointToInsert,
-          normalVecor,
+          normalVector,
           curveFactor
         );
 
@@ -983,7 +989,7 @@ class FaTranisition {
               120
             ))
         ) {
-          pointToInsert = movePointAlongVector(pointToInsert, normalVecor, 10);
+          pointToInsert = movePointAlongVector(pointToInsert, normalVector, 10);
 
           angle = Math.atan2(
             pointToInsert.y - this.startVector.y,
@@ -1057,7 +1063,7 @@ class FaTranisition {
     this.boundingBox.noFill();
     this.boundingBox.stroke = "transparent";
 
-    var labelPosition = movePointAlongVector(pointToInsert, normalVecor, 30);
+    var labelPosition = movePointAlongVector(pointToInsert, normalVector, 30);
     this.label = two.makeText(this.via, labelPosition.x, labelPosition.y);
     this.label.size = 30;
 
@@ -1155,7 +1161,7 @@ class SentenceForm {
   /**
    * Creates a new sentence form object
    * @param {SentenceForm} form
-   * @param {SentenceForm} previousForm the sentece form that lead to the current form
+   * @param {SentenceForm} previousForm the sentence form that lead to the current form
    */
   constructor(form, previousForm) {
     this.form = form;
@@ -1298,14 +1304,14 @@ class PieMenu {
 /**
  * Calculates the epsilon closure for a state
  * @param {State} state
- * @param {FaTranisition[]} transitions
+ * @param {FaTransition[]} transitions
  * @returns the epsilon closure
  */
 function calculateEpsilonClosure(state, transitions) {
   var closure = [state];
   var oldClosure = [];
   var maxIterations = 0;
-  while (maxIterations < 50 && !checkArrayEuquality(oldClosure, closure)) {
+  while (maxIterations < 50 && !(oldClosure, closure)) {
     oldClosure = closure;
     for (let i = 0; i < closure.length; i++) {
       var successors = calculateStateSuccessorsVia(
@@ -1333,10 +1339,10 @@ function onlyUnique(value, index, array) {
   return array.indexOf(value) === index;
 }
 /**
- * Calculates the lenght of a path definded by two points
+ * Calculates the length of a path defined by two points
  * @param {Point} point1
  * @param {Point} point2
- * @returns the lenght of the paht
+ * @returns the length of the path
  */
 function computeLineLength(point1, point2) {
   const x1 = point1.x;
@@ -1540,7 +1546,7 @@ function calculateStatePredecessors(faTransitions, state) {
 /**
  * Checks if the path of transition intersects with the circle of any state
  * @param {Two} two
- * @param {FaTranisition} transition
+ * @param {FaTransition} transition
  * @param {Array} states
  * @returns whether path and state circles intersect
  */
@@ -1667,7 +1673,7 @@ function createNFAFromGrammar(grammar, two) {
           let stateB = states.find((element) => element.name === b);
           let stateI = states.find((element) => element.name === variables[i]);
           transitions.push(
-            new FaTranisition(
+            new FaTransition(
               stateI,
               stateB,
               [inputAlphabet[j]],
@@ -1687,7 +1693,7 @@ function createNFAFromGrammar(grammar, two) {
           );
 
           transitions.push(
-            new FaTranisition(stateLeft, stateRight, ["ε"], transitionIndex)
+            new FaTransition(stateLeft, stateRight, ["ε"], transitionIndex)
           );
           transitionIndex++;
         }
@@ -1704,12 +1710,7 @@ function createNFAFromGrammar(grammar, two) {
           (element) => element.name === "Ze" + numberToSubscript(zeStateCount)
         );
         transitions.push(
-          new FaTranisition(
-            stateI,
-            zeState,
-            [inputAlphabet[j]],
-            transitionIndex
-          )
+          new FaTransition(stateI, zeState, [inputAlphabet[j]], transitionIndex)
         );
         transitionIndex++;
       }
@@ -1976,9 +1977,7 @@ function decideWordProblem(grammar, word) {
     i++;
   } while (
     i < 50 &&
-    !(
-      l.some((element) => element.form === word) || checkArrayEuquality(l, lOld)
-    )
+    !(l.some((element) => element.form === word) || (l, lOld))
   );
 
   return l.find((element) => element.form === word);
@@ -1986,9 +1985,9 @@ function decideWordProblem(grammar, word) {
 /**
  * Helper function that calculate the derivations of all current sentence forms
  * @param {SentenceForm} l the set of sentence forms
- * @param {SentenceForm} n the max lenght of sentence forms allowed
+ * @param {SentenceForm} n the max length of sentence forms allowed
  * @param {Array} productions
- * @returns the derviations of all current sentence forms
+ * @returns the derivations of all current sentence forms
  */
 function next(l, n, productions) {
   var successorDerivations = l.slice();
@@ -2004,11 +2003,11 @@ function next(l, n, productions) {
 /**
  * Calculates the successor sentence forms by applying all valid productions to the given sentence form
  * @param {SentenceForm} sentenceForm
- * @param {Int} maxLenght
+ * @param {Int} maxLength
  * @param {Array} productions
  * @returns the successor sentence forms
  */
-function calculateOneStepDerivations(sentenceForm, maxLenght, productions) {
+function calculateOneStepDerivations(sentenceForm, maxLength, productions) {
   var derivations = [];
 
   for (let i = 0; i < sentenceForm.form.length; i++) {
@@ -2031,7 +2030,7 @@ function calculateOneStepDerivations(sentenceForm, maxLenght, productions) {
             lastPortion.replace(/ε/g, "");
 
           if (
-            resultingSentenceForm.split(",").length <= maxLenght &&
+            resultingSentenceForm.split(",").length <= maxLength &&
             resultingSentenceForm.split(",").length > 0
           ) {
             derivations.push(
@@ -2056,7 +2055,7 @@ function calculateOneStepDerivations(sentenceForm, maxLenght, productions) {
  * @param {Array2} array2
  * @returns whether two arrays elements are equal
  */
-function checkArrayEuquality(array1, array2) {
+function checkArrayEquality(array1, array2) {
   if (array1.length !== array2.length) {
     return false;
   }
@@ -2132,7 +2131,7 @@ function generateTerminalsForms(grammar, maxCount) {
     lOld = l;
     l = next(lOld, n, grammar.productions);
     i++;
-  } while (i < 6 && !checkArrayEuquality(l, lOld));
+  } while (i < 6 && !(l, lOld));
 
   l = l.filter((element) => checkWordAlphabet(grammar.terminals, element.form));
 
@@ -2186,10 +2185,9 @@ function NFAToDFA(automaton, two, total) {
 
   var dfaStates = createPowerSetOfStates(automaton.states);
 
-  dfaStates.find((element) =>
-    checkArrayEuquality(
-      element.subsetStates,
-      automaton.states.filter((state) => state.isStart)
+  dfaStates.find(
+    (element) => (
+      element.subsetStates, automaton.states.filter((state) => state.isStart)
     )
   ).isStart = true;
 
@@ -2232,20 +2230,20 @@ function NFAToDFA(automaton, two, total) {
 
       if (total && successorStates.size == 0) {
         dfaTransitions.push(
-          new FaTranisition(state, emptyState, [alphabet[j]], transitionIndex)
+          new FaTransition(state, emptyState, [alphabet[j]], transitionIndex)
         );
         transitionIndex++;
       }
 
-      var matchingSubsetState = dfaStates.find((s) =>
-        checkArrayEuquality(
+      var matchingSubsetState = dfaStates.find(
+        (s) => (
           s.subsetStates.map((e) => e.name),
           Array.from(successorStates).map((t) => t.name)
         )
       );
       if (matchingSubsetState != undefined) {
         dfaTransitions.push(
-          new FaTranisition(
+          new FaTransition(
             state,
             matchingSubsetState,
             [alphabet[j]],
@@ -2273,12 +2271,12 @@ function NFAToDFA(automaton, two, total) {
 function calculateNormalVector(point1, point2) {
   var dx = point2.x - point1.x;
   var dy = point2.y - point1.y;
-  var normalVecor = { x: -dy, y: dx };
+  var normalVector = { x: -dy, y: dx };
   var length = Math.sqrt(
-    normalVecor.x * normalVecor.x + normalVecor.y * normalVecor.y
+    normalVector.x * normalVector.x + normalVector.y * normalVector.y
   );
 
-  return { x: normalVecor.x / length, y: normalVecor.y / length };
+  return { x: normalVector.x / length, y: normalVector.y / length };
 }
 /**
  * Moves a point along the given vector by the given distance

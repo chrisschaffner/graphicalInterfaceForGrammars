@@ -12,105 +12,72 @@
       href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap"
       rel="stylesheet"
     />
-    <script src="node_modules/two.js/build/two.js"></script>
-    <script src="model.js" onload="scriptLoaded()"></script>
-    <script src="grammarToGraph.js"></script>
   </head>
-  <body>
-    <header>
-      <h1>Graphical Interface for Grammars and Automata</h1>
-      <nav>
-        <ul>
-          <li><a href="landingPage.html">Home</a></li>
-          <li><a href="about.html">Help</a></li>
-        </ul>
-      </nav>
-    </header>
-
-    <div class="navBar">
-      <ul>
-        <li><a href="index.html" class="active">GRAMMAR TO GRAPH</a></li>
-        <li><a href="graphToGrammar.html">GRAPH TO GRAMMAR</a></li>
-        <li><a href="wordContainment.html">WORD CONTAINMENT</a></li>
-        <li><a href="multiview.html">COMBINED VIEW</a></li>
-      </ul>
+  <body
+    style="
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100vh;
+      text-align: center;
+    "
+  >
+    <div>
+      <header>
+        <h1>Graphical Interface for Grammars and Automata</h1>
+        <nav>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">Help</a></li>
+          </ul>
+        </nav>
+      </header>
     </div>
 
-    <div id="multiview">
-      <div id="grammarArea">
-        <h2>Grammar</h2>
-        <div id="grammarInputForm">
-          <div>
-            <label for="variableIOs">Variables:</label>
-            <input
-              type="text"
-              id="variablesIO"
-              name="variables"
-              placeholder="e.g. A, B"
-            /><br /><br />
-          </div>
-          <div>
-            <label for="terminalsIO">Terminal symbols:</label>
-            <input
-              type="text"
-              id="terminalsIO"
-              name="terminals"
-              placeholder="e.g. a, b, c"
-            /><br /><br />
-          </div>
-          <div>
-            <label for="productionsIO">Productions:</label>
-            <textarea
-              rows="7"
-              cols="60"
-              id="productionsIO"
-              name="productions"
-              placeholder="e.g.&#10;A->aB|cD&#10;B->Bc"
-            ></textarea>
-          </div>
-          <div>
-            <label for="startingIO">Starting symbol:</label>
-            <input
-              type="text"
-              id="startingIO"
-              name="starting"
-              placeholder="e.g. B"
-            /><br /><br />
-          </div>
+    <h1>What would you like to do?</h1>
 
-          <span id="buttons">
-            <span id="typeDisplay">Type: </span>
-            <button id="clearButton">Clear</button>
-            <button id="copyButton">Copy grammar</button>
-            <button id="pasteButton">Paste grammar</button>
-          </span>
+    <div
+      id="landingPageContent"
+      style="
+        display: flex;
+        justify-items: center;
+        align-items: center;
+        flex-direction: column;
+      "
+    >
+      <div id="categoryButtons">
+        <div class="categoryButton">
+          <a id="grammarToGraphButton" href="grammarToGraph.html"></a>
+          <span>Grammar to Graph</span>
         </div>
-
-        <div></div>
-      </div>
-
-      <div id="convertButtons">
-        <button id="rightArrowButton"></button>
-      </div>
-
-      <div id="graphArea">
-        <h2>Graph</h2>
-        <div id="drawingArea">
-          <div id="test">
-            <div id="pieMenu">
-              <div class="pieButton" id="pieDelete"></div>
-              <div class="pieButton" id="pieMove"></div>
-              <div class="pieButton" id="pieMarkStart"></div>
-              <div class="pieButton" id="pieMarkEnd"></div>
-              <div class="pieButton" id="pieRemoveEnd"></div>
-              <div class="pieButton" id="pieStartTransition"></div>
-            </div>
-          </div>
+        <div class="categoryButton">
+          <a id="graphToGrammarButton" href="graphToGrammar.html"></a>
+          <span>Graph to Grammar</span>
         </div>
-        <p id="console">Enter a grammar and press the arrow to convert into an equivalent automaton"</p>
-        <div></div>
+        <div class="categoryButton">
+          <a id="wordContainmentButton" href="wordContainment.html"></a>
+          <span>Word Containment</span>
+        </div>
+        <div class="categoryButton">
+          <a id="multiviewButton" href="multiview.html"></a>
+          <span>Combined View</span>
+        </div>
       </div>
-      
+    </div>
+
+    <div id="bottom">
+      <p>
+        This website is a tool for working with type 3 grammars and finite
+        Automata.
+      </p>
+      <p>
+        You can convert a regular grammar into an equivalent finite Automaton or
+        vice versa.
+      </p>
+      <p>
+        You can check whether an arbitrary word is contained in the language
+        induced by a type 1 grammar.
+      </p>
     </div>
   </body>
 </html>

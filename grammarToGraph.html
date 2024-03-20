@@ -14,7 +14,7 @@
     />
     <script src="node_modules/two.js/build/two.js"></script>
     <script src="model.js" onload="scriptLoaded()"></script>
-    <script src="graphToGrammar.js"></script>
+    <script src="grammarToGraph.js"></script>
   </head>
   <body>
     <header>
@@ -29,61 +29,19 @@
 
     <div class="navBar">
       <ul>
-        <li><a href="grammarToGraph.html">GRAMMAR TO GRAPH</a></li>
-        <li>
-          <a href="graphToGrammar.html" class="active">GRAPH TO GRAMMAR</a>
-        </li>
+        <li><a href="grammarToGraph.html" class="active">GRAMMAR TO GRAPH</a></li>
+        <li><a href="graphToGrammar.html">GRAPH TO GRAMMAR</a></li>
         <li><a href="wordContainment.html">WORD CONTAINMENT</a></li>
         <li><a href="multiview.html">COMBINED VIEW</a></li>
       </ul>
     </div>
 
     <div id="multiview">
-      <div id="graphArea">
-        <h2>Graph</h2>
-        <div id="drawingArea">
-          <div id="canvas">
-            <div id="pieMenu">
-              <div class="pieButton" id="pieDelete"></div>
-              <div class="pieButton" id="pieMove"></div>
-              <div class="pieButton" id="pieMarkStart"></div>
-              <div class="pieButton" id="pieMarkEnd"></div>
-              <div class="pieButton" id="pieRemoveEnd"></div>
-              <div class="pieButton" id="pieStartTransition"></div>
-            </div>
-          </div>
-        </div>
-        <p id="console">Start by selecting "Edit" and then "Create State"</p>
-        <div id="buttons">
-          <button id="editButton">Edit</button>
-          <button id="clearButton">Clear</button>
-          <button id="screenshotButton">Make Screenshot</button>
-          <button id="determinizeButton">Determinize Automaton</button>
-          <button id="determinizePartialButton">Determinize Partially</button>
-          <button id="removeEpsilonButton">Remove ε-transitions</button>
-          <span id="isDFADisplay">DFA</span>
-          <button id="createStateButton">Create State</button>
-          <button id="createTransitionButton">Create Transition</button>
-          <button id="markEndButton">Mark End</button>
-          <button id="deleteEndButton">Delete End</button>
-          <button id="markStartButton">MarkStart</button>
-          <button id="deleteButton">Delete State/Transition</button>
-          <button id="moveButton">Move State</button>
-        </div>
-      </div>
-
-      <div id="convertButtons">
-        <button id="rightArrowButton"></button>
-        <input type="checkbox" id="autoConvert" name="auto" checked />
-        <label for="autoConvert">Auto</label>
-      </div>
-
       <div id="grammarArea">
         <h2>Grammar</h2>
-
         <div id="grammarInputForm">
           <div>
-            <label for="variablesIO">Variables:</label>
+            <label for="variableIOs">Variables:</label>
             <input
               type="text"
               id="variablesIO"
@@ -122,10 +80,37 @@
 
           <span id="buttons">
             <span id="typeDisplay">Type: </span>
+            <button id="clearButton">Clear</button>
             <button id="copyButton">Copy grammar</button>
+            <button id="pasteButton">Paste grammar</button>
           </span>
         </div>
 
+        <div></div>
+      </div>
+
+      <div id="convertButtons">
+        <button id="rightArrowButton"></button>
+      </div>
+
+      <div id="graphArea">
+        <h2>Graph</h2>
+        <div id="drawingArea">
+          <div id="test">
+            <div id="pieMenu">
+              <div class="pieButton" id="pieDelete"></div>
+              <div class="pieButton" id="pieMove"></div>
+              <div class="pieButton" id="pieMarkStart"></div>
+              <div class="pieButton" id="pieMarkEnd"></div>
+              <div class="pieButton" id="pieRemoveEnd"></div>
+              <div class="pieButton" id="pieStartTransition"></div>
+            </div>
+          </div>
+        </div>
+        <p id="console">
+          Enter a grammar and press the arrow to convert into an equivalent
+          automaton"
+        </p>
         <div></div>
       </div>
     </div>

@@ -13,14 +13,18 @@ document.addEventListener("DOMContentLoaded", function () {
   two.appendTo(canvas);
   var clearButton = document.getElementById("clearButton");
   var createStateButton = document.getElementById("createStateButton");
-  var createTransitionButton = document.getElementById("createTransitionButton");
+  var createTransitionButton = document.getElementById(
+    "createTransitionButton"
+  );
   var markEndButton = document.getElementById("markEndButton");
   var markStartButton = document.getElementById("markStartButton");
   var deleteButton = document.getElementById("deleteButton");
   var deleteEndButton = document.getElementById("deleteEndButton");
   var makeScreenshotButton = document.getElementById("screenshotButton");
   var determinizeButton = document.getElementById("determinizeButton");
-  var determinizePartButton = document.getElementById("determinizePartialButton");
+  var determinizePartButton = document.getElementById(
+    "determinizePartialButton"
+  );
   var removeEpsilonButton = document.getElementById("removeEpsilonButton");
   var copyButton = document.getElementById("copyButton");
   var autoConvertInput = document.getElementById("autoConvert");
@@ -29,7 +33,8 @@ document.addEventListener("DOMContentLoaded", function () {
   var moveButton = document.getElementById("moveButton");
   var editButton = document.getElementById("editButton");
   var rightArrowButton = document.getElementById("rightArrowButton");
-  rightArrowButton.style.backgroundImage = "url('assets/arrow_right_selected.svg')";
+  rightArrowButton.style.backgroundImage =
+    "url('assets/arrow_right_selected.svg')";
   var pieDelete = document.getElementById("pieDelete");
   var pieMove = document.getElementById("pieMove");
   var pieMarkStart = document.getElementById("pieMarkStart");
@@ -60,7 +65,6 @@ document.addEventListener("DOMContentLoaded", function () {
   var moveActive = false;
   var pieMoveActive = false;
   var movingState;
-
 
   var grammar = new Grammar([], [], [], null);
   var automatonObserver = new AutomatonObserver(automaton, grammar, 0);
@@ -297,7 +301,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       automaton.arrangeGraph(two);
       messageToConsole("Determinized Automaton!", "black");
-
     } else {
       messageToConsole("Please remove ε-transitions first!", "red");
       console.warn("Detected ε-transition");
@@ -319,7 +322,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       automaton.arrangeGraph(two);
       messageToConsole("Determinized Automaton partially!", "black");
-
     } else {
       messageToConsole("Please remove ε-transitions first!", "red");
       console.warn("Detected ε-transition");
@@ -336,9 +338,7 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     messageToConsole("Grammar copied to clipboard", "green");
     var startState = automaton.states.find((s) => s.isStart === true);
-    console.log(
-      calculateEpsilonClosure(startState, automaton.transitions)
-    );
+    console.log(calculateEpsilonClosure(startState, automaton.transitions));
   });
 
   moveButton.addEventListener("click", function () {
@@ -497,8 +497,7 @@ document.addEventListener("DOMContentLoaded", function () {
       automaton.markEnd(state, two);
     } else if (startMarkingActive) {
       if (
-        automaton.states.filter((state) => state.isStart == true)
-          .length > 0
+        automaton.states.filter((state) => state.isStart == true).length > 0
       ) {
         messageToConsole(
           "More than one start state, auto grammar conversion is disabled!",
@@ -597,7 +596,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
 
-      var createdTransition = new FaTranisition(
+      var createdTransition = new FaTransition(
         userSelectedStateFrom,
         userSelectedStateTo,
         userViaInput
@@ -614,7 +613,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var transition = event.detail;
 
     if (deleteActive) {
-      automaton.removeTranstion(transition, two);
+      automaton.removeTransition(transition, two);
     }
   });
 
@@ -681,7 +680,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /**
    * Selects the pie menu buttons based on the mouse position
-   * @param {Float} angle 
+   * @param {Float} angle
    */
   function handlePieMenuSelection(angle) {
     pieMove.style.backgroundColor = "white";
@@ -705,12 +704,12 @@ document.addEventListener("DOMContentLoaded", function () {
       pieDelete.style.backgroundColor = "green";
     }
   }
-  
+
   /**
    * Clicks the selected pie menu button based on the mouse position
-   * @param {Float} angle 
-   * @param {Float} mouseX 
-   * @param {Float} mouseY 
+   * @param {Float} angle
+   * @param {Float} mouseX
+   * @param {Float} mouseY
    */
   function handlePieMenuClick(angle, mouseX, mouseY) {
     if (30 <= angle && angle <= 90) {
