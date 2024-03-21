@@ -30,8 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
     startingIO.value = "A";
     wordInput.value = "aaaa";
-
-    console.log(numberToSubscript(2345));
   });
 
   checkButton.addEventListener("click", function (event) {
@@ -50,8 +48,6 @@ document.addEventListener("DOMContentLoaded", function () {
       grammar.calculateGrammarType();
 
       typeDisplay.textContent = "Type: " + grammar.type;
-
-      console.log(decideWordProblem(grammar, word));
 
       var wordProblemResult = decideWordProblem(grammar, word);
 

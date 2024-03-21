@@ -335,7 +335,7 @@ header nav ul li a:hover {
 
 /* Buttons */
 
-#clearButton {
+#clearButton, #clearButtonGrammar {
   color: white;
   background-color: #eb4848;
   padding: 0.8em 1em;
@@ -413,7 +413,7 @@ header nav ul li a:hover {
   margin-bottom: 2em;
 }
 
-#clearButton:hover {
+#clearButton:hover, #clearButtonGrammar:hover {
   color: black;
   background-color: rgb(255, 188, 188);
 }

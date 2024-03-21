@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", function () {
   var grammar = new Grammar([], [], [], null);
 
   clearButton.addEventListener("click", function (event) {
-    console.log("Clear");
     event.preventDefault();
     two.clear();
     two.update();
@@ -31,11 +30,8 @@ document.addEventListener("DOMContentLoaded", function () {
     terminalsIO.value = "";
     productionsIO.value = "";
     startingIO.value = "";
+    console.log("Grammar cleared!");
     messageToConsole("Grammar cleared!", "black");
-  });
-
-  document.addEventListener("fullscreenchange", () => {
-    console.log(window.innerHeight);
   });
 
   copyButton.addEventListener("click", function (event) {
@@ -46,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
       formatProductions(grammar.productions).join("\n"),
       grammar.starting
     );
+    console.log("Copied Input to session storage");
     messageToConsole("Grammar copied to clipboard!", "black");
   });
 
@@ -86,7 +83,6 @@ document.addEventListener("DOMContentLoaded", function () {
       mousePositionX <= canvas.clientWidth &&
       mousePositionY >= 0 &&
       mousePositionY <= canvas.clientHeight;
-    console.log(isMouseInsideCanvas);
     if (isMouseInsideCanvas) {
       var sceneMouse = new Two.Vector(
         mousePositionX - two.scene.translation.x,
@@ -115,12 +111,18 @@ document.addEventListener("DOMContentLoaded", function () {
   rightArrowButton.addEventListener("click", function (event) {
     event.preventDefault();
 
-    grammar = userInputToGrammar(
-      variablesIO.value,
-      terminalsIO.value,
-      productionsIO.value,
-      startingIO.value
-    );
+    try {
+      grammar = userInputToGrammar(
+        variablesIO.value,
+        terminalsIO.value,
+        productionsIO.value,
+        startingIO.value
+      );
+    } catch (error) {
+      messageToConsole(error.message, "red");
+      console.error(error.message);
+      return;
+    }
     grammar.calculateGrammarType();
     grammar.updateOutput();
 
@@ -129,10 +131,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
       automaton.arrangeGraph(two);
       automaton.createAutomatonVisuals(two);
-      console.log(automaton);
       messageToConsole("Equivalent automaton created!", "green");
     } else {
-      console.log(grammar.type);
       messageToConsole(
         "Grammar type is not 3, an equivalent NFA can not be constructed!",
         "red"

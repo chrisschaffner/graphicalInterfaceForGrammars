@@ -181,7 +181,6 @@ class FiniteAutomaton {
   observers = [];
   dfaDisplay;
 
-
   constructor(states, inputAlphabet, transitions, two) {
     this.states = states;
     this.inputAlphabet = inputAlphabet;
@@ -190,8 +189,6 @@ class FiniteAutomaton {
       var sameFromAndToTransition = this.transitions.find(
         (t) => t.from === transitions[i].from && t.to === transitions[i].to
       );
-
-      console.log(sameFromAndToTransition);
 
       if (!sameFromAndToTransition) {
         this.transitions.push(transitions[i]);
@@ -207,9 +204,6 @@ class FiniteAutomaton {
     this.dfaDisplay = document.getElementById("isDFADisplay");
 
     this.notifyObservers(two);
-
-    console.log(transitions);
-
   }
 
   /**
@@ -217,9 +211,7 @@ class FiniteAutomaton {
    * @param {Two} two
    */
   arrangeGraph(two) {
-    console.log(this.states);
     this.createStatesGenerations();
-    this.states.forEach(s => console.log(s.generation))
 
     this.states = this.states.filter((state) => state.generation != undefined);
     this.calculateGenerationsArray();
@@ -281,12 +273,10 @@ class FiniteAutomaton {
    * @param {Two} two
    */
   addTransition(transition, two) {
-    console.log(this.transitions);
     var sameFromAndToTransition = this.transitions.find(
       (t) => t.from === transition.from && t.to === transition.to
     );
 
-    console.log(sameFromAndToTransition)
     if (sameFromAndToTransition) {
       sameFromAndToTransition.via = sameFromAndToTransition.via.concat(
         transition.via
@@ -440,7 +430,6 @@ class FiniteAutomaton {
           this.transitions,
           currentState
         );
-        console.log(currentState);
         for (let i = 0; i < successors.length; i++) {
           if (!visited.has(successors[i])) {
             successors[i].generation = currentState.generation + 1;
@@ -1208,7 +1197,6 @@ class AutomatonObserver {
     this.dfa.createAutomatonVisuals(two);
     var isDFA = this.dfa.checkAutomatonDeterminism();
     this.dfa.updateDFADisplay(isDFA);
-    console.log("Is DFA? " + isDFA);
     this.grammar.calculateGrammarType();
 
     if (this.updateGrammar) {
@@ -1437,12 +1425,20 @@ function userInputToGrammar(
   productionsInputValue = productionsInputValue.replace(/[ \t]/g, "");
   var splittedProductionsInput = productionsInputValue.split("\n");
 
+  if(variables.length == 0){
+    throw new Error("Empty variables!");
+  }
+
   if (terminals.length == 0) {
     throw new Error("Empty terminals!");
   }
 
   if (!variables.includes(starting)) {
     throw new Error("Invalid starting variable!");
+  }
+
+  if(productionsInputValue == ""){
+    throw new Error("Invalid productions!");
   }
 
   for (let i = 0; i < splittedProductionsInput.length; i++) {
@@ -2188,14 +2184,12 @@ function NFAToDFA(automaton, two, total) {
 
   var dfaStates = createPowerSetOfStates(automaton.states);
 
-  console.log(dfaStates.find(
-    (element) => (
-      element.subsetStates, automaton.states.filter((state) => state.isStart)
+  dfaStates.find((element) =>
+    checkArrayEquality(
+      element.subsetStates,
+      automaton.states.filter((state) => state.isStart)
     )
-  ));
-
-  dfaStates.find(element => checkArrayEquality(element.subsetStates, automaton.states.filter(state => state.isStart))).isStart = true;
-
+  ).isStart = true;
 
   dfaStates
     .filter((element) =>
@@ -2232,8 +2226,6 @@ function NFAToDFA(automaton, two, total) {
         subsetSuccessors.forEach((successor) => successorStates.add(successor));
       }
 
-      console.log("State: " + state.name + " " + successorStates.size);
-
       if (total && successorStates.size == 0) {
         dfaTransitions.push(
           new FaTransition(state, emptyState, [alphabet[j]], transitionIndex)
@@ -2241,10 +2233,12 @@ function NFAToDFA(automaton, two, total) {
         transitionIndex++;
       }
 
-      var matchingSubsetState = dfaStates.find(
-        (s) => checkArrayEquality(s.subsetStates.map((e) => e.name), Array.from(successorStates).map((t) => t.name))
+      var matchingSubsetState = dfaStates.find((s) =>
+        checkArrayEquality(
+          s.subsetStates.map((e) => e.name),
+          Array.from(successorStates).map((t) => t.name)
+        )
       );
-      console.log(matchingSubsetState)
       if (matchingSubsetState != undefined) {
         dfaTransitions.push(
           new FaTransition(
@@ -2259,15 +2253,12 @@ function NFAToDFA(automaton, two, total) {
     }
   }
 
-  console.log(dfaTransitions)
-
   return new FiniteAutomaton(
     dfaStates,
     automaton.inputAlphabet,
     dfaTransitions,
     two
   );
-
 }
 /**
  * Calculates the normalized normal vector of a path given by two points

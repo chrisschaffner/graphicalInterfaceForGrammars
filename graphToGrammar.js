@@ -273,8 +273,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   autoConvertInput.addEventListener("change", function () {
-    console.log("trigger");
-
     automatonObserver.updateGrammar = this.checked;
     if (this.checked) {
       rightArrowButton.style.backgroundImage =
@@ -292,7 +290,6 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     if (!hasEpsilonTransitions) {
-      console.log(automaton);
       nfaToDfa = NFAToDFA(automaton, two, true);
 
       automaton.states = nfaToDfa.states;
@@ -313,7 +310,6 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     if (!hasEpsilonTransitions) {
-      console.log(automaton);
       nfaToDfa = NFAToDFA(automaton, two, false);
 
       automaton.states = nfaToDfa.states;
@@ -338,7 +334,6 @@ document.addEventListener("DOMContentLoaded", function () {
     );
     messageToConsole("Grammar copied to clipboard", "green");
     var startState = automaton.states.find((s) => s.isStart === true);
-    console.log(calculateEpsilonClosure(startState, automaton.transitions));
   });
 
   moveButton.addEventListener("click", function () {
@@ -462,7 +457,6 @@ document.addEventListener("DOMContentLoaded", function () {
       mousePositionX <= canvas.clientWidth &&
       mousePositionY >= 0 &&
       mousePositionY <= canvas.clientHeight;
-    console.log(isMouseInsideCanvas);
     if (isMouseInsideCanvas) {
       var sceneMouse = new Two.Vector(
         mousePositionX - two.scene.translation.x,
@@ -491,7 +485,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var state = event.detail.state;
 
     if (transitionCreationActive) {
-      console.log(state.name + " from");
+      console.log("User selected " + state.name + " as transition start");
       userSelectedStateFrom = state;
     } else if (endMarkingActive) {
       automaton.markEnd(state, two);
@@ -576,7 +570,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var state = event.detail;
 
     if (transitionCreationActive) {
-      console.log(state.name + " to");
+      console.log("User selected " + state.name + " as transition end");
       userSelectedStateTo = state;
 
       var userViaInput = prompt("Insert terminal for transition:")
@@ -584,7 +578,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .split(",");
 
       if (userViaInput != null) {
-        console.log(userViaInput);
+        console.log("User typed in as terminal(s): " + userViaInput);
       }
 
       for (let i = 0; i < userViaInput.length; i++) {
