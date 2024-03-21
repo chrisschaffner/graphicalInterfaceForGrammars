@@ -181,13 +181,7 @@ class FiniteAutomaton {
   observers = [];
   dfaDisplay;
 
-  /**
-   * Creates a new finite automaton object
-   * @param {State[]} states
-   * @param {String} inputAlphabet
-   * @param {FaTransition[]} transitions
-   * @param {Two} two
-   */
+
   constructor(states, inputAlphabet, transitions, two) {
     this.states = states;
     this.inputAlphabet = inputAlphabet;
@@ -196,6 +190,8 @@ class FiniteAutomaton {
       var sameFromAndToTransition = this.transitions.find(
         (t) => t.from === transitions[i].from && t.to === transitions[i].to
       );
+
+      console.log(sameFromAndToTransition);
 
       if (!sameFromAndToTransition) {
         this.transitions.push(transitions[i]);
@@ -211,6 +207,9 @@ class FiniteAutomaton {
     this.dfaDisplay = document.getElementById("isDFADisplay");
 
     this.notifyObservers(two);
+
+    console.log(transitions);
+
   }
 
   /**
@@ -220,6 +219,7 @@ class FiniteAutomaton {
   arrangeGraph(two) {
     console.log(this.states);
     this.createStatesGenerations();
+    this.states.forEach(s => console.log(s.generation))
 
     this.states = this.states.filter((state) => state.generation != undefined);
     this.calculateGenerationsArray();
@@ -281,10 +281,12 @@ class FiniteAutomaton {
    * @param {Two} two
    */
   addTransition(transition, two) {
+    console.log(this.transitions);
     var sameFromAndToTransition = this.transitions.find(
       (t) => t.from === transition.from && t.to === transition.to
     );
 
+    console.log(sameFromAndToTransition)
     if (sameFromAndToTransition) {
       sameFromAndToTransition.via = sameFromAndToTransition.via.concat(
         transition.via
@@ -438,6 +440,7 @@ class FiniteAutomaton {
           this.transitions,
           currentState
         );
+        console.log(currentState);
         for (let i = 0; i < successors.length; i++) {
           if (!visited.has(successors[i])) {
             successors[i].generation = currentState.generation + 1;
@@ -1977,7 +1980,7 @@ function decideWordProblem(grammar, word) {
     i++;
   } while (
     i < 50 &&
-    !(l.some((element) => element.form === word) || (l, lOld))
+    !(l.some((element) => element.form === word) || checkArrayEquality(l, lOld))
   );
 
   return l.find((element) => element.form === word);
@@ -2131,7 +2134,7 @@ function generateTerminalsForms(grammar, maxCount) {
     lOld = l;
     l = next(lOld, n, grammar.productions);
     i++;
-  } while (i < 6 && !(l, lOld));
+  } while (i < 6 && !checkArrayEquality(l, lOld));
 
   l = l.filter((element) => checkWordAlphabet(grammar.terminals, element.form));
 
@@ -2185,11 +2188,14 @@ function NFAToDFA(automaton, two, total) {
 
   var dfaStates = createPowerSetOfStates(automaton.states);
 
-  dfaStates.find(
+  console.log(dfaStates.find(
     (element) => (
       element.subsetStates, automaton.states.filter((state) => state.isStart)
     )
-  ).isStart = true;
+  ));
+
+  dfaStates.find(element => checkArrayEquality(element.subsetStates, automaton.states.filter(state => state.isStart))).isStart = true;
+
 
   dfaStates
     .filter((element) =>
@@ -2236,11 +2242,9 @@ function NFAToDFA(automaton, two, total) {
       }
 
       var matchingSubsetState = dfaStates.find(
-        (s) => (
-          s.subsetStates.map((e) => e.name),
-          Array.from(successorStates).map((t) => t.name)
-        )
+        (s) => checkArrayEquality(s.subsetStates.map((e) => e.name), Array.from(successorStates).map((t) => t.name))
       );
+      console.log(matchingSubsetState)
       if (matchingSubsetState != undefined) {
         dfaTransitions.push(
           new FaTransition(
@@ -2255,12 +2259,15 @@ function NFAToDFA(automaton, two, total) {
     }
   }
 
+  console.log(dfaTransitions)
+
   return new FiniteAutomaton(
     dfaStates,
     automaton.inputAlphabet,
     dfaTransitions,
     two
   );
+
 }
 /**
  * Calculates the normalized normal vector of a path given by two points
