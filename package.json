@@ -5,9 +5,6 @@
   "scripts": {
     "doc": "jsdoc -c jsdoc.json"
   },
-  "dependencies": {
-    "two.js": "^0.8.12"
-  },
   "devDependencies": {
     "jsdoc": "^4.0.2",
     "vite": "^5.2.2"
