@@ -1302,7 +1302,7 @@ function calculateEpsilonClosure(state, transitions) {
   var closure = [state];
   var oldClosure = [];
   var maxIterations = 0;
-  while (maxIterations < 50 && !(oldClosure, closure)) {
+  while (maxIterations < 50 && !checkArrayEquality(oldClosure, closure)) {
     oldClosure = closure;
     for (let i = 0; i < closure.length; i++) {
       var successors = calculateStateSuccessorsVia(
@@ -1420,12 +1420,17 @@ function userInputToGrammar(
   var variables = variablesInputValue.replace(/\s/g, "").split(",");
   var terminals = terminalsInputValue.replace(/\s/g, "").split(",");
   var starting = startingInputValue.replace(/\s/g, "");
+  variables = variables.filter(onlyUnique);
+  terminals = terminals.filter(onlyUnique);
+
   var productions = [];
   productionsInputValue = productionsInputValue.replace(/,/g, "");
   productionsInputValue = productionsInputValue.replace(/[ \t]/g, "");
   var splittedProductionsInput = productionsInputValue.split("\n");
 
-  if(variables.length == 0){
+  splittedProductionsInput = splittedProductionsInput.filter(onlyUnique);
+
+  if (variables.length == 0) {
     throw new Error("Empty variables!");
   }
 
@@ -1437,8 +1442,8 @@ function userInputToGrammar(
     throw new Error("Invalid starting variable!");
   }
 
-  if(productionsInputValue == ""){
-    throw new Error("Invalid productions!");
+  if (productionsInputValue == "") {
+    throw new Error("Empty productions!");
   }
 
   for (let i = 0; i < splittedProductionsInput.length; i++) {
@@ -1448,7 +1453,7 @@ function userInputToGrammar(
 
     var splittedProductionInput = splittedProductionsInput[i].split("->");
     if (splittedProductionInput.length > 2) {
-      return;
+      throw new Error("Invalid production format!");
     }
     var leftSide = splittedProductionInput[0];
     var processedLeftSide = [];
@@ -1466,7 +1471,14 @@ function userInputToGrammar(
           i = i - j;
           break;
         } else {
-          console.log("Not found");
+          console.log("Terminal/Variable not found");
+          /* throw new Error(
+            "Error with " +
+              splittedProductionsInput[i] +
+              ", can't find " +
+              slice +
+              " in terminals or variables!"
+          ); */
         }
       }
     }
@@ -1491,7 +1503,14 @@ function userInputToGrammar(
             i = i - j;
             break;
           } else {
-            console.log("Not found");
+            console.log("Terminal/Variable not found");
+            /* throw new Error(
+              "Error with " +
+                splittedProductionsInput[i] +
+                ", can't find " +
+                slice +
+                " in terminals or variables!"
+            ); */
           }
         }
       }
