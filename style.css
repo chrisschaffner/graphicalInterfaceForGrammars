@@ -2,6 +2,8 @@
 
 * {
   font-family: "Quicksand", sans-serif;
+  cursor: default;
+  
 }
 
 body {
@@ -22,9 +24,10 @@ header a,
 p,
 h1 {
   color: black;
+  /* font-size: larger; */
 }
 
-header h1 {
+header h2 {
   margin: 0;
 }
 
@@ -41,12 +44,15 @@ header nav ul li {
 header nav ul li a {
   display: block;
   text-align: center;
-  padding: 1em 2em;
+  padding: .8em 1.6em;
   text-decoration: none;
   background-color: #729877;
   color: white;
   border-radius: 3em;
   margin-left: 2em;
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+  font-size: smaller;
 }
 
 header nav ul li a:hover {
@@ -58,13 +64,18 @@ header nav ul li a:hover {
   text-align: left;
   background-color: white;
   padding: 0;
+  margin: 0;
 }
 
 .navBar ul {
   list-style: none;
   padding: 0;
-  display: inline-flex;
-  justify-content: flex-start;
+  margin: 0;
+  display: flex;
+}
+
+.navBar ul li {
+  display: flex;
 }
 
 .navBar ul li a {
@@ -73,7 +84,9 @@ header nav ul li a:hover {
   transition: color 0.3s ease;
   transition: background-color 0.3s ease;
   background-color: #d9e1d5;
-  padding: 1em 1em 1em 1em;
+  padding: .6em .6em .6em .6em;
+  margin: 0;
+  font-size: smaller;
 }
 
 .navBar ul li a:hover {
@@ -169,7 +182,7 @@ header nav ul li a:hover {
 .categoryButton span {
   text-align: center;
   margin-top: 1em;
-  font-size: x-large;
+  font-size: large;
 }
 
 #top {
@@ -185,52 +198,58 @@ header nav ul li a:hover {
 #bottom {
   width: 100%;
   background-color: #d9e1d5;
+  font-size: .6em;
+
 }
 
 #grammarInputForm label,
 #wcGrammarInputForm label {
-  margin-bottom: 0.2em;
+  font-size: smaller;
+  margin-bottom: 0.3em;
 }
 
 #grammarInputForm div,
 #wcGrammarInputForm div {
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
+  margin-bottom: 1em;
 }
 
 #grammarInputForm input,
 #wcGrammarInputForm input {
   padding: 0.6em 1em;
   box-sizing: border-box;
-  font-size: large;
+  font-size: smaller;
   border-radius: 0.6em;
-  border: 0.1em solid black;
+  border: 0.08em solid rgb(189, 189, 189);
   transition: all 0.3s ease;
   line-height: 2em;
+  margin: 0;
 }
 
 #grammarInputForm textarea,
 #wcGrammarInputForm textarea {
+  padding: 0.6em 1em;
   box-sizing: border-box;
-  font-size: large;
+  font-size: smaller;
   border-radius: 0.6em;
-  border: 0.1em solid black;
+  border: 0.08em solid rgb(189, 189, 189);
   transition: all 0.3s ease;
   margin-bottom: 1em;
   max-height: 10em;
-  line-height: 1.5em;
+  line-height: 2em;
   resize: none;
 }
 
 #drawingArea {
   background-color: rgb(255, 255, 255);
-  border: 0.1em rgb(189, 189, 189) solid;
-  border-radius: 0.8em;
+  border: 0.08em rgb(189, 189, 189) solid;
+  border-radius: 0.5em;
   cursor: crosshair;
-  height: 80%;
   display: flex;
-  justify-content: flex-start;
-  align-items: flex-end;
+  flex-grow: 1;
+  flex-shrink: 1;
   user-select: none;
   -moz-user-select: none;
   -webkit-user-select: none;
@@ -241,16 +260,16 @@ header nav ul li a:hover {
   background-color: transparent;
 }
 
+
 #buttons {
   display: flex;
   width: 100%;
   flex-wrap: wrap;
   justify-content: space-evenly;
-  border: 0.1em solid grey;
-  border-radius: 1em;
-  padding-bottom: 0.5em;
-  padding-top: 0.5em;
-  margin-bottom: 1em;
+  border: 0.08em solid grey;
+  border-radius: .7em;
+  padding-bottom: 0.2em;
+  padding-top: 0.2em;
   background-color: rgb(237, 237, 237);
 }
 
@@ -268,7 +287,7 @@ header nav ul li a:hover {
 
 #WCoutput span {
   margin-top: 1em;
-  font-size: 1em;
+  font-size: smaller
 }
 
 #multiview {
@@ -283,7 +302,7 @@ header nav ul li a:hover {
   padding-left: 1%;
   padding-right: 1%;
   background-color: rgb(248, 248, 248);
-  border: 0.1em solid rgb(203, 203, 203);
+  border: 0.09em solid rgb(203, 203, 203);
   border-radius: 1em;
   overflow: auto;
 }
@@ -296,8 +315,11 @@ header nav ul li a:hover {
 }
 
 #console {
-  font-size: large;
+  font-size: smaller;
   color: black;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  font-size: medium;
 }
 
 #convertButtons {
@@ -308,6 +330,7 @@ header nav ul li a:hover {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  font-size: smaller;
 }
 
 #grammarArea {
@@ -338,10 +361,10 @@ header nav ul li a:hover {
 #clearButton, #clearButtonGrammar {
   color: white;
   background-color: #eb4848;
-  padding: 0.8em 1em;
-  border: 0.2em solid grey;
+  padding: 0.7em 0.7em;
+  border: 0.08em solid grey;
   border-radius: 0.5em;
-  font-size: medium;
+  font-size: smaller;
   scale: 1;
   transition: all 0.3s ease;
 }
@@ -368,10 +391,10 @@ header nav ul li a:hover {
 #moveButton {
   background-color: white;
   color: black;
-  padding: 0.8em 1em;
-  border: 0.2em solid #77896f;
+  padding: 0.7em .7em;
+  border: 0.08em solid #77896f;
   border-radius: 0.5em;
-  font-size: medium;
+  font-size: smaller;
   transition: all 0.3s ease;
 }
 
@@ -397,6 +420,10 @@ header nav ul li a:hover {
   background-color: rgba(0, 128, 0, 0.5);
 }
 
+#checkButton {
+  margin-top: 2em;
+}
+
 #createStateButton,
 #generateWordsButton,
 #createTransitionButton,
@@ -420,7 +447,7 @@ header nav ul li a:hover {
 
 #grammarInputForm input:focus,
 #grammarInputForm textarea:focus {
-  box-shadow: 0 0 3pt 2pt #005b0c;
+  box-shadow: 0 0 .1em .1em #005b0c;
   outline: none;
 }
 
@@ -462,7 +489,11 @@ header nav ul li a:hover {
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
+
+}
+
+#grammarArea h3 {
 }
 
 /* Pie Menu */

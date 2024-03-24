@@ -18,7 +18,7 @@
   </head>
   <body>
     <header>
-      <h1>Graphical Interface for Grammars and Automata</h1>
+      <h2>Graphical Interface for Grammars and Automata</h2>
       <nav>
         <ul>
           <li><a href="index.html">Home</a></li>
@@ -38,7 +38,7 @@
 
     <div id="multiview">
       <div id="grammarArea">
-        <h2>Grammar</h2>
+        <h3>Grammar</h3>
         <div id="grammarInputForm">
           <div>
             <label for="variableIOs">Variables:</label>
@@ -46,8 +46,7 @@
               type="text"
               id="variablesIO"
               name="variables"
-              placeholder="e.g. A, B"
-            /><br /><br />
+              placeholder="e.g. A, B">
           </div>
           <div>
             <label for="terminalsIO">Terminal symbols:</label>
@@ -55,8 +54,7 @@
               type="text"
               id="terminalsIO"
               name="terminals"
-              placeholder="e.g. a, b, c"
-            /><br /><br />
+              placeholder="e.g. a, b, c">
           </div>
           <div>
             <label for="productionsIO">Productions:</label>
@@ -74,12 +72,11 @@
               type="text"
               id="startingIO"
               name="starting"
-              placeholder="e.g. B"
-            /><br /><br />
+              placeholder="e.g. B">
           </div>
 
           <span id="buttons">
-            <span id="typeDisplay">Type: </span>
+            <button id="typeDisplay">Type: </button>
             <button id="clearButton">Clear</button>
             <button id="copyButton">Copy grammar</button>
             <button id="pasteButton">Paste grammar</button>
@@ -94,7 +91,7 @@
       </div>
 
       <div id="graphArea">
-        <h2>Graph</h2>
+        <h3>Graph</h3>
         <div id="drawingArea">
           <div id="test">
             <div id="pieMenu">
@@ -111,7 +108,7 @@
           Enter a grammar and press the arrow to convert into an equivalent
           automaton"
         </p>
-        <div></div>
+        <div><h4></h4></div>
       </div>
     </div>
   </body>

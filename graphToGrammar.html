@@ -18,7 +18,7 @@
   </head>
   <body>
     <header>
-      <h1>Graphical Interface for Grammars and Automata</h1>
+      <h2>Graphical Interface for Grammars and Automata</h2>
       <nav>
         <ul>
           <li><a href="index.html">Home</a></li>
@@ -40,7 +40,7 @@
 
     <div id="multiview">
       <div id="graphArea">
-        <h2>Graph</h2>
+        <h3>Graph</h3>
         <div id="drawingArea">
           <div id="canvas">
             <div id="pieMenu">
@@ -58,10 +58,10 @@
           <button id="editButton">Edit</button>
           <button id="clearButton">Clear</button>
           <button id="screenshotButton">Make Screenshot</button>
-          <button id="determinizeButton">Determinize Automaton</button>
+          <button id="determinizeButton">Determinize</button>
           <button id="determinizePartialButton">Determinize Partially</button>
           <button id="removeEpsilonButton">Remove ε-transitions</button>
-          <span id="isDFADisplay">DFA</span>
+          <button id="isDFADisplay">DFA</button>
           <button id="createStateButton">Create State</button>
           <button id="createTransitionButton">Create Transition</button>
           <button id="markEndButton">Mark End</button>
@@ -70,6 +70,9 @@
           <button id="deleteButton">Delete State/Transition</button>
           <button id="moveButton">Move State</button>
         </div>
+
+        <div><h4></h4></div>
+        
       </div>
 
       <div id="convertButtons">
@@ -79,7 +82,7 @@
       </div>
 
       <div id="grammarArea">
-        <h2>Grammar</h2>
+        <h3>Grammar</h3>
 
         <div id="grammarInputForm">
           <div>
@@ -88,8 +91,7 @@
               type="text"
               id="variablesIO"
               name="variables"
-              placeholder="e.g. A, B"
-            /><br /><br />
+              placeholder="e.g. A, B">
           </div>
           <div>
             <label for="terminalsIO">Terminal symbols:</label>
@@ -97,8 +99,7 @@
               type="text"
               id="terminalsIO"
               name="terminals"
-              placeholder="e.g. a, b, c"
-            /><br /><br />
+              placeholder="e.g. a, b, c">
           </div>
           <div>
             <label for="productionsIO">Productions:</label>
@@ -116,17 +117,16 @@
               type="text"
               id="startingIO"
               name="starting"
-              placeholder="e.g. B"
-            /><br /><br />
+              placeholder="e.g. B">
           </div>
 
           <span id="buttons">
-            <span id="typeDisplay">Type: </span>
+            <button id="typeDisplay">Type: </button>
             <button id="copyButton">Copy grammar</button>
           </span>
         </div>
 
-        <div></div>
+        <div><h3></h3></div>
       </div>
     </div>
   </body>
