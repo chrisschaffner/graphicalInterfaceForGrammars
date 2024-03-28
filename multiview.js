@@ -502,6 +502,15 @@ document.addEventListener("DOMContentLoaded", function () {
   document.addEventListener("stateMouseDown", function (event) {
     var state = event.detail.state;
 
+    if(editActive && !stateCreationActive && !transitionCreationActive && !startMarkingActive && !endMarkingActive && !endDeletionActive && !deleteActive && !moveActive){
+      pieMenu.enable(
+        state,
+        event.detail.mouseX + window.pageXOffset,
+        event.detail.mouseY + window.pageYOffset,
+        canvasRect
+      );
+    }
+
     if (transitionCreationActive) {
       console.log("User selected " + state.name + " as transition start");
       userSelectedStateFrom = state;
@@ -528,14 +537,7 @@ document.addEventListener("DOMContentLoaded", function () {
       automaton.unmarkEnd(state, two);
     } else if (moveActive) {
       movingState = state;
-    } else {
-      pieMenu.enable(
-        state,
-        event.detail.mouseX + window.pageXOffset,
-        event.detail.mouseY + window.pageYOffset,
-        canvasRect
-      );
-    }
+    } 
   });
 
   document.addEventListener("pieMenuMouseDown", function (event) {
