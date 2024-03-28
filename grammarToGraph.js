@@ -37,10 +37,10 @@ document.addEventListener("DOMContentLoaded", function () {
   copyButton.addEventListener("click", function (event) {
     event.preventDefault();
     grammarformToSessionStorage(
-      grammar.variables,
-      grammar.terminals,
-      formatProductions(grammar.productions).join("\n"),
-      grammar.starting
+      variablesIO.value,
+      terminalsIO.value,
+      productionsIO.value,
+      startingIO.value
     );
     console.log("Copied Input to session storage");
     messageToConsole("Grammar copied to clipboard!", "black");

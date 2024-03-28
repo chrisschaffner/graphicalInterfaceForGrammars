@@ -332,12 +332,14 @@ document.addEventListener("DOMContentLoaded", function () {
   copyButton.addEventListener("click", function (event) {
     event.preventDefault();
     grammarformToSessionStorage(
-      grammar.variables,
-      grammar.terminals,
-      formatProductions(grammar.productions).join("\n"),
-      grammar.starting
+      variablesIO.value,
+      terminalsIO.value,
+      productionsIO.value,
+      startingIO.value
     );
+
     messageToConsole("Grammar copied to clipboard", "green");
+    console.log(grammar)
   });
 
   moveButton.addEventListener("click", function () {
