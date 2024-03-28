@@ -26,9 +26,10 @@
 <h3 id="aboutCreatingGrammar">Creating a grammar</h3>
 <p>Grammars consist of sets of variables, terminals, productions and starting symbol from the variables. Usage:</p>
 <ol>
+<li>A variable can consist of multiple symbols (e.g. ZZ), whereas a terminal may only consist of one symbol</li>
 <li>Variable and terminal names can not contain comma "," or dash "|" symbols, as they are used for recognizing the grammar structure</li>
 <li>Apart from that, variables and terminals can be of any type like characters, numbers or symbols</li>
-<li>When putting in multiple variables/terminals, seperate them by a comma ",". Whitespaces are ignored</li>
+<li>When putting in multiple variables/terminals, separate them by a comma ",". Whitespaces are ignored</li>
 <li>Productions must be filled in the form left side -> right side 1 | right side 2 | ...</li>
 <li>For example A->aB or B->cC|aaB</li>
 <li>Each production must be put in a new line</li>
@@ -52,7 +53,7 @@
 
 <h2 id="aboutWordContainment">Word Containment</h2>
 <p>After <a href="#aboutCreatingGrammar">creating a grammar</a>, you can enter an arbitrary word and check if it is contained in the language induced by the grammar by clicking "Check".</p>
-<p>If the language contains the word you put in, a derivation will be displayed showing how the word can be constructed using the producions.</p>
+<p>If the language contains the word you put in, a derivation will be displayed showing how the word can be constructed using the productions.</p>
 <p>If the grammar you put in is valid and type 1, you can click "Generate example words" to generate up to 100 words that are also contained in the language.</p>
 
 
@@ -108,7 +109,7 @@
 <li>Paste grammar</li>
 <p>This allows you to paste the grammar values you copied</p>
 <li>Example grammar</li>
-<p>This allows you to insert an examplatory grammar for testing purposes</p>
+<p>This allows you to insert an exemplary grammar for testing purposes</p>
 </ol>
 
 <h1 id="aboutAutomatonButtons">Automaton Buttons</h1>

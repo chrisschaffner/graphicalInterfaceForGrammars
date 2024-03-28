@@ -582,6 +582,12 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("User typed in as terminal(s): " + userViaInput);
       }
 
+      userViaInput.forEach(t => {if(t.length !==1){
+        console.log("Each terminal must consist of only one symbol!")
+        messageToConsole("Each terminal must consist of only one symbol!", 'red');
+        userViaInput = undefined;
+      }});
+
       for (let i = 0; i < userViaInput.length; i++) {
         if (
           !automaton.inputAlphabet.includes(userViaInput[i]) &&
@@ -599,6 +605,8 @@ document.addEventListener("DOMContentLoaded", function () {
       createdTransition.index = transitionsCount;
       transitionsCount += 1;
       automaton.addTransition(createdTransition, two);
+      messageToConsole("Created transition from " + userSelectedStateFrom.name + " to " + userSelectedStateTo.name + " using " + userViaInput, 'green');
+
     }
 
     movingState = undefined;

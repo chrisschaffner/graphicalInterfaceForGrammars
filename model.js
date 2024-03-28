@@ -1438,6 +1438,8 @@ function userInputToGrammar(
     throw new Error("Empty terminals!");
   }
 
+  terminals.forEach(t => {if(t.length !== 1) {throw new Error("Each terminal must consist of only one symbol!")}});
+
   if (!variables.includes(starting)) {
     throw new Error("Invalid starting variable!");
   }
