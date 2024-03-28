@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
     productionsIO.value = "";
     startingIO.value = "";
     console.log("Grammar cleared!");
-    messageToConsole("Grammar cleared!", "black");
+    messageToConsole("Grammar cleared!", "red");
   });
 
   copyButton.addEventListener("click", function (event) {

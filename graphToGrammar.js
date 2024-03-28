@@ -270,6 +270,7 @@ document.addEventListener("DOMContentLoaded", function () {
     stateCount = 0;
     grammar.clear();
     grammar.updateOutput();
+    messageToConsole("Automaton cleared!", 'red');
   });
 
   autoConvertInput.addEventListener("change", function () {
