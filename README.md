@@ -26,8 +26,9 @@
 <h3 id="aboutCreatingGrammar">Creating a grammar</h3>
 <p>Grammars consist of sets of variables, terminals, productions and starting symbol from the variables. Usage:</p>
 <ol>
-<li>A variable can consist of multiple symbols (e.g. ZZ), whereas a terminal may only consist of one symbol</li>
+<li>A variable can consist of multiple symbols (e.g. zz), whereas a terminal may only consist of one symbol</li>
 <li>Variable and terminal names can not contain comma "," or dash "|" symbols, as they are used for recognizing the grammar structure</li>
+<li>Variables and terminals may not share symbols</li>
 <li>Apart from that, variables and terminals can be of any type like characters, numbers or symbols</li>
 <li>When putting in multiple variables/terminals, separate them by a comma ",". Whitespaces are ignored</li>
 <li>Productions must be filled in the form left side -> right side 1 | right side 2 | ...</li>

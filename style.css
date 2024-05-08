@@ -46,7 +46,7 @@ header nav ul li {
 header nav ul li a {
   display: block;
   text-align: center;
-  padding: .8em 1.6em;
+  padding: 0.8em 1.6em;
   text-decoration: none;
   background-color: #729877;
   color: white;
@@ -86,7 +86,7 @@ header nav ul li a:hover {
   transition: color 0.3s ease;
   transition: background-color 0.3s ease;
   background-color: #d9e1d5;
-  padding: .6em .6em .6em .6em;
+  padding: 0.6em 0.6em 0.6em 0.6em;
   margin: 0;
   font-size: smaller;
 }
@@ -200,8 +200,7 @@ header nav ul li a:hover {
 #bottom {
   width: 100%;
   background-color: #d9e1d5;
-  font-size: .8em;
-
+  font-size: 0.8em;
 }
 
 #grammarInputForm label,
@@ -264,14 +263,13 @@ header nav ul li a:hover {
   background-color: transparent;
 }
 
-
 #buttons {
   display: flex;
   width: 100%;
   flex-wrap: wrap;
   justify-content: space-evenly;
   border: 0.08em solid grey;
-  border-radius: .7em;
+  border-radius: 0.7em;
   padding-bottom: 0.2em;
   padding-top: 0.2em;
   background-color: rgb(237, 237, 237);
@@ -291,7 +289,7 @@ header nav ul li a:hover {
 
 #WCoutput span {
   margin-top: 1em;
-  font-size: smaller
+  font-size: smaller;
 }
 
 #multiview {
@@ -362,7 +360,8 @@ header nav ul li a:hover {
 
 /* Buttons */
 
-#clearButton, #clearButtonGrammar {
+#clearButton,
+#clearButtonGrammar {
   color: white;
   background-color: #eb4848;
   padding: 0.7em 0.7em;
@@ -395,7 +394,7 @@ header nav ul li a:hover {
 #moveButton {
   background-color: white;
   color: black;
-  padding: 0.7em .7em;
+  padding: 0.7em 0.7em;
   border: 0.08em solid #77896f;
   border-radius: 0.5em;
   font-size: smaller;
@@ -444,14 +443,15 @@ header nav ul li a:hover {
   margin-bottom: 2em;
 }
 
-#clearButton:hover, #clearButtonGrammar:hover {
+#clearButton:hover,
+#clearButtonGrammar:hover {
   color: black;
   background-color: rgb(255, 188, 188);
 }
 
 #grammarInputForm input:focus,
 #grammarInputForm textarea:focus {
-  box-shadow: 0 0 .1em .1em #005b0c;
+  box-shadow: 0 0 0.1em 0.1em #005b0c;
   outline: none;
 }
 
@@ -494,7 +494,6 @@ header nav ul li a:hover {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
 }
 
 #grammarArea h3 {

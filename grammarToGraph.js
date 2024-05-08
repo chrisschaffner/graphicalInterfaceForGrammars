@@ -36,13 +36,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   copyButton.addEventListener("click", function (event) {
     event.preventDefault();
-    grammarformToSessionStorage(
+    grammarformToLocalStorage(
       variablesIO.value,
       terminalsIO.value,
       productionsIO.value,
       startingIO.value
     );
-    console.log("Copied Input to session storage");
+    console.log("Copied Input to local storage");
     messageToConsole("Grammar copied to clipboard!", "black");
   });
 
@@ -142,11 +142,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   pasteButton.addEventListener("click", function (event) {
     event.preventDefault();
-    variablesIO.value = sessionStorage.getItem("variables");
-    terminalsIO.value = sessionStorage.getItem("terminals");
-    productionsIO.value = sessionStorage.getItem("productions");
-    startingIO.value = sessionStorage.getItem("starting");
-    console.log("Pasted Input from session storage");
+    variablesIO.value = localStorage.getItem("variables");
+    terminalsIO.value = localStorage.getItem("terminals");
+    productionsIO.value = localStorage.getItem("productions");
+    startingIO.value = localStorage.getItem("starting");
+    console.log("Pasted Input from local storage");
     messageToConsole("Pasted grammar from clipboard!", "black");
   });
 

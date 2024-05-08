@@ -47,15 +47,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   var stateCount = 0;
   var transitionsCount = 0;
-  var createdStates = [];
-  var createdTransitions = [];
-  var createdInputAlphabet = [];
-  var automaton = new FiniteAutomaton(
-    createdStates,
-    createdInputAlphabet,
-    createdTransitions,
-    two
-  );
+
+  var automaton = new FiniteAutomaton([], [], [], two);
   var userSelectedStateFrom;
   var userSelectedStateTo;
   var stateCreationActive = false;
@@ -331,7 +324,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   copyButton.addEventListener("click", function (event) {
     event.preventDefault();
-    grammarformToSessionStorage(
+    grammarformToLocalStorage(
       variablesIO.value,
       terminalsIO.value,
       productionsIO.value,
@@ -339,7 +332,6 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     messageToConsole("Grammar copied to clipboard", "green");
-    console.log(grammar)
   });
 
   moveButton.addEventListener("click", function () {
@@ -361,6 +353,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   autoConvertInput.addEventListener("change", function () {
     automatonObserver.updateGrammar = this.checked;
+
     if (this.checked) {
       rightArrowButton.style.backgroundImage =
         "url('assets/arrow_right_selected.svg')";
@@ -399,7 +392,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       var createdState = new State(
-        "Z" + numberToSubscript(stateCount),
+        "z" + numberToSubscript(stateCount),
         stateCount == 0,
         false,
         stateCount
@@ -502,7 +495,16 @@ document.addEventListener("DOMContentLoaded", function () {
   document.addEventListener("stateMouseDown", function (event) {
     var state = event.detail.state;
 
-    if(editActive && !stateCreationActive && !transitionCreationActive && !startMarkingActive && !endMarkingActive && !endDeletionActive && !deleteActive && !moveActive){
+    if (
+      editActive &&
+      !stateCreationActive &&
+      !transitionCreationActive &&
+      !startMarkingActive &&
+      !endMarkingActive &&
+      !endDeletionActive &&
+      !deleteActive &&
+      !moveActive
+    ) {
       pieMenu.enable(
         state,
         event.detail.mouseX + window.pageXOffset,
@@ -537,7 +539,7 @@ document.addEventListener("DOMContentLoaded", function () {
       automaton.unmarkEnd(state, two);
     } else if (moveActive) {
       movingState = state;
-    } 
+    }
   });
 
   document.addEventListener("pieMenuMouseDown", function (event) {
@@ -601,11 +603,16 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("User typed in as terminal(s): " + userViaInput);
       }
 
-      userViaInput.forEach(t => {if(t.length !==1){
-        console.log("Each terminal must consist of only one symbol!")
-        messageToConsole("Each terminal must consist of only one symbol!", 'red');
-        userViaInput = undefined;
-      }});
+      userViaInput.forEach((t) => {
+        if (t.length !== 1) {
+          console.log("Each terminal must consist of only one symbol!");
+          messageToConsole(
+            "Each terminal must consist of only one symbol!",
+            "red"
+          );
+          userViaInput = undefined;
+        }
+      });
 
       for (let i = 0; i < userViaInput.length; i++) {
         if (
@@ -624,7 +631,15 @@ document.addEventListener("DOMContentLoaded", function () {
       createdTransition.index = transitionsCount;
       transitionsCount += 1;
       automaton.addTransition(createdTransition, two);
-      messageToConsole("Created transition from " + userSelectedStateFrom.name + " to " + userSelectedStateTo.name + " using " + userViaInput, 'green');
+      messageToConsole(
+        "Created transition from " +
+          userSelectedStateFrom.name +
+          " to " +
+          userSelectedStateTo.name +
+          " using " +
+          userViaInput,
+        "green"
+      );
     }
 
     movingState = undefined;
@@ -680,18 +695,18 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   rightArrowButton.addEventListener("click", function () {
-    grammar = createGrammarFromNFA(automaton);
+    grammar = createGrammarFromFiniteAutomaton(automaton);
     grammar.updateOutput();
     messageToConsole("Equivalent grammar created!", "green");
   });
 
   pasteButton.addEventListener("click", function (event) {
     event.preventDefault();
-    variablesIO.value = sessionStorage.getItem("variables");
-    terminalsIO.value = sessionStorage.getItem("terminals");
-    productionsIO.value = sessionStorage.getItem("productions");
-    startingIO.value = sessionStorage.getItem("starting");
-    console.log("Pasted Input from session storage");
+    variablesIO.value = localStorage.getItem("variables");
+    terminalsIO.value = localStorage.getItem("terminals");
+    productionsIO.value = localStorage.getItem("productions");
+    startingIO.value = localStorage.getItem("starting");
+    console.log("Pasted Input from local storage");
   });
 
   /**

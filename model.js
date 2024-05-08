@@ -45,33 +45,6 @@ class Grammar {
   }
 
   /**
-   * Getter for the variables
-   */
-  get variables() {
-    return this.variables;
-  }
-
-  /**
-   * Getter for the terminals
-   */
-  get terminals() {
-    return this.terminals;
-  }
-
-  /**
-   * Getter for the productions
-   */
-  get productions() {
-    return this.productions;
-  }
-  /**
-   * Getter for the starting variable
-   */
-  get starting() {
-    return this.starting;
-  }
-
-  /**
    * Reformats the grammar IO by removing whitespaces and printing the grammar type to the display element
    */
   updateOutput() {
@@ -212,7 +185,6 @@ class FiniteAutomaton {
    */
   arrangeGraph(two) {
     this.createStatesGenerations();
-
     this.states = this.states.filter((state) => state.generation != undefined);
     this.calculateGenerationsArray();
     this.calculateStatePositions();
@@ -245,6 +217,7 @@ class FiniteAutomaton {
     this.states.push(state);
     this.notifyObservers(two);
   }
+
   /**
    * Removes a state from the automaton
    * @param {State} state
@@ -289,6 +262,7 @@ class FiniteAutomaton {
 
     this.notifyObservers(two);
   }
+
   /**
    * Makes a state a start state
    * @param {State} state
@@ -504,9 +478,19 @@ class FiniteAutomaton {
    */
   resolveEpsilonTransitions(two) {
     var originalTransitions = this.transitions;
+    var startState;
     this.transitions = [];
-    var startState = this.states.find((s) => s.isStart);
-    startState.isStart = false;
+    var startStates = this.states.filter((s) => s.isStart);
+    startStates.forEach((s) => (s.isStart = false));
+    if (startStates.length > 1) {
+      startState = new State("Zs", false, false, -2);
+      this.states.push(startState);
+      startStates.forEach((s) =>
+        originalTransitions.push(new FaTransition(startState, s, "ε", -1))
+      );
+    } else {
+      startState = startStates[0];
+    }
     var startEpsilonClosure = calculateEpsilonClosure(
       startState,
       originalTransitions
@@ -559,6 +543,11 @@ class FiniteAutomaton {
     if (this.states.filter((state) => state.isStart).length > 1) {
       return false;
     }
+
+    if (this.transitions.some((t) => t.via.includes("ε"))) {
+      return false;
+    }
+
     for (let i = 0; i < this.states.length; i++) {
       for (let j = 0; j < this.inputAlphabet.length; j++) {
         var successors = calculateStateSuccessorsVia(
@@ -1200,7 +1189,7 @@ class AutomatonObserver {
     this.grammar.calculateGrammarType();
 
     if (this.updateGrammar) {
-      Object.assign(this.grammar, createGrammarFromNFA(this.dfa));
+      Object.assign(this.grammar, createGrammarFromFiniteAutomaton(this.dfa));
 
       this.grammar.updateOutput();
     }
@@ -1343,66 +1332,7 @@ function computeLineLength(point1, point2) {
 
   return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 }
-/**
- * Checks if user input values represent a valid grammar
- * @param {Array} variables
- * @param {Array} terminals
- * @param {Array} productions
- * @param {Array} starting
- * @returns whether the user input is a valid grammar
- */
-function checkCorrectGrammarForm(
-  variablesInputValue,
-  terminalsInputValue,
-  startingInputValue
-) {
-  var variables = variablesInputValue.replace(/\s/g, "").split(",");
-  var terminals = terminalsInputValue.replace(/\s/g, "").split(",");
-  var starting = startingInputValue.replace(/\s/g, "");
 
-  if (terminals.length == 0) {
-    return false;
-  }
-
-  if (!variables.includes(starting)) {
-    return false;
-  }
-
-  return true;
-}
-
-/**
- * Check if a production is valid, i.e. contains only terminals or variables
- * @param {Production} production
- * @param {Variable} variables
- * @param {Array} terminals
- * @returns whether the production is valid
- */
-function checkProduction(production, variables, terminals) {
-  var leftSide = production.left;
-  var rightSide = production.right;
-
-  for (let i = 0; i < leftSide.length; i++) {
-    if (
-      !variables.some((element) => element.name === leftSide[i].name) &&
-      !terminals.some((element) => element.name === leftSide[i])
-    ) {
-      return false;
-    }
-  }
-
-  for (let i = 0; i < rightSide.length; i++) {
-    if (
-      !variables.includes(rightSide[i]) &&
-      !terminals.includes(rightSide[i]) &&
-      rightSide[i] !== "ε"
-    ) {
-      return false;
-    }
-  }
-
-  return true;
-}
 /**
  * Transforms valid user input into a grammar
  * @param {String} variablesInputValue
@@ -1438,10 +1368,18 @@ function userInputToGrammar(
     throw new Error("Empty terminals!");
   }
 
-  terminals.forEach(t => {if(t.length !== 1) {throw new Error("Each terminal must consist of only one symbol!")}});
+  terminals.forEach((t) => {
+    if (t.length !== 1) {
+      throw new Error("Each terminal must consist of only one symbol!");
+    }
+  });
 
   if (!variables.includes(starting)) {
     throw new Error("Invalid starting variable!");
+  }
+
+  if (checkArrayIntersection(terminals, variables)) {
+    throw new Error("Variables and terminals may not share symbols!");
   }
 
   if (productionsInputValue == "") {
@@ -1454,15 +1392,16 @@ function userInputToGrammar(
     }
 
     var splittedProductionInput = splittedProductionsInput[i].split("->");
-    if (splittedProductionInput.length > 2) {
+    if (splittedProductionInput.length != 2) {
       throw new Error("Invalid production format!");
     }
     var leftSide = splittedProductionInput[0];
     var processedLeftSide = [];
+    var slice;
 
     for (let i = leftSide.length - 1; i >= 0; i--) {
       for (let j = 0; j < leftSide.length; j++) {
-        var slice = leftSide.slice(i - j, i + 1);
+        slice = leftSide.slice(i - j, i + 1);
         if (variables.some((element) => element === slice)) {
           processedLeftSide = [slice].concat(processedLeftSide);
 
@@ -1474,14 +1413,16 @@ function userInputToGrammar(
           break;
         } else {
           console.log("Terminal/Variable not found");
-          /* throw new Error(
-            "Error with " +
-              splittedProductionsInput[i] +
-              ", can't find " +
-              slice +
-              " in terminals or variables!"
-          ); */
         }
+      }
+
+      if (
+        !(
+          variables.some((element) => element === slice) ||
+          terminals.some((element) => element === slice)
+        )
+      ) {
+        throw new Error("Terminal/Variable not found!");
       }
     }
 
@@ -1490,10 +1431,11 @@ function userInputToGrammar(
     for (let j = 0; j < rightSides.length; j++) {
       var rightSide = rightSides[j];
       var processedRightSide = [];
+      var slice;
 
       for (let i = rightSide.length - 1; i >= 0; i--) {
         for (let j = 0; j < rightSide.length; j++) {
-          var slice = rightSide.slice(i - j, i + 1);
+          slice = rightSide.slice(i - j, i + 1);
 
           if (variables.some((element) => element === slice)) {
             processedRightSide = [slice].concat(processedRightSide);
@@ -1506,14 +1448,17 @@ function userInputToGrammar(
             break;
           } else {
             console.log("Terminal/Variable not found");
-            /* throw new Error(
-              "Error with " +
-                splittedProductionsInput[i] +
-                ", can't find " +
-                slice +
-                " in terminals or variables!"
-            ); */
           }
+        }
+
+        if (
+          !(
+            variables.some((element) => element === slice) ||
+            terminals.some((element) => element === slice) ||
+            slice === "ε"
+          )
+        ) {
+          throw new Error("Terminal/Variable not found!");
         }
       }
 
@@ -1644,11 +1589,11 @@ function checkLineCircleIntersection(
       y: lineStart.y + t * startToEndVector.y,
     };
   }
-  const distanceToClosestPointSquared =
+  const centerToClosestPointDistanceSquared =
     Math.pow(circleCenter.x - closestPointOnLine.x, 2) +
     Math.pow(circleCenter.y - closestPointOnLine.y, 2);
 
-  return distanceToClosestPointSquared <= circleRadius * circleRadius;
+  return centerToClosestPointDistanceSquared <= circleRadius * circleRadius;
 }
 /**
  * Converts a grammar into a NFA
@@ -1668,9 +1613,11 @@ function createNFAFromGrammar(grammar, two) {
   var transitionIndex = 0;
 
   var zeStateCount = variables.filter((variable) =>
-    variable.startsWith("Ze")
+    variable.startsWith("z" + subscriptE())
   ).length;
-  states.push(new State("Ze" + numberToSubscript(zeStateCount), false, true));
+  states.push(
+    new State("z" + subscriptE() + numberToSubscript(zeStateCount), false, true)
+  );
 
   for (let i = 0; i < variables.length; i++) {
     states.push(new State(variables[i], false, false, i));
@@ -1727,7 +1674,9 @@ function createNFAFromGrammar(grammar, two) {
       if (productionToCheck != undefined) {
         let stateI = states.find((element) => element.name === variables[i]);
         let zeState = states.find(
-          (element) => element.name === "Ze" + numberToSubscript(zeStateCount)
+          (element) =>
+            element.name ===
+            "z" + subscriptE() + numberToSubscript(zeStateCount)
         );
         transitions.push(
           new FaTransition(stateI, zeState, [inputAlphabet[j]], transitionIndex)
@@ -1737,13 +1686,30 @@ function createNFAFromGrammar(grammar, two) {
     }
   }
 
+  var epsilonRightSides = productions.filter(
+    (p) =>
+      variables.includes(p.left.join("")) &&
+      p.left.join("") !== starting &&
+      p.right.join("") === "ε"
+  );
+
+  epsilonRightSides.forEach((p) => {
+    var state = states.find((s) => s.name === p.left.join(""));
+    var zeState = states.find(
+      (element) =>
+        element.name === "z" + subscriptE() + numberToSubscript(zeStateCount)
+    );
+    transitions.push(new FaTransition(state, zeState, "ε", transitionIndex));
+    transitionIndex++;
+  });
+
   if (
     productions.some(
       (element) =>
         element.left.join("") === starting && element.right.join("") === "ε"
     )
   ) {
-    states.find((element) => element.name === starting).isEnd = true;
+    startingState.isEnd = true;
   }
 
   var automaton = new FiniteAutomaton(states, inputAlphabet, transitions, two);
@@ -1752,64 +1718,11 @@ function createNFAFromGrammar(grammar, two) {
 }
 
 /**
- * Converts a DFA into a grammar
- * @param {FiniteAutomaton} automaton
- * @returns a Grammar
- */
-function createGrammarFromDFA(automaton) {
-  var variables = [];
-  var terminals;
-  var productions = [];
-  var starting;
-
-  for (i = 0; i < automaton.states.length; i++) {
-    variables.push(automaton.states[i].name);
-  }
-
-  var startState = automaton.states.find((element) => element.isStart === true);
-
-  if (startState != undefined) {
-    starting = startState.name;
-
-    if (startState.isEnd) {
-      productions.push(new Production(startState.name, "ε"));
-    }
-  }
-
-  terminals = automaton.inputAlphabet;
-
-  for (let i = 0; i < automaton.states.length; i++) {
-    for (let j = 0; j < automaton.inputAlphabet.length; j++) {
-      var successor = calculateStateSuccessorVia(
-        automaton.transitions,
-        automaton.states[i],
-        automaton.inputAlphabet[j]
-      );
-      if (successor != undefined) {
-        productions.push(
-          new Production(
-            automaton.states[i].name,
-            automaton.inputAlphabet[j] + successor.name
-          )
-        );
-
-        if (successor.isEnd) {
-          productions.push(
-            new Production(automaton.states[i].name, automaton.inputAlphabet[j])
-          );
-        }
-      }
-    }
-  }
-
-  return new Grammar(variables, terminals, productions, starting);
-}
-/**
- * Converts a NFA into a type 3 grammar
+ * Converts a finite automaton into a type 3 grammar
  * @param {FiniteAutomaton} automaton
  * @returns the equivalent type 3 grammar
  */
-function createGrammarFromNFA(automaton) {
+function createGrammarFromFiniteAutomaton(automaton) {
   var variables = [];
   var terminals;
   var productions = [];
@@ -1825,23 +1738,23 @@ function createGrammarFromNFA(automaton) {
 
   if (startStates.length == 1) {
     starting = startStates[0].name;
-
-    if (startStates[0].isEnd) {
-      productions.push(new Production([startStates[0].name], ["ε"]));
-    }
   } else {
     var n = 0;
 
-    while (variables.includes("H" + numberToSubscript(n))) {
+    while (variables.includes("h" + numberToSubscript(n))) {
       n++;
     }
-    variables.push("H" + numberToSubscript(n));
+    variables.push("h" + numberToSubscript(n));
     startStates.forEach((state) =>
       productions.push(
-        new Production(["H" + numberToSubscript(n)], [state.name])
+        new Production(["h" + numberToSubscript(n)], [state.name])
       )
     );
-    starting = "H" + numberToSubscript(n);
+    starting = "h" + numberToSubscript(n);
+  }
+
+  if (startStates.some((s) => s.isEnd)) {
+    productions.push(new Production([starting], ["ε"]));
   }
 
   terminals = automaton.inputAlphabet;
@@ -1883,11 +1796,14 @@ function createGrammarFromNFA(automaton) {
       true
     );
     if (epsilonSuccessors) {
-      epsilonSuccessors.forEach((succ) =>
+      epsilonSuccessors.forEach((succ) => {
         productions.push(
           new Production([automaton.states[i].name], [succ.name])
-        )
-      );
+        );
+        if (succ.isEnd) {
+          productions.push(new Production([succ.name], ["ε"]));
+        }
+      });
     }
   }
 
@@ -1982,7 +1898,7 @@ function checkWordAlphabet(terminals, word) {
  * @returns whether the grammar can create the given word
  */
 function decideWordProblem(grammar, word) {
-  if (!checkWordAlphabet(grammar.terminals, word)) {
+  if (!checkWordAlphabet(grammar.terminals, word) && word !== "ε") {
     return undefined;
   }
 
@@ -2045,9 +1961,8 @@ function calculateOneStepDerivations(sentenceForm, maxLength, productions) {
       if (matchingProductions != undefined) {
         for (let k = 0; k < matchingProductions.length; k++) {
           resultingSentenceForm =
-            firstPortion +
-            matchingProductions[k].right +
-            lastPortion.replace(/ε/g, "");
+            firstPortion + matchingProductions[k].right + lastPortion;
+          //replace(/ε/g, "")
 
           if (
             resultingSentenceForm.split(",").length <= maxLength &&
@@ -2057,7 +1972,7 @@ function calculateOneStepDerivations(sentenceForm, maxLength, productions) {
               new SentenceForm(
                 firstPortion +
                   matchingProductions[k].right.join("") +
-                  lastPortion.replace(/ε/g, ""),
+                  lastPortion,
                 sentenceForm
               )
             );
@@ -2098,12 +2013,22 @@ function checkArrayEquality(array1, array2) {
  */
 function checkArrayIntersection(array1, array2) {
   var size = Math.min(array1.length, array2.length);
-  for (let i = 0; i < size; i++) {
-    if (array1.includes(array2[i])) {
-      return true;
+
+  if (size == array1.length) {
+    for (let i = 0; i < size; i++) {
+      if (array2.includes(array1[i])) {
+        return true;
+      }
     }
+    return false;
+  } else {
+    for (let i = 0; i < size; i++) {
+      if (array1.includes(array2[i])) {
+        return true;
+      }
+    }
+    return false;
   }
-  return false;
 }
 /**
  * Converts the trace of predecessor forms into a string
@@ -2153,7 +2078,15 @@ function generateTerminalsForms(grammar, maxCount) {
     i++;
   } while (i < 6 && !checkArrayEquality(l, lOld));
 
-  l = l.filter((element) => checkWordAlphabet(grammar.terminals, element.form));
+  l = l.filter((element) =>
+    checkWordAlphabet(grammar.terminals + ["ε"], element.form)
+  );
+
+  l.forEach((element) => {
+    if (element.form !== "ε") {
+      element.form = element.form.replace(/ε/g, "");
+    }
+  });
 
   l = l.slice(0, maxCount);
 
@@ -2162,22 +2095,22 @@ function generateTerminalsForms(grammar, maxCount) {
   return stringOutput;
 }
 /**
- * Saves the user input in the browser's session storage
+ * Saves the user input in the browser's local storage
  * @param {Array} variables
  * @param {Array} terminals
  * @param {Array} productions
  * @param {Array} starting
  */
-function grammarformToSessionStorage(
+function grammarformToLocalStorage(
   variables,
   terminals,
   productions,
   starting
 ) {
-  sessionStorage.setItem("variables", variables);
-  sessionStorage.setItem("terminals", terminals);
-  sessionStorage.setItem("productions", productions);
-  sessionStorage.setItem("starting", starting);
+  localStorage.setItem("variables", variables);
+  localStorage.setItem("terminals", terminals);
+  localStorage.setItem("productions", productions);
+  localStorage.setItem("starting", starting);
 }
 /**
  * Creates a number in subscript
@@ -2194,6 +2127,14 @@ function numberToSubscript(number) {
 
   return output;
 }
+/**
+ * Creates a subscript 'e' letter
+ * @returns a subscript 'e'
+ */
+function subscriptE() {
+  return "\u2091";
+}
+
 /**
  * Converts a NFA into a DFA
  * @param {FiniteAutomaton} automaton
