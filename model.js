@@ -1133,16 +1133,16 @@ class FaTransition {
 }
 
 /**
- * Class that represents a sentence form (can consist of terminals and variables)
+ * Class that represents a sentential form (can consist of terminals and variables)
  */
-class SentenceForm {
+class SententialForm {
   form;
   previousForm;
 
   /**
-   * Creates a new sentence form object
-   * @param {SentenceForm} form
-   * @param {SentenceForm} previousForm the sentence form that lead to the current form
+   * Creates a new sentential form object
+   * @param {SententialForm} form
+   * @param {SententialForm} previousForm the sentential form that lead to the current form
    */
   constructor(form, previousForm) {
     this.form = form;
@@ -1150,8 +1150,8 @@ class SentenceForm {
   }
 
   /**
-   * Turns a sentence form into a readable string
-   * @returns a string representing the sentence form
+   * Turns a sentential form into a readable string
+   * @returns a string representing the sentential form
    */
   toString() {
     return this.form;
@@ -1903,7 +1903,7 @@ function decideWordProblem(grammar, word) {
   }
 
   var n = word.length;
-  var l = [new SentenceForm(grammar.starting, null)];
+  var l = [new SententialForm(grammar.starting, null)];
   var lOld;
   var i = 0;
 
@@ -1919,11 +1919,11 @@ function decideWordProblem(grammar, word) {
   return l.find((element) => element.form === word);
 }
 /**
- * Helper function that calculate the derivations of all current sentence forms
- * @param {SentenceForm} l the set of sentence forms
- * @param {SentenceForm} n the max length of sentence forms allowed
+ * Helper function that calculate the derivations of all current sentential forms
+ * @param {SententialForm} l the set of sentential forms
+ * @param {SententialForm} n the max length of sentential forms allowed
  * @param {Array} productions
- * @returns the derivations of all current sentence forms
+ * @returns the derivations of all current sentential forms
  */
 function next(l, n, productions) {
   var successorDerivations = l.slice();
@@ -1937,22 +1937,22 @@ function next(l, n, productions) {
   return successorDerivations.filter(filterOutUniqueForms);
 }
 /**
- * Calculates the successor sentence forms by applying all valid productions to the given sentence form
- * @param {SentenceForm} sentenceForm
+ * Calculates the successor sentential forms by applying all valid productions to the given sentential form
+ * @param {SententialForm} sententialForm
  * @param {Int} maxLength
  * @param {Array} productions
- * @returns the successor sentence forms
+ * @returns the successor sentential forms
  */
-function calculateOneStepDerivations(sentenceForm, maxLength, productions) {
+function calculateOneStepDerivations(sententialForm, maxLength, productions) {
   var derivations = [];
 
-  for (let i = 0; i < sentenceForm.form.length; i++) {
-    for (let j = 0; j < sentenceForm.form.length; j++) {
-      var firstPortion = sentenceForm.form.slice(0, i);
+  for (let i = 0; i < sententialForm.form.length; i++) {
+    for (let j = 0; j < sententialForm.form.length; j++) {
+      var firstPortion = sententialForm.form.slice(0, i);
 
-      var currentPortion = sentenceForm.form.slice(i, j + 1);
+      var currentPortion = sententialForm.form.slice(i, j + 1);
 
-      var lastPortion = sentenceForm.form.slice(j + 1, sentenceForm.length); //possible error
+      var lastPortion = sententialForm.form.slice(j + 1, sententialForm.length); //possible error
 
       var matchingProductions = productions.filter(
         (element) => element.left.join("") === currentPortion
@@ -1960,20 +1960,20 @@ function calculateOneStepDerivations(sentenceForm, maxLength, productions) {
 
       if (matchingProductions != undefined) {
         for (let k = 0; k < matchingProductions.length; k++) {
-          resultingSentenceForm =
+          resultingSententialForm =
             firstPortion + matchingProductions[k].right + lastPortion;
           //replace(/ε/g, "")
 
           if (
-            resultingSentenceForm.split(",").length <= maxLength &&
-            resultingSentenceForm.split(",").length > 0
+            resultingSententialForm.split(",").length <= maxLength &&
+            resultingSententialForm.split(",").length > 0
           ) {
             derivations.push(
-              new SentenceForm(
+              new SententialForm(
                 firstPortion +
                   matchingProductions[k].right.join("") +
                   lastPortion,
-                sentenceForm
+                sententialForm
               )
             );
           }
@@ -2032,12 +2032,12 @@ function checkArrayIntersection(array1, array2) {
 }
 /**
  * Converts the trace of predecessor forms into a string
- * @param {SentenceForm} sentenceForm
+ * @param {SententialForm} sententialForm
  * @returns the string representation of the trace
  */
-function sentenceFormPredecessorsToString(sentenceForm) {
+function sententialFormPredecessorsToString(sententialForm) {
   var predecessors = [];
-  var temp = sentenceForm;
+  var temp = sententialForm;
   var outputString;
 
   while (temp != null) {
@@ -2051,7 +2051,7 @@ function sentenceFormPredecessorsToString(sentenceForm) {
   return outputString;
 }
 /**
- * Filters out the unique sentence forms (by value, not reference)
+ * Filters out the unique sentential forms (by value, not reference)
  * @param {any} value
  * @param {Int} index
  * @param {any} self
@@ -2068,7 +2068,7 @@ const filterOutUniqueForms = (value, index, self) => {
  */
 function generateTerminalsForms(grammar, maxCount) {
   var n = 7;
-  var l = [new SentenceForm(grammar.starting, null)];
+  var l = [new SententialForm(grammar.starting, null)];
   var lOld;
   var i = 0;
 

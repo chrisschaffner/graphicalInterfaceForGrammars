@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
         wordContainmentDisplay.textContent = "Word is in the language";
         wordContainmentDisplay.style.color = "green";
         derivationDisplay.textContent =
-          "Derivation: " + sentenceFormPredecessorsToString(wordProblemResult);
+          "Derivation: " + sententialFormPredecessorsToString(wordProblemResult);
       } else {
         wordContainmentDisplay.textContent = "Word is not in the language";
         wordContainmentDisplay.style.color = "red";
