@@ -509,11 +509,13 @@ class FiniteAutomaton {
     var startState;
     this.transitions = [];
     var startStates = this.states.filter((s) => s.isStart);
-    startStates.forEach(s => s.isStart = false);
-    if(startStates.length > 1){
+    startStates.forEach((s) => (s.isStart = false));
+    if (startStates.length > 1) {
       startState = new State("Zs", false, false, -2);
       this.states.push(startState);
-      startStates.forEach(s => originalTransitions.push(new FaTransition(startState, s, 'ε', -1)));
+      startStates.forEach((s) =>
+        originalTransitions.push(new FaTransition(startState, s, "ε", -1))
+      );
     } else {
       startState = startStates[0];
     }
@@ -570,7 +572,7 @@ class FiniteAutomaton {
       return false;
     }
 
-    if(this.transitions.some(t => t.via.includes("ε"))){
+    if (this.transitions.some((t) => t.via.includes("ε"))) {
       return false;
     }
 
@@ -1159,16 +1161,16 @@ class FaTransition {
 }
 
 /**
- * Class that represents a sentence form (can consist of terminals and variables)
+ * Class that represents a sentential form (can consist of terminals and variables)
  */
-class SentenceForm {
+class SententialForm {
   form;
   previousForm;
 
   /**
-   * Creates a new sentence form object
-   * @param {SentenceForm} form
-   * @param {SentenceForm} previousForm the sentence form that lead to the current form
+   * Creates a new sentential form object
+   * @param {SententialForm} form
+   * @param {SententialForm} previousForm the sentential form that lead to the current form
    */
   constructor(form, previousForm) {
     this.form = form;
@@ -1176,8 +1178,8 @@ class SentenceForm {
   }
 
   /**
-   * Turns a sentence form into a readable string
-   * @returns a string representing the sentence form
+   * Turns a sentential form into a readable string
+   * @returns a string representing the sentential form
    */
   toString() {
     return this.form;
@@ -1404,7 +1406,7 @@ function userInputToGrammar(
     throw new Error("Invalid starting variable!");
   }
 
-  if(checkArrayIntersection(terminals, variables)){
+  if (checkArrayIntersection(terminals, variables)) {
     throw new Error("Variables and terminals may not share symbols!");
   }
 
@@ -1442,13 +1444,15 @@ function userInputToGrammar(
         }
       }
 
-      if(!(variables.some((element) => element === slice) || terminals.some((element) => element === slice))){
+      if (
+        !(
+          variables.some((element) => element === slice) ||
+          terminals.some((element) => element === slice)
+        )
+      ) {
         throw new Error("Terminal/Variable not found!");
       }
-    
     }
-
-    
 
     var rightSides = splittedProductionInput[1].split("|");
 
@@ -1475,13 +1479,16 @@ function userInputToGrammar(
           }
         }
 
-        if(!(variables.some((element) => element === slice) || terminals.some((element) => element === slice) || slice === "ε")){
+        if (
+          !(
+            variables.some((element) => element === slice) ||
+            terminals.some((element) => element === slice) ||
+            slice === "ε"
+          )
+        ) {
           throw new Error("Terminal/Variable not found!");
         }
-      
       }
-
-      
 
       productions.push(new Production(processedLeftSide, processedRightSide));
     }
@@ -1634,9 +1641,11 @@ function createNFAFromGrammar(grammar, two) {
   var transitionIndex = 0;
 
   var zeStateCount = variables.filter((variable) =>
-    variable.startsWith(("z") + subscriptE())
+    variable.startsWith("z" + subscriptE())
   ).length;
-  states.push(new State("z" + subscriptE() + numberToSubscript(zeStateCount), false, true));
+  states.push(
+    new State("z" + subscriptE() + numberToSubscript(zeStateCount), false, true)
+  );
 
   for (let i = 0; i &lt; variables.length; i++) {
     states.push(new State(variables[i], false, false, i));
@@ -1693,7 +1702,9 @@ function createNFAFromGrammar(grammar, two) {
       if (productionToCheck != undefined) {
         let stateI = states.find((element) => element.name === variables[i]);
         let zeState = states.find(
-          (element) => element.name === ("z" + subscriptE() + numberToSubscript(zeStateCount))
+          (element) =>
+            element.name ===
+            "z" + subscriptE() + numberToSubscript(zeStateCount)
         );
         transitions.push(
           new FaTransition(stateI, zeState, [inputAlphabet[j]], transitionIndex)
@@ -1703,15 +1714,22 @@ function createNFAFromGrammar(grammar, two) {
     }
   }
 
-  var epsilonRightSides = productions.filter(p => variables.includes(p.left.join("")) &amp;&amp; p.left.join("") !== starting &amp;&amp; p.right.join("") === "ε");
+  var epsilonRightSides = productions.filter(
+    (p) =>
+      variables.includes(p.left.join("")) &amp;&amp;
+      p.left.join("") !== starting &amp;&amp;
+      p.right.join("") === "ε"
+  );
 
-  epsilonRightSides.forEach(p => {
-    var state = states.find(s => s.name === p.left.join(""));
-    var zeState = states.find((element) => element.name === ("z" + subscriptE() + numberToSubscript(zeStateCount)));
+  epsilonRightSides.forEach((p) => {
+    var state = states.find((s) => s.name === p.left.join(""));
+    var zeState = states.find(
+      (element) =>
+        element.name === "z" + subscriptE() + numberToSubscript(zeStateCount)
+    );
     transitions.push(new FaTransition(state, zeState, "ε", transitionIndex));
     transitionIndex++;
-  })
-
+  });
 
   if (
     productions.some(
@@ -1721,7 +1739,6 @@ function createNFAFromGrammar(grammar, two) {
   ) {
     startingState.isEnd = true;
   }
-
 
   var automaton = new FiniteAutomaton(states, inputAlphabet, transitions, two);
 
@@ -1811,10 +1828,10 @@ function createGrammarFromFiniteAutomaton(automaton) {
         productions.push(
           new Production([automaton.states[i].name], [succ.name])
         );
-        if(succ.isEnd){
+        if (succ.isEnd) {
           productions.push(new Production([succ.name], ["ε"]));
         }
-        });
+      });
     }
   }
 
@@ -1914,7 +1931,7 @@ function decideWordProblem(grammar, word) {
   }
 
   var n = word.length;
-  var l = [new SentenceForm(grammar.starting, null)];
+  var l = [new SententialForm(grammar.starting, null)];
   var lOld;
   var i = 0;
 
@@ -1930,11 +1947,11 @@ function decideWordProblem(grammar, word) {
   return l.find((element) => element.form === word);
 }
 /**
- * Helper function that calculate the derivations of all current sentence forms
- * @param {SentenceForm} l the set of sentence forms
- * @param {SentenceForm} n the max length of sentence forms allowed
+ * Helper function that calculate the derivations of all current sentential forms
+ * @param {SententialForm} l the set of sentential forms
+ * @param {SententialForm} n the max length of sentential forms allowed
  * @param {Array} productions
- * @returns the derivations of all current sentence forms
+ * @returns the derivations of all current sentential forms
  */
 function next(l, n, productions) {
   var successorDerivations = l.slice();
@@ -1948,22 +1965,22 @@ function next(l, n, productions) {
   return successorDerivations.filter(filterOutUniqueForms);
 }
 /**
- * Calculates the successor sentence forms by applying all valid productions to the given sentence form
- * @param {SentenceForm} sentenceForm
+ * Calculates the successor sentential forms by applying all valid productions to the given sentential form
+ * @param {SententialForm} sententialForm
  * @param {Int} maxLength
  * @param {Array} productions
- * @returns the successor sentence forms
+ * @returns the successor sentential forms
  */
-function calculateOneStepDerivations(sentenceForm, maxLength, productions) {
+function calculateOneStepDerivations(sententialForm, maxLength, productions) {
   var derivations = [];
 
-  for (let i = 0; i &lt; sentenceForm.form.length; i++) {
-    for (let j = 0; j &lt; sentenceForm.form.length; j++) {
-      var firstPortion = sentenceForm.form.slice(0, i);
+  for (let i = 0; i &lt; sententialForm.form.length; i++) {
+    for (let j = 0; j &lt; sententialForm.form.length; j++) {
+      var firstPortion = sententialForm.form.slice(0, i);
 
-      var currentPortion = sentenceForm.form.slice(i, j + 1);
+      var currentPortion = sententialForm.form.slice(i, j + 1);
 
-      var lastPortion = sentenceForm.form.slice(j + 1, sentenceForm.length); //possible error
+      var lastPortion = sententialForm.form.slice(j + 1, sententialForm.length); //possible error
 
       var matchingProductions = productions.filter(
         (element) => element.left.join("") === currentPortion
@@ -1971,22 +1988,20 @@ function calculateOneStepDerivations(sentenceForm, maxLength, productions) {
 
       if (matchingProductions != undefined) {
         for (let k = 0; k &lt; matchingProductions.length; k++) {
-          resultingSentenceForm =
-            (firstPortion +
-            matchingProductions[k].right +
-            lastPortion);
-            //replace(/ε/g, "")
+          resultingSententialForm =
+            firstPortion + matchingProductions[k].right + lastPortion;
+          //replace(/ε/g, "")
 
           if (
-            resultingSentenceForm.split(",").length &lt;= maxLength &amp;&amp;
-            resultingSentenceForm.split(",").length > 0
+            resultingSententialForm.split(",").length &lt;= maxLength &amp;&amp;
+            resultingSententialForm.split(",").length > 0
           ) {
             derivations.push(
-              new SentenceForm(
-                (firstPortion +
+              new SententialForm(
+                firstPortion +
                   matchingProductions[k].right.join("") +
-                  lastPortion),
-                sentenceForm
+                  lastPortion,
+                sententialForm
               )
             );
           }
@@ -2027,15 +2042,14 @@ function checkArrayEquality(array1, array2) {
 function checkArrayIntersection(array1, array2) {
   var size = Math.min(array1.length, array2.length);
 
-  if(size == array1.length){
+  if (size == array1.length) {
     for (let i = 0; i &lt; size; i++) {
       if (array2.includes(array1[i])) {
         return true;
       }
     }
     return false;
-  }
-  else{
+  } else {
     for (let i = 0; i &lt; size; i++) {
       if (array1.includes(array2[i])) {
         return true;
@@ -2043,17 +2057,15 @@ function checkArrayIntersection(array1, array2) {
     }
     return false;
   }
-
-  
 }
 /**
  * Converts the trace of predecessor forms into a string
- * @param {SentenceForm} sentenceForm
+ * @param {SententialForm} sententialForm
  * @returns the string representation of the trace
  */
-function sentenceFormPredecessorsToString(sentenceForm) {
+function sententialFormPredecessorsToString(sententialForm) {
   var predecessors = [];
-  var temp = sentenceForm;
+  var temp = sententialForm;
   var outputString;
 
   while (temp != null) {
@@ -2067,7 +2079,7 @@ function sentenceFormPredecessorsToString(sentenceForm) {
   return outputString;
 }
 /**
- * Filters out the unique sentence forms (by value, not reference)
+ * Filters out the unique sentential forms (by value, not reference)
  * @param {any} value
  * @param {Int} index
  * @param {any} self
@@ -2084,7 +2096,7 @@ const filterOutUniqueForms = (value, index, self) => {
  */
 function generateTerminalsForms(grammar, maxCount) {
   var n = 7;
-  var l = [new SentenceForm(grammar.starting, null)];
+  var l = [new SententialForm(grammar.starting, null)];
   var lOld;
   var i = 0;
 
@@ -2094,10 +2106,12 @@ function generateTerminalsForms(grammar, maxCount) {
     i++;
   } while (i &lt; 6 &amp;&amp; !checkArrayEquality(l, lOld));
 
-  l = l.filter((element) => checkWordAlphabet(grammar.terminals + ["ε"], element.form));
+  l = l.filter((element) =>
+    checkWordAlphabet(grammar.terminals + ["ε"], element.form)
+  );
 
-  l.forEach(element => {
-    if (element.form !== "ε"){
+  l.forEach((element) => {
+    if (element.form !== "ε") {
       element.form = element.form.replace(/ε/g, "");
     }
   });
@@ -2145,8 +2159,8 @@ function numberToSubscript(number) {
  * Creates a subscript 'e' letter
  * @returns a subscript 'e'
  */
-function subscriptE(){
-  return '\u2091';
+function subscriptE() {
+  return "\u2091";
 }
 
 /**
@@ -2399,13 +2413,13 @@ async function loadSVGToImage(svg) {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AutomatonObserver.html">AutomatonObserver</a></li><li><a href="FaTransition.html">FaTransition</a></li><li><a href="FiniteAutomaton.html">FiniteAutomaton</a></li><li><a href="Grammar.html">Grammar</a></li><li><a href="PieMenu.html">PieMenu</a></li><li><a href="Production.html">Production</a></li><li><a href="SentenceForm.html">SentenceForm</a></li><li><a href="State.html">State</a></li></ul><h3>Global</h3><ul><li><a href="global.html#NFAToDFA">NFAToDFA</a></li><li><a href="global.html#calculateEpsilonClosure">calculateEpsilonClosure</a></li><li><a href="global.html#calculateMedianVertex">calculateMedianVertex</a></li><li><a href="global.html#calculateNormalVector">calculateNormalVector</a></li><li><a href="global.html#calculateOneStepDerivations">calculateOneStepDerivations</a></li><li><a href="global.html#calculateStatePredecessors">calculateStatePredecessors</a></li><li><a href="global.html#calculateStateSuccessorVia">calculateStateSuccessorVia</a></li><li><a href="global.html#calculateStateSuccessors">calculateStateSuccessors</a></li><li><a href="global.html#calculateStateSuccessorsVia">calculateStateSuccessorsVia</a></li><li><a href="global.html#checkArrayEquality">checkArrayEquality</a></li><li><a href="global.html#checkArrayIntersection">checkArrayIntersection</a></li><li><a href="global.html#checkLineCircleIntersection">checkLineCircleIntersection</a></li><li><a href="global.html#checkTransitionStatesIntersection">checkTransitionStatesIntersection</a></li><li><a href="global.html#checkWordAlphabet">checkWordAlphabet</a></li><li><a href="global.html#computeLineLength">computeLineLength</a></li><li><a href="global.html#createGrammarFromFiniteAutomaton">createGrammarFromFiniteAutomaton</a></li><li><a href="global.html#createNFAFromGrammar">createNFAFromGrammar</a></li><li><a href="global.html#createPowerSetOfStates">createPowerSetOfStates</a></li><li><a href="global.html#createSVGScreenshot">createSVGScreenshot</a></li><li><a href="global.html#decideWordProblem">decideWordProblem</a></li><li><a href="global.html#downloadImage">downloadImage</a></li><li><a href="global.html#filterOutUniqueForms">filterOutUniqueForms</a></li><li><a href="global.html#formatProductions">formatProductions</a></li><li><a href="global.html#generateTerminalsForms">generateTerminalsForms</a></li><li><a href="global.html#grammarformToLocalStorage">grammarformToLocalStorage</a></li><li><a href="global.html#inRange">inRange</a></li><li><a href="global.html#loadSVGToImage">loadSVGToImage</a></li><li><a href="global.html#movePointAlongVector">movePointAlongVector</a></li><li><a href="global.html#nTimesZ">nTimesZ</a></li><li><a href="global.html#next">next</a></li><li><a href="global.html#numberToSubscript">numberToSubscript</a></li><li><a href="global.html#onlyUnique">onlyUnique</a></li><li><a href="global.html#sentenceFormPredecessorsToString">sentenceFormPredecessorsToString</a></li><li><a href="global.html#subscriptE">subscriptE</a></li><li><a href="global.html#userInputToGrammar">userInputToGrammar</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AutomatonObserver.html">AutomatonObserver</a></li><li><a href="FaTransition.html">FaTransition</a></li><li><a href="FiniteAutomaton.html">FiniteAutomaton</a></li><li><a href="Grammar.html">Grammar</a></li><li><a href="PieMenu.html">PieMenu</a></li><li><a href="Production.html">Production</a></li><li><a href="SententialForm.html">SententialForm</a></li><li><a href="State.html">State</a></li></ul><h3>Global</h3><ul><li><a href="global.html#NFAToDFA">NFAToDFA</a></li><li><a href="global.html#calculateEpsilonClosure">calculateEpsilonClosure</a></li><li><a href="global.html#calculateMedianVertex">calculateMedianVertex</a></li><li><a href="global.html#calculateNormalVector">calculateNormalVector</a></li><li><a href="global.html#calculateOneStepDerivations">calculateOneStepDerivations</a></li><li><a href="global.html#calculateStatePredecessors">calculateStatePredecessors</a></li><li><a href="global.html#calculateStateSuccessorVia">calculateStateSuccessorVia</a></li><li><a href="global.html#calculateStateSuccessors">calculateStateSuccessors</a></li><li><a href="global.html#calculateStateSuccessorsVia">calculateStateSuccessorsVia</a></li><li><a href="global.html#checkArrayEquality">checkArrayEquality</a></li><li><a href="global.html#checkArrayIntersection">checkArrayIntersection</a></li><li><a href="global.html#checkLineCircleIntersection">checkLineCircleIntersection</a></li><li><a href="global.html#checkTransitionStatesIntersection">checkTransitionStatesIntersection</a></li><li><a href="global.html#checkWordAlphabet">checkWordAlphabet</a></li><li><a href="global.html#computeLineLength">computeLineLength</a></li><li><a href="global.html#createGrammarFromFiniteAutomaton">createGrammarFromFiniteAutomaton</a></li><li><a href="global.html#createNFAFromGrammar">createNFAFromGrammar</a></li><li><a href="global.html#createPowerSetOfStates">createPowerSetOfStates</a></li><li><a href="global.html#createSVGScreenshot">createSVGScreenshot</a></li><li><a href="global.html#decideWordProblem">decideWordProblem</a></li><li><a href="global.html#downloadImage">downloadImage</a></li><li><a href="global.html#filterOutUniqueForms">filterOutUniqueForms</a></li><li><a href="global.html#formatProductions">formatProductions</a></li><li><a href="global.html#generateTerminalsForms">generateTerminalsForms</a></li><li><a href="global.html#grammarformToLocalStorage">grammarformToLocalStorage</a></li><li><a href="global.html#inRange">inRange</a></li><li><a href="global.html#loadSVGToImage">loadSVGToImage</a></li><li><a href="global.html#movePointAlongVector">movePointAlongVector</a></li><li><a href="global.html#nTimesZ">nTimesZ</a></li><li><a href="global.html#next">next</a></li><li><a href="global.html#numberToSubscript">numberToSubscript</a></li><li><a href="global.html#onlyUnique">onlyUnique</a></li><li><a href="global.html#sententialFormPredecessorsToString">sententialFormPredecessorsToString</a></li><li><a href="global.html#subscriptE">subscriptE</a></li><li><a href="global.html#userInputToGrammar">userInputToGrammar</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Wed May 08 2024 20:57:16 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Tue May 14 2024 23:02:54 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>
