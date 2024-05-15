@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", function () {
   two.appendTo(canvas);
   var clearButton = document.getElementById("clearButton");
   var clearButtonGrammar = document.getElementById("clearButtonGrammar");
+  var resolveEpsilonProductionsButton = document.getElementById(
+    "resolveEpsilonProductionsButton"
+  );
   var createStateButton = document.getElementById("createStateButton");
   var createTransitionButton = document.getElementById(
     "createTransitionButton"
@@ -678,6 +681,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     grammar.calculateGrammarType();
 
+    var grammarHasEpsilonProductions = grammar.productions.some(
+      (p) =>
+        grammar.variables.some(
+          (v) => checkArrayEquality([v], p.left) && v !== grammar.starting
+        ) && checkArrayEquality(p.right, ["ε"])
+    );
+
+    if (grammarHasEpsilonProductions) {
+      messageToConsole("Remove ε-productions first!", "red");
+      return;
+    }
+
     if (grammar.type === 3) {
       nfaFromGrammar = createNFAFromGrammar(grammar, two);
       automaton.states = nfaFromGrammar.states;
@@ -707,6 +722,27 @@ document.addEventListener("DOMContentLoaded", function () {
     productionsIO.value = localStorage.getItem("productions");
     startingIO.value = localStorage.getItem("starting");
     console.log("Pasted Input from local storage");
+    messageToConsole("Pasted grammar from clipboard!", "black");
+  });
+
+  resolveEpsilonProductionsButton.addEventListener("click", function (event) {
+    event.preventDefault();
+    try {
+      grammar = userInputToGrammar(
+        variablesIO.value,
+        terminalsIO.value,
+        productionsIO.value,
+        startingIO.value
+      );
+    } catch (error) {
+      messageToConsole(error.message, "red");
+      console.error(error.message);
+      return;
+    }
+    grammar.resolveEpsilonProductions();
+    grammar.calculateGrammarType();
+    grammar.updateOutput();
+    messageToConsole("Removed ε-productions", "black");
   });
 
   /**

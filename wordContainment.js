@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", function () {
   var typeDisplay = document.getElementById("typeDisplay");
   var clearButton = document.getElementById("clearButton");
   var exampleButton = document.getElementById("exampleButton");
+  var resolveEpsilonProductionsButton = document.getElementById(
+    "resolveEpsilonProductionsButton"
+  );
   var checkButton = document.getElementById("checkButton");
   var copyButton = document.getElementById("copyButton");
   var pasteButton = document.getElementById("pasteButton");
@@ -19,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
   );
   var exampleWordsDisplay = document.getElementById("exampleWords");
   var grammar;
+  var infoConsole = document.getElementById("console");
 
   exampleButton.addEventListener("click", function (event) {
     event.preventDefault();
@@ -47,6 +51,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
       grammar.calculateGrammarType();
 
+      var grammarHasEpsilonProductions = grammar.productions.some(
+        (p) =>
+          grammar.variables.some(
+            (v) => checkArrayEquality([v], p.left) && v !== grammar.starting
+          ) && checkArrayEquality(p.right, ["ε"])
+      );
+
+      if (grammarHasEpsilonProductions) {
+        messageToConsole("Remove ε-productions first!", "red");
+        return;
+      }
+
       typeDisplay.textContent = "Type: " + grammar.type;
 
       var wordProblemResult = decideWordProblem(grammar, word);
@@ -55,7 +71,8 @@ document.addEventListener("DOMContentLoaded", function () {
         wordContainmentDisplay.textContent = "Word is in the language";
         wordContainmentDisplay.style.color = "green";
         derivationDisplay.textContent =
-          "Derivation: " + sententialFormPredecessorsToString(wordProblemResult);
+          "Derivation: " +
+          sententialFormPredecessorsToString(wordProblemResult);
       } else {
         wordContainmentDisplay.textContent = "Word is not in the language";
         wordContainmentDisplay.style.color = "red";
@@ -79,6 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
     derivationDisplay.textContent = "";
     generateExampleWordsButton.style.display = "none";
     exampleWordsDisplay.textContent = "";
+    messageToConsole("Cleared grammar!", "red");
   });
 
   generateExampleWordsButton.addEventListener("click", function () {
@@ -99,6 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
       startingIO.value
     );
     console.log("Saved Input in local storage");
+    messageToConsole("Grammar copied to clipboard", "green");
   });
 
   pasteButton.addEventListener("click", function (event) {
@@ -108,9 +127,47 @@ document.addEventListener("DOMContentLoaded", function () {
     productionsIO.value = localStorage.getItem("productions");
     startingIO.value = localStorage.getItem("starting");
     console.log("Pasted Input from local storage");
+    messageToConsole("Pasted grammar from clipboard!", "black");
   });
 
   window.addEventListener("resize", function () {
     document.body.style.height = window.innerHeight + "px";
   });
+
+  resolveEpsilonProductionsButton.addEventListener("click", function (event) {
+    event.preventDefault();
+    try {
+      grammar = userInputToGrammar(
+        variablesIO.value,
+        terminalsIO.value,
+        productionsIO.value,
+        startingIO.value
+      );
+    } catch (error) {
+      messageToConsole(error.message, "red");
+      console.error(error.message);
+      return;
+    }
+    grammar.calculateGrammarType();
+    if (grammar.type < 2) {
+      messageToConsole(
+        "Grammar must be of type 2 or 3 to remove ε-productions!",
+        "red"
+      );
+      return;
+    }
+    grammar.resolveEpsilonProductions();
+    grammar.updateOutput();
+    messageToConsole("Removed ε-productions", "black");
+  });
+
+  /**
+   * Prints a message to the info console in a specified color
+   * @param {String} message the message text
+   * @param {String} color the color, e.g. 'white'
+   */
+  function messageToConsole(message, color) {
+    infoConsole.textContent = message;
+    infoConsole.style.color = color;
+  }
 });

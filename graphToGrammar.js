@@ -647,6 +647,7 @@ document.addEventListener("DOMContentLoaded", function () {
   rightArrowButton.addEventListener("click", function () {
     grammar = createGrammarFromFiniteAutomaton(automaton);
     grammar.updateOutput();
+    console.log(grammar);
     messageToConsole("Equivalent grammar created!", "green");
   });
 

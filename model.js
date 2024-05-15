@@ -117,6 +117,89 @@ class Grammar {
     this.productions = [];
     this.starting = "";
   }
+
+  /**
+   * Removes epsilon-productions where the left side is a non-starting variable
+   * @returns used for when there are no epsilon-productions
+   */
+  resolveEpsilonProductions() {
+    var epsilonProductions = this.productions.filter(
+      (p) =>
+        this.variables.some(
+          (v) => checkArrayEquality([v], p.left) && v !== this.starting
+        ) && checkArrayEquality(p.right, ["ε"])
+    );
+    var epsilonVariables = epsilonProductions.map((prod) => prod.left[0]);
+
+    if (epsilonProductions.length == 0) {
+      return;
+    }
+
+    var epsilonVariablesOld = [];
+
+    do {
+      epsilonVariablesOld = epsilonVariables;
+
+      this.productions.forEach((p) => {
+        if (
+          this.variables.some((v) => checkArrayEquality([v], p.left)) &&
+          checkWordAlphabet(epsilonVariables, p.right)
+        ) {
+          epsilonVariables.push(p.left[0]);
+        }
+      });
+    } while (!checkArrayEquality(epsilonVariables, epsilonVariablesOld));
+
+    console.log(epsilonProductions);
+
+    this.productions = this.productions.filter(
+      (p) => !epsilonProductions.includes(p)
+    );
+
+    //These productions contain an epsilon-productions's variable in their right side
+    var rightSideEpsilonProductions = this.productions.filter(
+      (p) =>
+        this.variables.some((v) => checkArrayEquality([v], p.left)) &&
+        epsilonVariables.some((e) => p.right.includes(e))
+    );
+
+    let oldProductions = [];
+
+    do {
+      oldProductions = this.productions;
+
+      this.productions.forEach((r) => {
+        //The number of epsilon variables in this production's right side
+        var epsilonVariableCount = calculateSharedElements(
+          r.right,
+          epsilonVariables
+        );
+
+        for (let i = 0; i < epsilonVariableCount; i++) {
+          let i = 0;
+          while (i < r.right.length) {
+            if (epsilonVariables.some((e) => e === r.right[i])) {
+              let rightSideWithoutEpsilonVariables = r.right.slice();
+              rightSideWithoutEpsilonVariables.splice(i, 1);
+              if (rightSideWithoutEpsilonVariables.length > 0) {
+                this.productions.push(
+                  new Production(r.left, rightSideWithoutEpsilonVariables)
+                );
+              }
+            }
+            i++;
+          }
+        }
+        this.productions = onlyUniqueByTwoKeys(
+          this.productions,
+          "left",
+          "right"
+        );
+        oldProductions = onlyUniqueByTwoKeys(oldProductions, "left", "right");
+        console.log(this.productions.length);
+      });
+    } while (oldProductions.length != this.productions.length);
+  }
 }
 /**
  * Class that represents a grammar production
@@ -1138,6 +1221,7 @@ class FaTransition {
 class SententialForm {
   form;
   previousForm;
+  length;
 
   /**
    * Creates a new sentential form object
@@ -1318,6 +1402,32 @@ function calculateEpsilonClosure(state, transitions) {
 function onlyUnique(value, index, array) {
   return array.indexOf(value) === index;
 }
+
+/**
+ * Removes duplicate objects identified by two attributes from an array
+ * @param {Array} array
+ * @param {String} key1
+ * @param {String} key2
+ * @returns the array consisting of only unique objects
+ */
+function onlyUniqueByTwoKeys(array, key1, key2) {
+  var map = {};
+  var filteredArray = [];
+
+  array.forEach((element) => {
+    const keyValue1 = element[key1];
+    const keyValue2 = element[key2];
+    const uniqueKey = `${keyValue1}${keyValue2}`;
+
+    if (!map[uniqueKey]) {
+      map[uniqueKey] = true;
+      filteredArray.push(element);
+    }
+  });
+
+  return filteredArray;
+}
+
 /**
  * Calculates the length of a path defined by two points
  * @param {Point} point1
@@ -1433,6 +1543,19 @@ function userInputToGrammar(
       var processedRightSide = [];
       var slice;
 
+      if (rightSide.includes("ε")) {
+        console.log(processedLeftSide);
+        if (
+          rightSide === "ε" &&
+          variables.some((v) => checkArrayEquality(processedLeftSide, [v]))
+        ) {
+          productions.push(new Production(processedLeftSide, ["ε"]));
+          continue;
+        } else {
+          throw new Error("Illegal ε-Production!");
+        }
+      }
+
       for (let i = rightSide.length - 1; i >= 0; i--) {
         for (let j = 0; j < rightSide.length; j++) {
           slice = rightSide.slice(i - j, i + 1);
@@ -1442,7 +1565,7 @@ function userInputToGrammar(
 
             i = i - j;
             break;
-          } else if (terminals.includes(slice) || slice === "ε") {
+          } else if (terminals.includes(slice)) {
             processedRightSide = [slice].concat(processedRightSide);
             i = i - j;
             break;
@@ -1454,8 +1577,7 @@ function userInputToGrammar(
         if (
           !(
             variables.some((element) => element === slice) ||
-            terminals.some((element) => element === slice) ||
-            slice === "ε"
+            terminals.some((element) => element === slice)
           )
         ) {
           throw new Error("Terminal/Variable not found!");
@@ -1465,6 +1587,20 @@ function userInputToGrammar(
       productions.push(new Production(processedLeftSide, processedRightSide));
     }
   }
+
+  if (
+    productions.some(
+      (p) =>
+        checkArrayEquality(p.left, [starting]) &&
+        checkArrayEquality(p.right, ["ε"]) &&
+        productions.some((p) => p.right.includes(starting))
+    )
+  ) {
+    throw new Error(
+      "There can't be a production with the starting symbol on the right!"
+    );
+  }
+
   return new Grammar(variables, terminals, productions, starting);
 }
 /**
@@ -1727,6 +1863,7 @@ function createGrammarFromFiniteAutomaton(automaton) {
   var terminals;
   var productions = [];
   var starting;
+  var n = 0;
 
   for (i = 0; i < automaton.states.length; i++) {
     variables.push(automaton.states[i].name);
@@ -1739,22 +1876,35 @@ function createGrammarFromFiniteAutomaton(automaton) {
   if (startStates.length == 1) {
     starting = startStates[0].name;
   } else {
-    var n = 0;
-
-    while (variables.includes("h" + numberToSubscript(n))) {
+    while (variables.includes("H" + numberToSubscript(n))) {
       n++;
     }
-    variables.push("h" + numberToSubscript(n));
+    variables.push("H" + numberToSubscript(n));
     startStates.forEach((state) =>
       productions.push(
-        new Production(["h" + numberToSubscript(n)], [state.name])
+        new Production(["H" + numberToSubscript(n)], [state.name])
       )
     );
-    starting = "h" + numberToSubscript(n);
+    starting = "H" + numberToSubscript(n);
   }
 
   if (startStates.some((s) => s.isEnd)) {
     productions.push(new Production([starting], ["ε"]));
+  }
+
+  if (
+    automaton.states.some(
+      (s) =>
+        s.isStart && s.isEnd && automaton.transitions.some((t) => t.to === s)
+    )
+  ) {
+    n = 0;
+    while (variables.includes("H" + numberToSubscript(n))) {
+      n++;
+    }
+    variables.push("H" + numberToSubscript(n));
+    productions.push(new Production(["H" + numberToSubscript(n)], [starting]));
+    starting = "H" + numberToSubscript(n);
   }
 
   terminals = automaton.inputAlphabet;
@@ -1915,6 +2065,7 @@ function decideWordProblem(grammar, word) {
     i < 50 &&
     !(l.some((element) => element.form === word) || checkArrayEquality(l, lOld))
   );
+  console.log(l);
 
   return l.find((element) => element.form === word);
 }
@@ -1952,7 +2103,7 @@ function calculateOneStepDerivations(sententialForm, maxLength, productions) {
 
       var currentPortion = sententialForm.form.slice(i, j + 1);
 
-      var lastPortion = sententialForm.form.slice(j + 1, sententialForm.length); //possible error
+      var lastPortion = sententialForm.form.slice(j + 1, sententialForm.length);
 
       var matchingProductions = productions.filter(
         (element) => element.left.join("") === currentPortion
@@ -1960,18 +2111,40 @@ function calculateOneStepDerivations(sententialForm, maxLength, productions) {
 
       if (matchingProductions != undefined) {
         for (let k = 0; k < matchingProductions.length; k++) {
-          resultingSententialForm =
-            firstPortion + matchingProductions[k].right + lastPortion;
+          resultingSententialForm = (
+            firstPortion +
+            matchingProductions[k].right +
+            lastPortion
+          ).replace(/ε/g, "");
+
+          if (resultingSententialForm === "") {
+            resultingSententialForm = "ε";
+          }
           //replace(/ε/g, "")
+          console.log(resultingSententialForm);
+          console.log(resultingSententialForm.split(",").length);
 
           if (
-            resultingSententialForm.split(",").length <= maxLength &&
+            /* resultingSententialForm.split(",").length <= maxLength && */
             resultingSententialForm.split(",").length > 0
           ) {
-            derivations.push(
+            if (resultingSententialForm === "ε") {
+              derivations.push(new SententialForm("ε", sententialForm));
+            } else {
+              derivations.push(
+                new SententialForm(
+                  firstPortion +
+                    matchingProductions[k].right.join("").replace(/ε/g, "") +
+                    lastPortion,
+                  sententialForm
+                )
+              );
+            }
+
+            console.log(
               new SententialForm(
                 firstPortion +
-                  matchingProductions[k].right.join("") +
+                  matchingProductions[k].right.join("").replace(/ε/g, "") +
                   lastPortion,
                 sententialForm
               )
@@ -2030,6 +2203,33 @@ function checkArrayIntersection(array1, array2) {
     return false;
   }
 }
+
+/**
+ * Counts the elements shared by two arrays
+ * @param {Array} array1
+ * @param {Array} array2
+ * @returns the amount of shared elements
+ */
+function calculateSharedElements(array1, array2) {
+  var sharedElements = 0;
+  var size = Math.min(array1.length, array2.length);
+
+  if (size == array1.length) {
+    for (let i = 0; i < size; i++) {
+      if (array2.includes(array1[i])) {
+        sharedElements++;
+      }
+    }
+  } else {
+    for (let i = 0; i < size; i++) {
+      if (array1.includes(array2[i])) {
+        sharedElements++;
+      }
+    }
+  }
+  return sharedElements;
+}
+
 /**
  * Converts the trace of predecessor forms into a string
  * @param {SententialForm} sententialForm
@@ -2082,15 +2282,17 @@ function generateTerminalsForms(grammar, maxCount) {
     checkWordAlphabet(grammar.terminals + ["ε"], element.form)
   );
 
-  l.forEach((element) => {
+  /* l.forEach((element) => {
     if (element.form !== "ε") {
       element.form = element.form.replace(/ε/g, "");
     }
-  });
+  }); */
 
   l = l.slice(0, maxCount);
 
   var stringOutput = l.join(", ");
+
+  console.log(l);
 
   return stringOutput;
 }

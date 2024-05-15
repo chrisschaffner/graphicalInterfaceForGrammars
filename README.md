@@ -35,6 +35,7 @@
 <li>For example A->aB or B->cC|aaB</li>
 <li>Each production must be put in a new line</li>
 <li>The starting symbol must be included in the set of variables</li>
+<li>Epsilon-productions can be removed using the button below the input form</li>
 </ol>
 
 <h3>Converting into an equivalent finite automaton</h3>
@@ -53,10 +54,9 @@
 </ol>
 
 <h2 id="aboutWordContainment">Word Containment</h2>
-<p>After <a href="#aboutCreatingGrammar">creating a grammar</a>, you can enter an arbitrary word and check if it is contained in the language induced by the grammar by clicking "Check".</p>
+<p>After <a href="#aboutCreatingGrammar">creating a grammar</a>, you can enter an arbitrary word and check if it is contained in the language induced by the grammar by clicking "Check". If the grammar contains epsilon-productions, remove them first.</p>
 <p>If the language contains the word you put in, a derivation will be displayed showing how the word can be constructed using the productions.</p>
 <p>If the grammar you put in is valid and type 1, you can click "Generate example words" to generate up to 100 words that are also contained in the language.</p>
-
 
 <h2 id="aboutCombinedView">Combined View</h2>
 <p>The combined view - as the name suggests - allows you to convert a grammar into an equivalent automaton and vice versa.</p>
@@ -97,8 +97,6 @@
 <p>For editing the states, you can also use the quick menu</p>
 </ol>
 
-
-
 <h1 id="aboutGrammarButtons">Grammar Buttons</h1>
 <ol>
 <li>Type</li>
@@ -134,4 +132,3 @@
 <li>DFA/NFA</li>
 <p>This fields indicates whether your created automaton is a DFA or NFA</p>
 </ol>
-

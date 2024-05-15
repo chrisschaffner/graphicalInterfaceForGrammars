@@ -378,6 +378,7 @@ header nav ul li a:hover {
 #submitButton,
 #checkButton,
 #copyButton,
+#resolveEpsilonProductionsButton,
 #exampleButton,
 #isDFADisplay,
 #editButton,
@@ -418,6 +419,7 @@ header nav ul li a:hover {
 #screenshotButton:hover,
 #determinizeButton:hover,
 #copyButton:hover,
+#resolveEpsilonProductionsButton:hover,
 #pasteButton:hover {
   color: white;
   background-color: rgba(0, 128, 0, 0.5);

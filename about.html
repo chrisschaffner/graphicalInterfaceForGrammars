@@ -105,6 +105,10 @@
           <li>For example A->aB or B->cC|aaB</li>
           <li>Each production must be put in a new line</li>
           <li>The starting symbol must be included in the set of variables</li>
+          <li>
+            Epsilon-productions can be removed using the button below the input
+            form
+          </li>
         </ol>
 
         <h3>Converting into an equivalent finite automaton</h3>
@@ -146,7 +150,8 @@
         <p>
           After <a href="#aboutCreatingGrammar">creating a grammar</a>, you can
           enter an arbitrary word and check if it is contained in the language
-          induced by the grammar by clicking "Check".
+          induced by the grammar by clicking "Check". If the grammar contains
+          epsilon-productions, remove them first.
         </p>
         <p>
           If the language contains the word you put in, a derivation will be
