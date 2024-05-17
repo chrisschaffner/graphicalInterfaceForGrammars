@@ -84,8 +84,7 @@ class Grammar {
       isType3 &=
         isType2 &&
         ((productions[i].right.length === 1 &&
-          (terminals.includes(productions[i].right[0]) ||
-            variables.includes(productions[i].right[0]))) ||
+          terminals.includes(productions[i].right[0])) ||
           (productions[i].right.length === 2 &&
             terminals.includes(productions[i].right[0]) &&
             variables.includes(productions[i].right[1])));
@@ -1784,7 +1783,7 @@ function createNFAFromGrammar(grammar, two) {
             )
           );
           transitionIndex++;
-        } else if (
+        } /* else if (
           productions[k].left.length === 1 &&
           productions[k].right[0] === variables[i]
         ) {
@@ -1799,7 +1798,7 @@ function createNFAFromGrammar(grammar, two) {
             new FaTransition(stateLeft, stateRight, ["ε"], transitionIndex)
           );
           transitionIndex++;
-        }
+        } */
       }
 
       let productionToCheck = productions.find(
@@ -2048,7 +2047,7 @@ function checkWordAlphabet(terminals, word) {
  * @returns whether the grammar can create the given word
  */
 function decideWordProblem(grammar, word) {
-  if (!checkWordAlphabet(grammar.terminals, word) && word !== "ε") {
+  if (!(checkWordAlphabet(grammar.terminals, word) || word == "ε")) {
     return undefined;
   }
 
@@ -2065,7 +2064,6 @@ function decideWordProblem(grammar, word) {
     i < 50 &&
     !(l.some((element) => element.form === word) || checkArrayEquality(l, lOld))
   );
-  console.log(l);
 
   return l.find((element) => element.form === word);
 }
@@ -2096,7 +2094,6 @@ function next(l, n, productions) {
  */
 function calculateOneStepDerivations(sententialForm, maxLength, productions) {
   var derivations = [];
-
   for (let i = 0; i < sententialForm.form.length; i++) {
     for (let j = 0; j < sententialForm.form.length; j++) {
       var firstPortion = sententialForm.form.slice(0, i);
@@ -2120,12 +2117,11 @@ function calculateOneStepDerivations(sententialForm, maxLength, productions) {
           if (resultingSententialForm === "") {
             resultingSententialForm = "ε";
           }
-          //replace(/ε/g, "")
           console.log(resultingSententialForm);
           console.log(resultingSententialForm.split(",").length);
 
           if (
-            /* resultingSententialForm.split(",").length <= maxLength && */
+            resultingSententialForm.split(",").length <= maxLength &&
             resultingSententialForm.split(",").length > 0
           ) {
             if (resultingSententialForm === "ε") {

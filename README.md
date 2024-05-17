@@ -65,7 +65,7 @@
 
 <h1 id="aboutEditButtons">Edit Buttons</h1>
 <ol>
-<li>Create State<p>To create a state, click on the position where you would like to place it inside the drawing area. The first state created will always be the start state. The start property can however be removed later. The states will be named like "Z1", "Z2" etc.</p></li>
+<li>Create State<p>To create a state, click on the position where you would like to place it inside the drawing area. The first state created will always be the start state. The start property can however be removed later. The states will be named like "z1", "z2" etc.</p></li>
 <li>Create Transition<p>To create a transition, click on the state where you want the transition to begin and drag-and-drop to the state where you want the transition to end. You are then prompted to enter a terminal for this transition. Transitions with the same start and end state can also be created like this</p></li>
 <li id="aboutMarkEnd">Mark End<p>To mark a state as end state, click on that state when 'Mark End' is enabled. End states are marked with a second smaller circle inside the state circle</p></li>
 <li id="aboutDeleteEnd">Delete End<p>To unmark a state as end state, click on that state when 'Delete End' is enabled.</p></li>

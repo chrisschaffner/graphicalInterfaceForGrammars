@@ -520,6 +520,16 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("User selected " + state.name + " as transition start");
       userSelectedStateFrom = state;
     } else if (endMarkingActive) {
+      if (state.isStart && automaton.transitions.some((t) => t.to === state)) {
+        messageToConsole(
+          "Start state is end state and has a transition to it, auto grammar conversion is disabled!",
+          "red"
+        );
+        if (autoConvertInput.checked) {
+          autoConvertInput.checked = false;
+          autoConvertInput.dispatchEvent(new Event("change"));
+        }
+      }
       automaton.markEnd(state, two);
     } else if (startMarkingActive) {
       if (
@@ -626,6 +636,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
 
+      var wouldProduceType2Grammar =
+        userSelectedStateTo.isStart && userSelectedStateTo.isEnd;
+
+      if (wouldProduceType2Grammar) {
+        if (autoConvertInput.checked) {
+          autoConvertInput.checked = false;
+          autoConvertInput.dispatchEvent(new Event("change"));
+        }
+      }
+
       var createdTransition = new FaTransition(
         userSelectedStateFrom,
         userSelectedStateTo,
@@ -643,6 +663,12 @@ document.addEventListener("DOMContentLoaded", function () {
           userViaInput,
         "green"
       );
+      if (wouldProduceType2Grammar) {
+        messageToConsole(
+          "Start state is end state and has a transition to it, auto grammar conversion is disabled!",
+          "red"
+        );
+      }
     }
 
     movingState = undefined;
@@ -680,8 +706,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     grammar.calculateGrammarType();
+    grammar.updateOutput();
+    console.log(grammar.type);
 
-    var grammarHasEpsilonProductions = grammar.productions.some(
+    /* var grammarHasEpsilonProductions = grammar.productions.some(
       (p) =>
         grammar.variables.some(
           (v) => checkArrayEquality([v], p.left) && v !== grammar.starting
@@ -691,7 +719,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (grammarHasEpsilonProductions) {
       messageToConsole("Remove ε-productions first!", "red");
       return;
-    }
+    } */
 
     if (grammar.type === 3) {
       nfaFromGrammar = createNFAFromGrammar(grammar, two);
@@ -727,6 +755,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   resolveEpsilonProductionsButton.addEventListener("click", function (event) {
     event.preventDefault();
+
     try {
       grammar = userInputToGrammar(
         variablesIO.value,
@@ -734,6 +763,14 @@ document.addEventListener("DOMContentLoaded", function () {
         productionsIO.value,
         startingIO.value
       );
+      grammarCreatesEpsilon = decideWordProblem(grammar, "ε");
+      if (grammarCreatesEpsilon) {
+        messageToConsole(
+          "Grammar creates the empty word ε, removing ε-productions is not possible!",
+          "red"
+        );
+        return;
+      }
     } catch (error) {
       messageToConsole(error.message, "red");
       console.error(error.message);

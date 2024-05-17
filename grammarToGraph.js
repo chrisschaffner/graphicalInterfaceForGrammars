@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function () {
     grammar.calculateGrammarType();
     grammar.updateOutput();
 
-    var grammarHasEpsilonProductions = grammar.productions.some(
+    /* var grammarHasEpsilonProductions = grammar.productions.some(
       (p) =>
         grammar.variables.some(
           (v) => checkArrayEquality([v], p.left) && v !== grammar.starting
@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (grammarHasEpsilonProductions) {
       messageToConsole("Remove ε-productions first!", "red");
       return;
-    }
+    } */
 
     if (grammar.type === 3) {
       var automaton = createNFAFromGrammar(grammar, two);
@@ -174,6 +174,14 @@ document.addEventListener("DOMContentLoaded", function () {
         productionsIO.value,
         startingIO.value
       );
+      grammarCreatesEpsilon = decideWordProblem(grammar, "ε");
+      if (grammarCreatesEpsilon) {
+        messageToConsole(
+          "Grammar creates the empty word ε, removing ε-productions is not possible!",
+          "red"
+        );
+        return;
+      }
     } catch (error) {
       messageToConsole(error.message, "red");
       console.error(error.message);

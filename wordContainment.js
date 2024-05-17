@@ -90,6 +90,8 @@ document.addEventListener("DOMContentLoaded", function () {
       generateExampleWordsButton.style.display = "block";
     } catch (error) {
       console.error(error);
+      wordContainmentDisplay.style.color = "red";
+      wordContainmentDisplay.textContent = error.message;
     }
   });
 
@@ -148,6 +150,13 @@ document.addEventListener("DOMContentLoaded", function () {
         productionsIO.value,
         startingIO.value
       );
+      grammarCreatesEpsilon = decideWordProblem(grammar, "ε");
+      if (grammarCreatesEpsilon) {
+        wordContainmentDisplay.textContent =
+          "Grammar creates the empty word ε, removing ε-productions is not possible!";
+        wordContainmentDisplay.style.color = "red";
+        return;
+      }
     } catch (error) {
       console.error(error.message);
       return;

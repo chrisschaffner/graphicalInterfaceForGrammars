@@ -501,6 +501,16 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("User selected " + state.name + " as transition start");
       userSelectedStateFrom = state;
     } else if (endMarkingActive) {
+      if (state.isStart && automaton.transitions.some((t) => t.to === state)) {
+        messageToConsole(
+          "Start state is end state and has a transition to it, auto grammar conversion is disabled!",
+          "red"
+        );
+        if (autoConvertInput.checked) {
+          autoConvertInput.checked = false;
+          autoConvertInput.dispatchEvent(new Event("change"));
+        }
+      }
       automaton.markEnd(state, two);
     } else if (startMarkingActive) {
       if (
@@ -607,6 +617,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
 
+      var wouldProduceType2Grammar =
+        userSelectedStateTo.isStart && userSelectedStateTo.isEnd;
+
+      if (wouldProduceType2Grammar) {
+        if (autoConvertInput.checked) {
+          autoConvertInput.checked = false;
+          autoConvertInput.dispatchEvent(new Event("change"));
+        }
+      }
+
       var createdTransition = new FaTransition(
         userSelectedStateFrom,
         userSelectedStateTo,
@@ -624,6 +644,22 @@ document.addEventListener("DOMContentLoaded", function () {
           userViaInput,
         "green"
       );
+      if (wouldProduceType2Grammar) {
+        messageToConsole(
+          "Start state is end state and has a transition to it, auto grammar conversion is disabled!",
+          "red"
+        );
+      }
+      /* if(userViaInput.includes("ε")){
+        messageToConsole(
+          "Detected ε-transition, auto grammar conversion is disabled!",
+          "red"
+        );
+        if (autoConvertInput.checked) {
+          autoConvertInput.checked = false;
+          autoConvertInput.dispatchEvent(new Event("change"));
+        }
+      } */
     }
 
     movingState = undefined;
