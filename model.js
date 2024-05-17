@@ -565,10 +565,10 @@ class FiniteAutomaton {
     var startStates = this.states.filter((s) => s.isStart);
     startStates.forEach((s) => (s.isStart = false));
     if (startStates.length > 1) {
-      startState = new State("Zs", false, false, -2);
+      startState = new State("z" + subscriptS(), false, false, -2);
       this.states.push(startState);
       startStates.forEach((s) =>
-        originalTransitions.push(new FaTransition(startState, s, "ε", -1))
+        originalTransitions.push(new FaTransition(startState, s, ["ε"], -1))
       );
     } else {
       startState = startStates[0];
@@ -580,7 +580,10 @@ class FiniteAutomaton {
     startEpsilonClosure.forEach((s) => (s.isStart = true));
     //var newTransitions = [];
 
+    console.log(originalTransitions);
+
     originalTransitions.forEach((trans) => {
+      console.log(trans.via);
       trans.via.forEach((v) => {
         if (!v.includes("ε")) {
           var epsilonClosure = calculateEpsilonClosure(
@@ -2331,6 +2334,13 @@ function numberToSubscript(number) {
  */
 function subscriptE() {
   return "\u2091";
+}
+/**
+ * Creates a subscript 's' letter
+ * @returns a subscript 's'
+ */
+function subscriptS() {
+  return "\u209B";
 }
 
 /**
